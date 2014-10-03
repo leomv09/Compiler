@@ -66,25 +66,76 @@ public class TokenList {
         });
     }
     
+    private LineContainer findLine(List<LineContainer> linesList, int line)
+    {
+        LineContainer currentContainer = null;
+        for(int i = 0; i < linesList.size(); i++)
+        {
+            currentContainer = linesList.get(i);
+            if(linesList.get(i).getLine() == line)
+            {
+                break; 
+            }
+        }
+        return currentContainer;
+    }
+    
+    /*Adds a line to the lines container list of a token that is already in the map.
+    * currentToken: The token that is being processed.
+    * tokensList: The map that contains all the tokens that have been processed.
+    */
+    private void addLineToTokenInMap(Yytoken currentToken, Map<String, List<LineContainer>> tokensList)
+    {
+        List<LineContainer> linesList = tokensList.get(currentToken.getToken());//Obtains the linesList of the current token.
+        LineContainer oldLine = findLine(linesList, currentToken.getLine());
+        if(currentToken.getLine() == oldLine.getLine())//This means that the same token is in the same line.
+        {
+            oldLine.incrementRepetitions();//So, the repetitions of that line of that specific token is incremented.
+        }
+        else
+        {//This means that the token is already in the map, but in a different line.
+            LineContainer Newline = new LineContainer(currentToken.getLine());//New line container is created.
+            linesList.add(Newline);//The new line container is added to the list of containers.
+        }
+        
+    }
+    
     private void getTokenLines(List<Yytoken> tokenLines)
     {
         sortList(tokenLines);
+        
         int index = 0;
-        int counter = 0;
+        
+        Yytoken previousToken = null;
         Yytoken currentToken = tokenLines.get(index);
         
-        while(currentToken != null)
+        Map<String, List<LineContainer>> tokensList = new HashMap();
+        
+    while(currentToken != null)
         {
-            counter++;
-            Yytoken nextToken = tokenLines.get(index + 1);
-            if( nextToken != null)
+            if(currentToken == previousToken)
             {
-                if(currentToken == nextToken)
-                {
-                    
-                }
+               addLineToTokenInMap(currentToken,tokensList);
             }
-            
+            else
+            {
+                List<LineContainer> linesList = tokensList.get(currentToken.getToken());
+                if(linesList != null)//It means that the current token is already in the map.
+                {
+                    addLineToTokenInMap(currentToken,tokensList);
+                }
+                else//It means that the current token is not in the map.
+                {
+                    LineContainer Newline = new LineContainer(currentToken.getLine());//New line container is created.
+                    List<LineContainer> lines = null;//A new list of line containers is created.
+                    lines.add(Newline);//The new line is added to the list of lines.
+                    tokensList.put(currentToken.getToken(), lines);// The new token is put into the map.
+                    previousToken = currentToken;
+                    currentToken = tokenLines.get(index++);
+                }
+                    
+                    
+            }
             
         }
         
