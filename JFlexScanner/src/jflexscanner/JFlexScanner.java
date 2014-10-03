@@ -5,6 +5,8 @@
  */
 package jflexscanner;
 
+import java.io.File;
+
 /**
  *
  * @author Leo
@@ -15,7 +17,13 @@ public class JFlexScanner {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        String path = "src/jflexscanner/expresiones.flex";
+        generarLexer(path);
+    }
+    
+    public static void generarLexer(String path){
+        File file=new File(path);
+        jflex.Main.generate(file);
     }
     
 }
