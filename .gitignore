@@ -1,13 +1,12 @@
 private/
 build/
 dist/
-output.txt
+samples/
+
+Scanner_Report_*
 
 *.java~
 *.class
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
 
 # Package Files #
 *.jar
