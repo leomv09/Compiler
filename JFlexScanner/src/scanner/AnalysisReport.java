@@ -1,8 +1,10 @@
 package scanner;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -22,9 +24,24 @@ public class AnalysisReport {
     private final TokenList tokenList;
     
     /**
-     * Format for the date.
+     * File read by the analyzer.
      */
-    private DateFormat dateFormat;
+    private final File file;
+    
+    /**
+     * Date of the report.
+     */
+    private final Date date;
+    
+    /**
+     * Date format for the report header.
+     */
+    private DateFormat reportDateFormat;
+    
+    /**
+     * Date format for the generated file name.
+     */
+    private DateFormat fileDateFormat;
     
     /**
      * Content of the report.
@@ -34,12 +51,16 @@ public class AnalysisReport {
     /**
      * Instantiates a new AnalysisReport.
      * 
+     * @param file File read by the analyzer.
      * @param tokenList List of tokens read.
      */
-    public AnalysisReport(TokenList tokenList)
+    public AnalysisReport(File file, TokenList tokenList)
     {
+        this.date = new Date();
+        this.file = file;
         this.tokenList = tokenList;
-        this.dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM);
+        this.reportDateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM);
+        this.fileDateFormat = new SimpleDateFormat("dd-MM-yy_HH:mm:ss:S");
         generateReport();
     }
     
@@ -51,10 +72,11 @@ public class AnalysisReport {
      */
     private void addHeaders(StringBuilder sb, int tokenCount)
     {
-        Date now = new Date();
-        sb.append("# COMPILATION REPORT").append("\n");
-        sb.append("# DATE: ").append(this.dateFormat.format(now)).append("\n");
-        sb.append("# TOTAL TOKENS: ").append(tokenCount).append("\n");
+        sb.append("# SCANNER REPORT #").append("\n");
+        sb.append("==================").append("\n\n");
+        sb.append("┌ FILE: ").append(this.file.getAbsolutePath()).append("\n");
+        sb.append("├ DATE: ").append(this.reportDateFormat.format(this.date)).append("\n");
+        sb.append("└ TOKENS: ").append(tokenCount).append("\n");
         sb.append("\n");
     }
     
@@ -109,11 +131,15 @@ public class AnalysisReport {
         
         addHeaders(sb, tokens.size());
         
+        String key;
+        List<LineContainer> lineList;
+        Token token;
+        
         for (Map.Entry<String, List<LineContainer>> entry : lines.entrySet())
         {
-            String key = entry.getKey();
-            List<LineContainer> lineList = entry.getValue();
-            Token token = this.tokenList.getFirstToken(key);
+            key = entry.getKey();
+            lineList = entry.getValue();
+            token = this.tokenList.getFirstToken(key);
             
             addTokenInfo(sb, token);
             addTokenLinesInfo(sb, lineList);
@@ -141,15 +167,34 @@ public class AnalysisReport {
             Logger.getLogger(AnalysisReport.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    /**
+     * Write the report to a file.
+     * 
+     */
+    public void writeToFile()
+    {
+        this.writeToFile("Scanner_Report_" + this.fileDateFormat.format(this.date));
+    }
 
     /**
-     * Set a custom format for the date.
+     * Set a custom format for the date in the report.
      * 
      * @param dateFormat DateFormat for formatting the date.
      */
-    public void setDateFormat(DateFormat dateFormat)
+    public void setReportDateFormat(DateFormat dateFormat)
     {
-        this.dateFormat = dateFormat;
+        this.reportDateFormat = dateFormat;
+    }
+    
+    /**
+     * Set a custom format for the date in the generated file.
+     * 
+     * @param dateFormat DateFormat for formatting the date.
+     */
+    public void setFileDateFormat(DateFormat dateFormat)
+    {
+        this.fileDateFormat = dateFormat;
     }
 
     @Override

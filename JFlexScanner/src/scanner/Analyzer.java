@@ -49,6 +49,7 @@ public class Analyzer {
         Lexer lexScanner = new Lexer(fr);
         Token token = null;
         
+        System.out.println("Analyzing " + file.getAbsolutePath() + "\n");
         do
         {
             try
@@ -66,19 +67,26 @@ public class Analyzer {
             }
         } while (token != null);
         
-        AnalysisReport report = new AnalysisReport(lexScanner.getTokenList());
-        report.writeToFile("output.txt");
+        System.out.println();
+        
+        AnalysisReport report = new AnalysisReport(file, lexScanner.getTokenList());
+        report.writeToFile();
     }
     
     /**
      * The main method.
      * 
-     * @param args The command line arguments.
+     * @param args The command line arguments. This is a list of files to analyze, separated by a space.
      */
     public static void main(String[] args)
     {
         Analyzer analyzer = new Analyzer();
-        analyzer.analyze("samples/code1.txt");
+        
+        // Analize each file given in the command line arguments.
+        for (String arg : args)
+        {
+            analyzer.analyze(arg);
+        }
     }
 
 }

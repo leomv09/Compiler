@@ -124,7 +124,7 @@ public class Token implements Comparable<Token> {
     @Override
     public String toString()
     {
-        return "Token {" + "token=" + token + ", tipoToken=" + type + ", line=" + line + ", column=" + column + '}';
+        return "Token {" + "token=" + token + ", type=" + type + ", line=" + line + ", column=" + column + '}';
     }
     
 }
