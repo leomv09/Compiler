@@ -1,14 +1,11 @@
 package scanner;
 
-import java.util.Objects;
-
-
 /**
  * Represent a Token read by the scanner.
  * 
  * @author Leo
  */
-public class Token implements Comparable<Token> {
+public class Token {
     
     /**
      * The token itself.
@@ -84,41 +81,6 @@ public class Token implements Comparable<Token> {
     public int getColumn()
     {
         return column;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        int hash = 3;
-        hash = 79 * hash + Objects.hashCode(this.token);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Token other = (Token) obj;
-        return Objects.equals(this.token, other.token);
-    }
-
-    @Override
-    public int compareTo(Token o) {
-        int compareByToken = this.token.compareTo(o.getToken());
-        
-        if (compareByToken == 0)
-        {
-            return this.line - o.getLine();
-        }
-        else
-        {
-            return compareByToken;
-        }
     }
 
     @Override

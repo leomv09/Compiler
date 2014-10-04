@@ -1,5 +1,8 @@
 package scanner;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Class that helps to manage the line's count of a token.
  * For each token in the map, it has a line container list that has all the line containers.
@@ -15,9 +18,9 @@ public class LineContainer {
     private final int line;
     
     /**
-     * Amount of repetitions of the token on the same line.
+     * Columns where the token appear in the line.
      */
-    private int repetitions;
+    private final List<Integer> columns;
     
     /**
      * Instantiates a new LineContainer.
@@ -27,15 +30,17 @@ public class LineContainer {
     public LineContainer(int line)
     {
         this.line = line;
-        this.repetitions = 1;
+        this.columns = new LinkedList();
     }
     
     /**
-     * Increments the amount of repetitions of a token in a line.
+     * Add a column to the current line.
+     * 
+     * @param column Column where the token appear in the line.
      */
-    public void incrementRepetitions()
+    public void addColumn(int column)
     {
-        this.repetitions++;
+        this.columns.add(column);
     }
     
     /**
@@ -45,7 +50,7 @@ public class LineContainer {
      */
     public int getRepetitions()
     {
-        return this.repetitions;
+        return this.columns.size();
     }
     
     /**
@@ -56,6 +61,16 @@ public class LineContainer {
     public int getLine()
     {
         return this.line;
+    }
+    
+    /**
+     * Gets the columns in which the token was found.
+     * 
+     * @return The columns in which the token was found.
+     */
+    public List<Integer> getColumns()
+    {
+        return this.columns;
     }
     
 }

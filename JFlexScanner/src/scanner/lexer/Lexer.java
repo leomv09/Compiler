@@ -599,19 +599,6 @@ class Lexer {
 
 
   /**
-   * Contains user EOF-code, which will be executed exactly once,
-   * when the end of file is reached
-   */
-  private void zzDoEOF() {
-    if (!zzEOFDone) {
-      zzEOFDone = true;
-        tokenList.generateTokenLines();
-
-    }
-  }
-
-
-  /**
    * Resumes scanning until the next regular expression is matched,
    * the end of input is encountered or an I/O-Error occurs.
    *
@@ -789,7 +776,6 @@ class Lexer {
         default: 
           if (zzInput == YYEOF && zzStartRead == zzCurrentPos) {
             zzAtEOF = true;
-            zzDoEOF();
             return null;
           } 
           else {

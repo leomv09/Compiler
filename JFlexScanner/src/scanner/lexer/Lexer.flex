@@ -15,10 +15,6 @@ package scanner;
     tokenList = new TokenList();
 %init}
 
-%eof{
-    tokenList.generateTokenLines();
-%eof}
-
 %class Lexer
 %type Token
 %function nextToken

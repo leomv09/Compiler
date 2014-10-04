@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -89,11 +90,11 @@ public class AnalysisReport {
     private void generateReportHeaders()
     {
         StringBuilder sb = new StringBuilder();
-        List<Token> tokens = this.tokenList.getTokens();
+        int tokenSize = this.tokenList.getTokens().size();
         
         sb.append("┌ FILE: ").append(this.file.getAbsolutePath()).append("\n");
         sb.append("├ DATE: ").append(this.reportDateFormat.format(this.date)).append("\n");
-        sb.append("└ TOKENS: ").append(tokens.size()).append("\n");
+        sb.append("└ TOKENS: ").append(tokenSize).append("\n");
         
         this.reportHeaders = sb.toString();
     }
@@ -104,7 +105,7 @@ public class AnalysisReport {
      * @param sb The string builder used to construct the report.
      * @param token The token that is being processed.
      */
-    private void addTokenInfo(StringBuilder sb, Token token)
+    private void addTokenInfo(StringBuilder sb, TokenInfo token)
     {
         sb.append("Token: ").append(token.getToken()).append("\n");
         sb.append("Type: ").append(token.getType()).append("\n");
@@ -118,9 +119,10 @@ public class AnalysisReport {
      */
     private void addTokenLinesInfo(StringBuilder sb, List<LineContainer> lineList)
     {
+        Iterator<LineContainer> iterator = lineList.iterator();
         LineContainer line;
         int repetitions;
-        Iterator<LineContainer> iterator = lineList.iterator();
+        
         sb.append("Lines: ");
         
         while (iterator.hasNext())
@@ -148,23 +150,15 @@ public class AnalysisReport {
     private void generateReportTokens()
     {
         StringBuilder sb = new StringBuilder();
-        Map<String, List<LineContainer>> lines = this.tokenList.getTokensLines();
-        Iterator<Entry<String, List<LineContainer>>> iterator = lines.entrySet().iterator();
-        
-        Map.Entry<String, List<LineContainer>> entry;
-        String key;
-        List<LineContainer> lineList;
-        Token token;
+        Collection<TokenInfo> tokens = this.tokenList.getTokens();
+        Iterator<TokenInfo> iterator = tokens.iterator();
+        TokenInfo token;
         
         while (iterator.hasNext())
         {
-            entry = iterator.next();
-            key = entry.getKey();
-            lineList = entry.getValue();
-            token = this.tokenList.getFirstToken(key);
-            
+            token = iterator.next();
             addTokenInfo(sb, token);
-            addTokenLinesInfo(sb, lineList);
+            addTokenLinesInfo(sb, token.getLines());
             
             if (iterator.hasNext())
             {
@@ -184,6 +178,9 @@ public class AnalysisReport {
         this.reportErrors = sb.toString();
     }
     
+    /**
+     * Generate the full report.
+     */
     private void generateReportContent()
     {
         StringBuilder sb = new StringBuilder();
