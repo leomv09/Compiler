@@ -6,13 +6,15 @@ import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Represent a report of the compilation process.
+ * Represent a report of the scanning process.
  * 
  * @author jose
  */
@@ -44,7 +46,22 @@ public class AnalysisReport {
     private DateFormat fileDateFormat;
     
     /**
-     * Content of the report.
+     * Headers of the report.
+     */
+    private String reportHeaders;
+    
+    /**
+     * Where the analysis tokens will be saved in the report.
+     */
+    private String reportTokens;
+    
+    /**
+     * Where the analysis errors will be saved in the report.
+     */
+    private String reportErrors;
+    
+    /**
+     * The full report content.
      */
     private String reportContent;
     
@@ -61,23 +78,24 @@ public class AnalysisReport {
         this.tokenList = tokenList;
         this.reportDateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM);
         this.fileDateFormat = new SimpleDateFormat("dd-MM-yy_HH:mm:ss:S");
-        generateReport();
+        this.generateReport();
     }
     
     /**
      * Generate the report header.
      * 
-     * @param sb The string builder used to construct the report.
      * @param tokenCount The amount of tokens read.
      */
-    private void addHeaders(StringBuilder sb, int tokenCount)
+    private void generateReportHeaders()
     {
-        sb.append("# SCANNER REPORT #").append("\n");
-        sb.append("==================").append("\n\n");
+        StringBuilder sb = new StringBuilder();
+        List<Token> tokens = this.tokenList.getTokens();
+        
         sb.append("┌ FILE: ").append(this.file.getAbsolutePath()).append("\n");
         sb.append("├ DATE: ").append(this.reportDateFormat.format(this.date)).append("\n");
-        sb.append("└ TOKENS: ").append(tokenCount).append("\n");
-        sb.append("\n");
+        sb.append("└ TOKENS: ").append(tokens.size()).append("\n");
+        
+        this.reportHeaders = sb.toString();
     }
     
     /**
@@ -100,24 +118,103 @@ public class AnalysisReport {
      */
     private void addTokenLinesInfo(StringBuilder sb, List<LineContainer> lineList)
     {
+        LineContainer line;
+        int repetitions;
+        Iterator<LineContainer> iterator = lineList.iterator();
         sb.append("Lines: ");
         
-        LineContainer line;
-        for (int i=0; i<lineList.size(); i++)
+        while (iterator.hasNext())
         {
-            line = lineList.get(i);
-            int counter = line.getRepetitions();
+            line = iterator.next();
+            repetitions = line.getRepetitions();
             
             sb.append(line.getLine());
-            if (counter > 1)
+            if (repetitions > 1)
             {
-                sb.append("(").append(counter).append(")");
+                sb.append("(").append(repetitions).append(")");
             }
-            if (i+1 < lineList.size())
+            if (iterator.hasNext())
             {
                 sb.append(", ");
             }
         }
+        
+        sb.append("\n");
+    }
+    
+    /**
+     * Generate the part of the report where the tokens will be saved.
+     */
+    private void generateReportTokens()
+    {
+        StringBuilder sb = new StringBuilder();
+        Map<String, List<LineContainer>> lines = this.tokenList.getTokensLines();
+        Iterator<Entry<String, List<LineContainer>>> iterator = lines.entrySet().iterator();
+        
+        Map.Entry<String, List<LineContainer>> entry;
+        String key;
+        List<LineContainer> lineList;
+        Token token;
+        
+        while (iterator.hasNext())
+        {
+            entry = iterator.next();
+            key = entry.getKey();
+            lineList = entry.getValue();
+            token = this.tokenList.getFirstToken(key);
+            
+            addTokenInfo(sb, token);
+            addTokenLinesInfo(sb, lineList);
+            
+            if (iterator.hasNext())
+            {
+                sb.append("\n");
+            }
+        }
+        
+        this.reportTokens = sb.toString();
+    }
+    
+    /**
+     * Generate the part of the report where the scanning errors will be saved.
+     */
+    private void generateReportErrors()
+    {
+        StringBuilder sb = new StringBuilder();
+        this.reportErrors = sb.toString();
+    }
+    
+    private void generateReportContent()
+    {
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append("# SCANNER REPORT #").append("\n");
+        sb.append("==================").append("\n\n");
+        sb.append(this.reportHeaders).append("\n");
+        
+        sb.append("* TOKEN LIST").append("\n");
+        sb.append("------------").append("\n\n");
+        if (this.reportTokens.isEmpty())
+        {
+            sb.append("None").append("\n\n");
+        }
+        else
+        {
+            sb.append(this.reportTokens).append("\n");
+        }
+        
+        sb.append("* ERROR LIST").append("\n");
+        sb.append("------------").append("\n\n");
+        if (this.reportErrors.isEmpty())
+        {
+            sb.append("None");
+        }
+        else
+        {
+            sb.append(this.reportErrors);
+        }
+        
+        this.reportContent = sb.toString();
     }
     
     /**
@@ -125,28 +222,10 @@ public class AnalysisReport {
      */
     public final void generateReport()
     {
-        StringBuilder sb = new StringBuilder();
-        List<Token> tokens = this.tokenList.getTokens();
-        Map<String, List<LineContainer>> lines = this.tokenList.getTokensLines();
-        
-        addHeaders(sb, tokens.size());
-        
-        String key;
-        List<LineContainer> lineList;
-        Token token;
-        
-        for (Map.Entry<String, List<LineContainer>> entry : lines.entrySet())
-        {
-            key = entry.getKey();
-            lineList = entry.getValue();
-            token = this.tokenList.getFirstToken(key);
-            
-            addTokenInfo(sb, token);
-            addTokenLinesInfo(sb, lineList);
-            sb.append("\n\n");
-        }
-        
-        this.reportContent = sb.toString();
+        this.generateReportHeaders();
+        this.generateReportTokens();
+        this.generateReportErrors();
+        this.generateReportContent();
     }
     
     /**
@@ -159,7 +238,7 @@ public class AnalysisReport {
         try
         {
             try (PrintWriter out = new PrintWriter(filePath)) {
-                out.println(this.reportContent);
+                out.println(this.toString());
             }
         }
         catch (FileNotFoundException ex)
@@ -169,12 +248,12 @@ public class AnalysisReport {
     }
     
     /**
-     * Write the report to a file.
-     * 
+     * Write the report to a file with a predefined name.
      */
     public void writeToFile()
     {
-        this.writeToFile("Scanner_Report_" + this.fileDateFormat.format(this.date));
+        String fileName = "Scanner_Report_" + this.fileDateFormat.format(this.date);
+        this.writeToFile(fileName);
     }
 
     /**
@@ -197,10 +276,50 @@ public class AnalysisReport {
         this.fileDateFormat = dateFormat;
     }
 
+    /**
+     * Gets the report headers.
+     * 
+     * @return The report headers.
+     */
+    public String getReportHeaders()
+    {
+        return reportHeaders;
+    }
+
+    /**
+     * Gets the report tokens.
+     * 
+     * @return The report tokens.
+     */
+    public String getReportTokens()
+    {
+        return reportTokens;
+    }
+
+    /**
+     * Gets the report errors.
+     * 
+     * @return The report errors.
+     */
+    public String getReportErrors()
+    {
+        return reportErrors;
+    }
+
+    /**
+     * Gets the full report content.
+     * 
+     * @return The report content.
+     */
+    public String getReportContent()
+    {
+        return reportContent;
+    }
+    
     @Override
     public String toString()
     {
-        return reportContent;
+        return this.reportContent;
     }
 
 }
