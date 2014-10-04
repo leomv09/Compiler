@@ -1,20 +1,26 @@
-package jflexscanner;
+package scanner;
 
 %%
 
 %{
-    private TokenList listaTokens;
+    private TokenList tokenList;
 
     public TokenList getTokenList()
     {
-        return this.listaTokens;
+        return this.tokenList;
     }
 %}
 
 %init{
-    listaTokens = new TokenList();
+    tokenList = new TokenList();
 %init}
 
+%eof{
+    tokenList.generateTokenLines();
+%eof}
+
+%class Lexer
+%type Token
 %function nextToken
 %unicode
 %line
@@ -24,13 +30,13 @@ PALABRASRESERVADAS = "ARRAY" | "BEGIN" | "BOOLEAN" | "BYTE" | "CASE" | "CHAR" | 
 
 FIN_DE_LINEA = \r|\n|\r\n
 ESPACIOS = {FIN_DE_LINEA} | [ \t\f]
-EXP_NUMERICAS = [0-9] //Expresiones númericas permitidas
-EXP_ALPHA = [a-zA-Z] //Expresiones 
+EXP_NUMERICAS = [0-9]
+EXP_ALPHA = [a-zA-Z]
 EXP_ALPHA_NUMERIC = {EXP_NUMERICAS} | {EXP_ALPHA}
 
 OPERADORES = "," | ";" | "++" | "--" | ">=" | ">" | "<=" | "<" | "<>" | "=" | "+" | "-" | "*" | "/" | "(" | ")" | "[" | "]" | ":=" | "." | ":" | "+=" | "-=" | "*=" | "/=" | ">>" | "<<" | "<<=" | ">>=" | "NOT" | "OR" | "AND" | "XOR" | "DIV" | "MOD"
 
-NUMERO_ENTERO_POSITIVO = ({EXP_NUMERICAS})*
+NUMERO_ENTERO_POSITIVO = ({EXP_NUMERICAS})+
 NUMERO_ENTERO_NEGATIVO = "-"{NUMERO_ENTERO_POSITIVO}
 NUMERO_ENTERO = {NUMERO_ENTERO_NEGATIVO} | {NUMERO_ENTERO_POSITIVO}
 NUMERO_REAL = {NUMERO_ENTERO}"."{NUMERO_ENTERO_POSITIVO} "E"{NUMERO_ENTERO}?
@@ -48,40 +54,39 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 %%
 
+{ESPACIOS} {
+    /*Ignore*/
+}
+
 {COMENTARIOS} {
     /*Ignore*/
 }
 
 {PALABRASRESERVADAS} {
-    Yytoken token = new Yytoken(yytext(), "PALABRARESERVADA", yyline, yycolumn);
-    listaTokens.addToken(token);
+    Token token = new Token(yytext(), "PALABRARESERVADA", yyline, yycolumn);
+    tokenList.addToken(token);
     return token;
 }
 
 {OPERADORES} {
-    Yytoken token = new Yytoken(yytext(), "OPERADOR", yyline, yycolumn);
-    listaTokens.addToken(token);
+    Token token = new Token(yytext(), "OPERADOR", yyline, yycolumn);
+    tokenList.addToken(token);
     return token;
 }
 
 {LITERALES} {
-    Yytoken token = new Yytoken(yytext(), "LITERAL", yyline, yycolumn);
-    listaTokens.addToken(token);
+    Token token = new Token(yytext(), "LITERAL", yyline, yycolumn);
+    tokenList.addToken(token);
     return token;
 }
 
 {IDENTIFICADORES} {
-    Yytoken token = new Yytoken(yytext(), "IDENTIFICADOR", yyline, yycolumn);
-    listaTokens.addToken(token);
+    Token token = new Token(yytext(), "IDENTIFICADOR", yyline, yycolumn);
+    tokenList.addToken(token);
     return token;
 }
 
 . {
-    Yytoken token = new Yytoken(yytext(), "ERROR", yyline, yycolumn);
+    Token token = new Token(yytext(), "ERROR", yyline, yycolumn);
     return token;
 }
-
-
-
-
-

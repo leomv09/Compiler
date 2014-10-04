@@ -368,11 +368,11 @@ class Yylex {
   private int zzFinalHighSurrogate = 0;
 
   /* user code: */
-    private TokenList listaTokens;
+    private TokenList tokenList;
 
     public TokenList getTokenList()
     {
-        return this.listaTokens;
+        return this.tokenList;
     }
 
 
@@ -382,7 +382,7 @@ class Yylex {
    * @param   in  the java.io.Reader to read input from.
    */
   Yylex(java.io.Reader in) {
-      listaTokens = new TokenList();
+      tokenList = new TokenList();
     this.zzReader = in;
   }
 
@@ -743,7 +743,7 @@ class Yylex {
       switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
         case 1: 
           { Yytoken token = new Yytoken(yytext(), "LITERAL", yyline, yycolumn);
-    listaTokens.addToken(token);
+    tokenList.addToken(token);
     return token;
           }
         case 7: break;
@@ -754,19 +754,19 @@ class Yylex {
         case 8: break;
         case 3: 
           { Yytoken token = new Yytoken(yytext(), "IDENTIFICADOR", yyline, yycolumn);
-    listaTokens.addToken(token);
+    tokenList.addToken(token);
     return token;
           }
         case 9: break;
         case 4: 
           { Yytoken token = new Yytoken(yytext(), "OPERADOR", yyline, yycolumn);
-    listaTokens.addToken(token);
+    tokenList.addToken(token);
     return token;
           }
         case 10: break;
         case 5: 
           { Yytoken token = new Yytoken(yytext(), "PALABRARESERVADA", yyline, yycolumn);
-    listaTokens.addToken(token);
+    tokenList.addToken(token);
     return token;
           }
         case 11: break;
