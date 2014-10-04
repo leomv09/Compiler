@@ -1,6 +1,7 @@
-nbproject/private/
+private/
 build/
 dist/
+output.txt
 
 *.java~
 *.class
