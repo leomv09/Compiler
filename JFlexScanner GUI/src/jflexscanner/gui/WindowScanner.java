@@ -7,11 +7,11 @@ package jflexscanner.gui;
 
 import fileManager.FileWriter;
 import fileManager.ReportManager;
-import scanner.Analyzer;
 import java.io.File;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import scanner.Analyzer;
+import scanner.AnalysisReport;
 
 /**
  *
@@ -36,17 +36,19 @@ public class WindowScanner extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        codeArea = new javax.swing.JTextArea();
         analyzeButton = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        codeArea = new javax.swing.JTextArea();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        errorResultArea = new javax.swing.JTextArea();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        tokenResultArea = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setText("Ingrese el texto a analizar:");
-
-        codeArea.setColumns(20);
-        codeArea.setRows(5);
-        jScrollPane1.setViewportView(codeArea);
 
         analyzeButton.setText("Analizar");
         analyzeButton.addActionListener(new java.awt.event.ActionListener() {
@@ -55,33 +57,75 @@ public class WindowScanner extends javax.swing.JFrame {
             }
         });
 
+        codeArea.setColumns(20);
+        codeArea.setRows(5);
+        jScrollPane2.setViewportView(codeArea);
+
+        jLabel2.setText("Tokens:");
+
+        jLabel3.setText("Errores:");
+
+        errorResultArea.setEditable(false);
+        errorResultArea.setColumns(20);
+        errorResultArea.setRows(5);
+        jScrollPane4.setViewportView(errorResultArea);
+
+        tokenResultArea.setEditable(false);
+        tokenResultArea.setColumns(20);
+        tokenResultArea.setRows(5);
+        jScrollPane5.setViewportView(tokenResultArea);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 575, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(analyzeButton)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap()
+                        .addComponent(jLabel1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(analyzeButton)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 139, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(222, 222, 222)
+                        .addComponent(jLabel3)
+                        .addGap(212, 212, 212))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(20, 20, 20)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(529, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(15, 15, 15)
                 .addComponent(analyzeButton)
-                .addContainerGap(39, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(53, 53, 53)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(48, Short.MAX_VALUE)))
         );
 
         pack();
@@ -102,14 +146,15 @@ public class WindowScanner extends javax.swing.JFrame {
     /**
      * Method that set visible the report window and loads the report information.
      * 
-     * @param filePath The path where the file is saved.
+     * @param report The report generated during the analysis phase.
      */
-    private void openReport(String filePath)
+    private void openReport(AnalysisReport report)
     {
-        FileReport reportWindow = new FileReport();
-        ReportManager reportManager = new ReportManager();
-        reportWindow.showReport(reportManager.readReport(filePath));
-        reportWindow.setVisible(true);
+        System.out.println("Reporto de tokens: "+ report.getReportTokens());
+        System.out.println("Reporto de errores: "+ report.getReportErrors());
+        this.tokenResultArea.setText(report.getReportTokens());
+        this.tokenResultArea.setText(report.getReportErrors());
+        
     }
     
     
@@ -124,7 +169,8 @@ public class WindowScanner extends javax.swing.JFrame {
             saveCode("C:/Users/Leo/Documents/Compiladores e Intérpretes/JFlexScanner/Input Code/code.txt");
             
             Analyzer analyzer = new Analyzer();
-            analyzer.analyze("C:/Users/Leo/Documents/Compiladores e Intérpretes/JFlexScanner/Input Code/code.txt", fileToSave.getAbsolutePath()); 
+            File file = new File("C:/Users/Leo/Documents/Compiladores e Intérpretes/JFlexScanner/Input Code/code.txt");
+            AnalysisReport report = analyzer.analyze(file, fileToSave.getAbsolutePath()); 
             
             int option = JOptionPane.showConfirmDialog(null,
                     "Análisis realizado con éxito.\n"
@@ -135,7 +181,7 @@ public class WindowScanner extends javax.swing.JFrame {
             
             if(option == JOptionPane.YES_OPTION)
             {
-                openReport(fileToSave.getAbsolutePath());
+                openReport(report);
             }
         }
     }//GEN-LAST:event_analyzeButtonActionPerformed
@@ -178,7 +224,13 @@ public class WindowScanner extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton analyzeButton;
     private javax.swing.JTextArea codeArea;
+    private javax.swing.JTextArea errorResultArea;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JTextArea tokenResultArea;
     // End of variables declaration//GEN-END:variables
 }

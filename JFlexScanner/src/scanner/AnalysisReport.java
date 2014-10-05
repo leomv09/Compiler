@@ -221,7 +221,7 @@ public class AnalysisReport {
     /**
      * Write the report to a file.
      * 
-     * @param filePath The path of the file.
+     * @param filePath The path where the file will be saved.
      */
     public void writeToFile(String filePath)
     {

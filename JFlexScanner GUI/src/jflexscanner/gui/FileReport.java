@@ -73,6 +73,7 @@ public class FileReport extends javax.swing.JFrame {
      */
     public void showReport(StringBuilder report)
     {
+        System.out.println(report.toString());
         this.reportArea.setText(report.toString());
     }
     

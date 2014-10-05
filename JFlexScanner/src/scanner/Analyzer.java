@@ -17,6 +17,7 @@ import scanner.lexer.Lexer;
  */
 public class Analyzer {
     
+    
     /**
      * Create a file reader for a given file.
      * 
@@ -82,7 +83,7 @@ public class Analyzer {
      * @param savingFilePath The path where the report will be saved.
      * @return The list of tokens read.
      */
-    public TokenList analyze(File file, String savingFilePath)
+    public AnalysisReport analyze(File file, String savingFilePath)
     {
         System.out.println("Analyzing \"" + file.getAbsolutePath() + "\"\n");
         FileReader fr = createFileReader(file);
@@ -90,7 +91,7 @@ public class Analyzer {
         AnalysisReport report = new AnalysisReport(tokens);
         System.out.println(report);
         report.writeToFile(savingFilePath);
-        return tokens;
+        return report;
     }
     
     /**
@@ -109,6 +110,8 @@ public class Analyzer {
         //report.writeToFile();
         return tokens;
     }
+    
+    
     
     /**
      * The main method.

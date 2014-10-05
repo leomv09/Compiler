@@ -31,8 +31,11 @@ public class ReportManager {
                 while (line != null)
                 {
                     sb.append(line);
-                } }
-          return sb;
+                } 
+                reader.close();
+                return sb;
+            }
+          
         }
         catch (Exception e)
         {
