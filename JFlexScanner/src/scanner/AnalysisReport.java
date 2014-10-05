@@ -2,11 +2,9 @@ package scanner;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -15,8 +13,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -268,15 +264,7 @@ public class AnalysisReport {
           Logger.getLogger(AnalysisReport.class.getName()).log(Level.SEVERE, null, ex);
         } 
     }
-    
-    /**
-     * Write the report to a file with a predefined name.
-     */
-    public void writeToFile()
-    {
-        String fileName = "Scanner_Report.txt";
-        this.writeToFile(fileName);
-    }
+
 
     /**
      * Set a custom format for the date in the report.

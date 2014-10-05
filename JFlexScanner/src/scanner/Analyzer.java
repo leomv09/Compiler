@@ -40,8 +40,9 @@ public class Analyzer {
      * Scan a source code file.
      * 
      * @param filePath The path of the file.
+     * @param savingFilePath The path where the report file will be saved.
      */
-    public void analyze(String filePath)
+    public void analyze(String filePath, String savingFilePath)
     {
         File file = new File(filePath);
         FileReader fr = createFileReader(file);
@@ -70,7 +71,7 @@ public class Analyzer {
         System.out.println();
 
         AnalysisReport report = new AnalysisReport(file, lexScanner.getTokenList(), lexScanner.getErrorList());
-        report.writeToFile();
+        report.writeToFile(savingFilePath);
     }
     
     /**
@@ -83,10 +84,7 @@ public class Analyzer {
         Analyzer analyzer = new Analyzer();
         
         // Analize each file given in the command line arguments.
-        for (String arg : args)
-        {
-            analyzer.analyze(arg);
-        }
+
     }
 
 }

@@ -1,0 +1,18 @@
+# SCANNER REPORT #
+==================
+
+┌ FILE: C:\Users\Leo\Documents\Compiladores e Intérpretes\JFlexScanner\JFlexScanner\src\scanner\prueba.txt
+├ DATE: sábado 4 de octubre de 2014 08:15:48 PM
+└ TOKENS: 1
+
+* TOKEN LIST
+------------
+
+Token: cosa
+Type: IDENTIFICADOR
+Lines: 0
+
+* ERROR LIST
+------------
+
+Error: Token: ', at  line: 0, column: 0
