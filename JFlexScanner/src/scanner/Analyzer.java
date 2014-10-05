@@ -78,7 +78,7 @@ public class Analyzer {
      */
     public TokenList analyze(File file)
     {
-        System.out.println("Analyzing " + file.getAbsolutePath() + "\n");
+        System.out.println("Analyzing \"" + file.getAbsolutePath() + "\"\n");
         FileReader fr = createFileReader(file);
         TokenList tokens = this.analyze(fr);
         AnalysisReport report = new AnalysisReport(tokens);

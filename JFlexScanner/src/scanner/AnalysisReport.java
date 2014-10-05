@@ -165,7 +165,7 @@ public class AnalysisReport {
  
         for (Token token : this.tokenList.getErrors())
         {
-            sb.append("Error: ").append("Token: ").append(token.getToken()).append(", at ").append(" line: ").append(token.getLine()).append(", column: ").append(token.getColumn());
+            sb.append("Token: ").append(token.getToken()).append(" at line: ").append(token.getLine()).append(", column: ").append(token.getColumn());
         }
 
         this.reportErrors = sb.toString();
