@@ -98,17 +98,18 @@ public class Analyzer {
      * Analyze a string.
      * 
      * @param input The string to analyze.
+     * @param savingFilePath The path where the file will be saved.
      * @return The list of tokens read.
      */
-    public TokenList analyze(String input)
+    public AnalysisReport analyze(String input, String savingFilePath)
     {
         System.out.println("Analyzing Input String\n");
         StringReader sr = new StringReader(input);
         TokenList tokens = this.analyze(sr);
         AnalysisReport report = new AnalysisReport(tokens);
         System.out.println(report);
-        //report.writeToFile();
-        return tokens;
+        report.writeToFile(savingFilePath);
+        return report;
     }
     
     

@@ -170,7 +170,7 @@ public class WindowScanner extends javax.swing.JFrame {
             
             Analyzer analyzer = new Analyzer();
             File file = new File("C:/Users/Leo/Documents/Compiladores e Intérpretes/JFlexScanner/Input Code/code.txt");
-            AnalysisReport report = analyzer.analyze(file, fileToSave.getAbsolutePath()); 
+            AnalysisReport report = analyzer.analyze(this.codeArea.getText(), fileToSave.getAbsolutePath()); 
             
             int option = JOptionPane.showConfirmDialog(null,
                     "Análisis realizado con éxito.\n"
