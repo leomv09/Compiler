@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -25,6 +26,11 @@ public class AnalysisReport {
      * List of tokens read.
      */
     private final TokenList tokenList;
+    
+    /**
+     * List of tokens with errors read.
+     */
+    private final ArrayList<Token> errorList;
     
     /**
      * File read by the analyzer.
@@ -71,12 +77,14 @@ public class AnalysisReport {
      * 
      * @param file File read by the analyzer.
      * @param tokenList List of tokens read.
+     * @param errorList List of tokens with errors.
      */
-    public AnalysisReport(File file, TokenList tokenList)
+    public AnalysisReport(File file, TokenList tokenList, ArrayList<Token> errorList)
     {
         this.date = new Date();
         this.file = file;
         this.tokenList = tokenList;
+        this.errorList = errorList;
         this.reportDateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM);
         this.fileDateFormat = new SimpleDateFormat("dd-MM-yy_HH:mm:ss:S");
         this.generateReport();
@@ -165,7 +173,6 @@ public class AnalysisReport {
                 sb.append("\n");
             }
         }
-        
         this.reportTokens = sb.toString();
     }
     
@@ -174,7 +181,15 @@ public class AnalysisReport {
      */
     private void generateReportErrors()
     {
+        System.out.println("Generating error report...");
         StringBuilder sb = new StringBuilder();
+ 
+        for(Token token : this.errorList)
+        {
+            sb.append("Error: ").append("Token: ").append(token.getToken()).append(", at ").append(" line: ").append(token.getLine()).append(", column: ").append(token.getColumn());
+        }
+
+        System.out.println(sb.toString());
         this.reportErrors = sb.toString();
     }
     
@@ -236,10 +251,12 @@ public class AnalysisReport {
         {
             try (PrintWriter out = new PrintWriter(filePath)) {
                 out.println(this.toString());
+                out.close();
             }
         }
         catch (FileNotFoundException ex)
         {
+            System.out.println("Error al escribir en el archivo.");
             Logger.getLogger(AnalysisReport.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -249,7 +266,7 @@ public class AnalysisReport {
      */
     public void writeToFile()
     {
-        String fileName = "Scanner_Report_" + this.fileDateFormat.format(this.date);
+        String fileName = "Scanner_Report_" + this.fileDateFormat.format(this.date)+".txt";
         this.writeToFile(fileName);
     }
 

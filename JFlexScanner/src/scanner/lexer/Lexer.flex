@@ -3,16 +3,23 @@ package scanner;
 %%
 
 %{
-    private TokenList tokenList;
+    private final TokenList tokenList;
+    private final ArrayList<Token> errorList;
 
     public TokenList getTokenList()
     {
         return this.tokenList;
     }
+
+    public ArrayList<Token> getErrorList()
+    {
+        return this.errorList;
+    }
 %}
 
 %init{
     tokenList = new TokenList();
+    errorList = new  ArrayList<Token>();
 %init}
 
 %class Lexer
@@ -83,5 +90,6 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 . {
     Token token = new Token(yytext(), "ERROR", yyline, yycolumn);
+    errorList.add(token);
     return token;
 }

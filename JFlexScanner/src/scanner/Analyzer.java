@@ -68,8 +68,8 @@ public class Analyzer {
         } while (token != null);
         
         System.out.println();
-        
-        AnalysisReport report = new AnalysisReport(file, lexScanner.getTokenList());
+
+        AnalysisReport report = new AnalysisReport(file, lexScanner.getTokenList(), lexScanner.getErrorList());
         report.writeToFile();
     }
     
