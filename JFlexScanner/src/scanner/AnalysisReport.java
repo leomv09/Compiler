@@ -76,10 +76,12 @@ public class AnalysisReport {
     private void generateReportHeaders()
     {
         StringBuilder sb = new StringBuilder();
-        int tokenSize = this.tokenList.getTokens().size();
+        int tokenCount = this.tokenList.getTokens().size();
+        int errorCount = this.tokenList.getErrors().size();
         
         sb.append("┌ DATE: ").append(this.reportDateFormat.format(this.date)).append("\n");
-        sb.append("└ TOKENS: ").append(tokenSize).append("\n");
+        sb.append("├ TOKENS: ").append(tokenCount).append("\n");
+        sb.append("└ ERRORS: ").append(errorCount).append("\n");
         
         this.reportHeaders = sb.toString();
     }
@@ -150,6 +152,7 @@ public class AnalysisReport {
                 sb.append("\n");
             }
         }
+        
         this.reportTokens = sb.toString();
     }
     
@@ -160,12 +163,11 @@ public class AnalysisReport {
     {
         StringBuilder sb = new StringBuilder();
  
-        for(Token token : this.tokenList.getErrors())
+        for (Token token : this.tokenList.getErrors())
         {
             sb.append("Error: ").append("Token: ").append(token.getToken()).append(", at ").append(" line: ").append(token.getLine()).append(", column: ").append(token.getColumn());
         }
 
-        System.out.println(sb.toString());
         this.reportErrors = sb.toString();
     }
     
@@ -224,11 +226,11 @@ public class AnalysisReport {
     public void writeToFile(String filePath)
     {
         Writer writer;
-        
+
         try
         {
             writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), "utf-8"));
-            writer.write(this.toString());
+            writer.write(this.reportContent);
             writer.close();
         }
         catch (IOException ex)

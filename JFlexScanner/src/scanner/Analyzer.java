@@ -63,11 +63,9 @@ public class Analyzer {
             
             if (token != null)
             {
-                System.out.println(token);
+                // Do something with token here.
             }
         } while (token != null);
-        
-        System.out.println();
         
         return scanner.getTokenList();
     }
@@ -84,6 +82,7 @@ public class Analyzer {
         FileReader fr = createFileReader(file);
         TokenList tokens = this.analyze(fr);
         AnalysisReport report = new AnalysisReport(tokens);
+        System.out.println(report);
         report.writeToFile();
         return tokens;
     }
@@ -100,6 +99,7 @@ public class Analyzer {
         StringReader sr = new StringReader(input);
         TokenList tokens = this.analyze(sr);
         AnalysisReport report = new AnalysisReport(tokens);
+        System.out.println(report);
         report.writeToFile();
         return tokens;
     }
