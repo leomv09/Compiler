@@ -1,8 +1,13 @@
 package scanner;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -247,18 +252,21 @@ public class AnalysisReport {
      */
     public void writeToFile(String filePath)
     {
-        try
-        {
-            try (PrintWriter out = new PrintWriter(filePath)) {
-                out.println(this.toString());
-                out.close();
+        Writer writer = null;
+        
+        try {
+            writer = new BufferedWriter(new OutputStreamWriter(
+                  new FileOutputStream(filePath), "utf-8"));
+            writer.write(this.toString());
+            try 
+            {
+                writer.close();
+            } catch (Exception ex2) {
+                Logger.getLogger(AnalysisReport.class.getName()).log(Level.SEVERE, null, ex2);
             }
-        }
-        catch (FileNotFoundException ex)
-        {
-            System.out.println("Error al escribir en el archivo.");
-            Logger.getLogger(AnalysisReport.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (IOException ex) {
+          Logger.getLogger(AnalysisReport.class.getName()).log(Level.SEVERE, null, ex);
+        } 
     }
     
     /**
@@ -266,7 +274,7 @@ public class AnalysisReport {
      */
     public void writeToFile()
     {
-        String fileName = "Scanner_Report_" + this.fileDateFormat.format(this.date)+".txt";
+        String fileName = "Scanner_Report.txt";
         this.writeToFile(fileName);
     }
 
