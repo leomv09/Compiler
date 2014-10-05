@@ -5,6 +5,10 @@
  */
 package jflexscanner.gui;
 
+import fileManager.FileWriter;
+import java.io.File;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import scanner.AnalysisReport;
 import scanner.Analyzer;
 import scanner.TokenList;
@@ -18,6 +22,8 @@ public class WindowScanner extends javax.swing.JFrame {
     /**
      * Creates new form WindowScanner
      */
+    
+    private AnalysisReport report;
     public WindowScanner() {
         initComponents();
     }
@@ -41,6 +47,7 @@ public class WindowScanner extends javax.swing.JFrame {
         errorResultArea = new javax.swing.JTextArea();
         jScrollPane5 = new javax.swing.JScrollPane();
         tokenResultArea = new javax.swing.JTextArea();
+        saveReportButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -71,6 +78,14 @@ public class WindowScanner extends javax.swing.JFrame {
         tokenResultArea.setRows(5);
         jScrollPane5.setViewportView(tokenResultArea);
 
+        saveReportButton.setText("Guardar Reporte");
+        saveReportButton.setEnabled(false);
+        saveReportButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveReportButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -84,16 +99,20 @@ public class WindowScanner extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(analyzeButton)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 139, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(222, 222, 222)
-                        .addComponent(jLabel3)
-                        .addGap(212, 212, 212))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabel2)
+                            .addGap(222, 222, 222)
+                            .addComponent(jLabel3)
+                            .addGap(212, 212, 212))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addContainerGap()))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(saveReportButton)
                         .addContainerGap())))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
@@ -115,7 +134,9 @@ public class WindowScanner extends javax.swing.JFrame {
                         .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(15, 15, 15)
-                .addComponent(analyzeButton)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(analyzeButton)
+                    .addComponent(saveReportButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
@@ -128,16 +149,36 @@ public class WindowScanner extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
     
+    private void saveCode(String filePath)
+    {
+        FileWriter file = new FileWriter();
+        file.writeToFile(filePath, this.report.getReportContent());
+    }
+    
     private void analyzeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_analyzeButtonActionPerformed
         Analyzer analyzer = new Analyzer();
         TokenList tokens = analyzer.analyze(this.codeArea.getText());
         
-        AnalysisReport report = new AnalysisReport(tokens);
-        report.writeToFile("report");
+        this.report = new AnalysisReport(tokens);
+        this.report.writeToFile("report");
 
-        errorResultArea.setText(report.getReportErrors());
-        tokenResultArea.setText(report.getReportTokens());
+        errorResultArea.setText(this.report.getReportErrors());
+        tokenResultArea.setText(this.report.getReportTokens());
+        this.saveReportButton.setEnabled(true);
     }//GEN-LAST:event_analyzeButtonActionPerformed
+
+    private void saveReportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveReportButtonActionPerformed
+        // TODO add your handling code here:
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Specify a file to save the report");   
+        int userSelection = fileChooser.showSaveDialog(this);
+        
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+            saveCode(fileToSave.getAbsolutePath());
+            JOptionPane.showMessageDialog(this, "Reporte guardado exitosamente en: "+"\n"+fileToSave.getAbsolutePath());
+        }
+    }//GEN-LAST:event_saveReportButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -185,6 +226,7 @@ public class WindowScanner extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JButton saveReportButton;
     private javax.swing.JTextArea tokenResultArea;
     // End of variables declaration//GEN-END:variables
 }

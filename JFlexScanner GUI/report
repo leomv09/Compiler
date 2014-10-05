@@ -1,14 +1,22 @@
 # SCANNER REPORT #
 ==================
 
-┌ DATE: Sunday, October 5, 2014 5:06:21 PM
-├ TOKENS: 1
+┌ DATE: domingo 5 de octubre de 2014 05:30:01 PM
+├ TOKENS: 3
 └ ERRORS: 0
 
 * TOKEN LIST
 ------------
 
-Token: ssss
+Token: lakjs
+Type: IDENTIFICADOR
+Lines: 1
+
+Token: AND
+Type: OPERADOR
+Lines: 2
+
+Token: Hola
 Type: IDENTIFICADOR
 Lines: 0
 
