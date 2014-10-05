@@ -2,6 +2,8 @@ package scanner;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,9 +14,14 @@ import java.util.Map;
 public class TokenList {
     
     /**
-     * Where the token lines are stored.
+     * Where the tokens are stored.
      */
     private final Map<String, TokenInfo> tokens;
+    
+    /**
+     * Where the errors are stored.
+     */
+    private final List<Token> errors;
     
     /**
      * Instantiates a new TokenList.
@@ -22,6 +29,7 @@ public class TokenList {
     public TokenList()
     {
         this.tokens = new HashMap();
+        this.errors = new LinkedList();
     }
     
     /**
@@ -44,15 +52,35 @@ public class TokenList {
            this.tokens.put(token.getToken(), info);
        }
     }
+    
+    /**
+     * Add a new error
+     * 
+     * @param token The new token error.
+     */
+    public void addError(Token token)
+    {
+        this.errors.add(token);
+    }
 
     /**
-     * Get the map of tokens.
+     * Get the tokens.
      * 
-     * @return The map of token lines.
+     * @return The collection of tokens.
      */
     public Collection<TokenInfo> getTokens()
     {
-        return tokens.values();
+        return this.tokens.values();
+    }
+    
+    /**
+     * Get the errors.
+     * 
+     * @return The list of errors.
+     */
+    public List<Token> getErrors()
+    {
+        return this.errors;
     }
 
 }
