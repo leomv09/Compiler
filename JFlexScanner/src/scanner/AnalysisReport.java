@@ -1,14 +1,11 @@
 package scanner;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -29,16 +26,6 @@ public class AnalysisReport {
     private final TokenList tokenList;
     
     /**
-     * List of tokens with errors read.
-     */
-    private final ArrayList<Token> errorList;
-    
-    /**
-     * File read by the analyzer.
-     */
-    private final File file;
-    
-    /**
      * Date of the report.
      */
     private final Date date;
@@ -47,11 +34,6 @@ public class AnalysisReport {
      * Date format for the report header.
      */
     private DateFormat reportDateFormat;
-    
-    /**
-     * Date format for the generated file name.
-     */
-    private DateFormat fileDateFormat;
     
     /**
      * Headers of the report.
@@ -76,18 +58,13 @@ public class AnalysisReport {
     /**
      * Instantiates a new AnalysisReport.
      * 
-     * @param file File read by the analyzer.
      * @param tokenList List of tokens read.
-     * @param errorList List of tokens with errors.
      */
-    public AnalysisReport(File file, TokenList tokenList, ArrayList<Token> errorList)
+    public AnalysisReport(TokenList tokenList)
     {
         this.date = new Date();
-        this.file = file;
         this.tokenList = tokenList;
-        this.errorList = errorList;
         this.reportDateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM);
-        this.fileDateFormat = new SimpleDateFormat("dd-MM-yy_HH:mm:ss:S");
         this.generateReport();
     }
     
@@ -99,11 +76,12 @@ public class AnalysisReport {
     private void generateReportHeaders()
     {
         StringBuilder sb = new StringBuilder();
-        int tokenSize = this.tokenList.getTokens().size();
+        int tokenCount = this.tokenList.getTokens().size();
+        int errorCount = this.tokenList.getErrors().size();
         
-        sb.append("┌ FILE: ").append(this.file.getAbsolutePath()).append("\n");
-        sb.append("├ DATE: ").append(this.reportDateFormat.format(this.date)).append("\n");
-        sb.append("└ TOKENS: ").append(tokenSize).append("\n");
+        sb.append("┌ DATE: ").append(this.reportDateFormat.format(this.date)).append("\n");
+        sb.append("├ TOKENS: ").append(tokenCount).append("\n");
+        sb.append("└ ERRORS: ").append(errorCount).append("\n");
         
         this.reportHeaders = sb.toString();
     }
@@ -174,6 +152,7 @@ public class AnalysisReport {
                 sb.append("\n");
             }
         }
+        
         this.reportTokens = sb.toString();
     }
     
@@ -182,15 +161,13 @@ public class AnalysisReport {
      */
     private void generateReportErrors()
     {
-        System.out.println("Generating error report...");
         StringBuilder sb = new StringBuilder();
  
-        for(Token token : this.errorList)
+        for (Token token : this.tokenList.getErrors())
         {
-            sb.append("Error: ").append("Token: ").append(token.getToken()).append(", at ").append(" line: ").append(token.getLine()).append(", column: ").append(token.getColumn());
+            sb.append("Token: ").append(token.getToken()).append(" at line: ").append(token.getLine()).append(", column: ").append(token.getColumn());
         }
 
-        System.out.println(sb.toString());
         this.reportErrors = sb.toString();
     }
     
@@ -248,19 +225,16 @@ public class AnalysisReport {
      */
     public void writeToFile(String filePath)
     {
-        Writer writer = null;
-        
-        try {
-            writer = new BufferedWriter(new OutputStreamWriter(
-                  new FileOutputStream(filePath), "utf-8"));
-            writer.write(this.toString());
-            try 
-            {
-                writer.close();
-            } catch (Exception ex2) {
-                Logger.getLogger(AnalysisReport.class.getName()).log(Level.SEVERE, null, ex2);
-            }
-        } catch (IOException ex) {
+        Writer writer;
+
+        try
+        {
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), "utf-8"));
+            writer.write(this.reportContent);
+            writer.close();
+        }
+        catch (IOException ex)
+        {
           Logger.getLogger(AnalysisReport.class.getName()).log(Level.SEVERE, null, ex);
         } 
     }
@@ -274,16 +248,6 @@ public class AnalysisReport {
     public void setReportDateFormat(DateFormat dateFormat)
     {
         this.reportDateFormat = dateFormat;
-    }
-    
-    /**
-     * Set a custom format for the date in the generated file.
-     * 
-     * @param dateFormat DateFormat for formatting the date.
-     */
-    public void setFileDateFormat(DateFormat dateFormat)
-    {
-        this.fileDateFormat = dateFormat;
     }
 
     /**

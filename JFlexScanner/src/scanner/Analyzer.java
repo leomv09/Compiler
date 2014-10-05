@@ -4,8 +4,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import scanner.lexer.Lexer;
 
 /**
  * Lexical Scanner.
@@ -37,25 +40,21 @@ public class Analyzer {
     }
     
     /**
-     * Scan a source code file.
+     * Analyze a reader.
      * 
-     * @param filePath The path of the file.
-     * @param savingFilePath The path where the report file will be saved.
+     * @param reader
+     * @return 
      */
-    public void analyze(String filePath, String savingFilePath)
+    public TokenList analyze(Reader reader)
     {
-        File file = new File(filePath);
-        FileReader fr = createFileReader(file);
-        
-        Lexer lexScanner = new Lexer(fr);
+        Lexer scanner = new Lexer(reader);
         Token token = null;
         
-        System.out.println("Analyzing " + file.getAbsolutePath() + "\n");
         do
         {
             try
             {
-                token = lexScanner.nextToken();
+                token = scanner.nextToken();
             } 
             catch (IOException ex)
             {
@@ -64,14 +63,51 @@ public class Analyzer {
             
             if (token != null)
             {
-                System.out.println(token);
+                // Do something with token here.
             }
         } while (token != null);
         
         System.out.println();
 
-        AnalysisReport report = new AnalysisReport(file, lexScanner.getTokenList(), lexScanner.getErrorList());
+        //AnalysisReport report = new AnalysisReport(file, lexScanner.getTokenList(), lexScanner.getErrorList());
+        //report.writeToFile();
+
+        return scanner.getTokenList();
+    }
+    
+    /**
+     * Analyze a file.
+     * 
+     * @param file The file to analyze.
+     * @param savingFilePath The path where the report will be saved.
+     * @return The list of tokens read.
+     */
+    public TokenList analyze(File file, String savingFilePath)
+    {
+        System.out.println("Analyzing \"" + file.getAbsolutePath() + "\"\n");
+        FileReader fr = createFileReader(file);
+        TokenList tokens = this.analyze(fr);
+        AnalysisReport report = new AnalysisReport(tokens);
+        System.out.println(report);
         report.writeToFile(savingFilePath);
+        return tokens;
+    }
+    
+    /**
+     * Analyze a string.
+     * 
+     * @param input The string to analyze.
+     * @return The list of tokens read.
+     */
+    public TokenList analyze(String input)
+    {
+        System.out.println("Analyzing Input String\n");
+        StringReader sr = new StringReader(input);
+        TokenList tokens = this.analyze(sr);
+        AnalysisReport report = new AnalysisReport(tokens);
+        System.out.println(report);
+        //report.writeToFile();
+        return tokens;
     }
     
     /**
@@ -82,9 +118,14 @@ public class Analyzer {
     public static void main(String[] args)
     {
         Analyzer analyzer = new Analyzer();
+        File file;
         
         // Analize each file given in the command line arguments.
-
+        for (String arg : args)
+        {
+            file = new File(arg);
+            //analyzer.analyze(file);
+        }
     }
 
 }

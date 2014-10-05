@@ -1,27 +1,24 @@
-package scanner;
+package scanner.lexer;
+
+import scanner.Token;
+import scanner.TokenList;
 
 %%
 
 %{
     private final TokenList tokenList;
-    private final ArrayList<Token> errorList;
 
     public TokenList getTokenList()
     {
         return this.tokenList;
     }
-
-    public ArrayList<Token> getErrorList()
-    {
-        return this.errorList;
-    }
 %}
 
 %init{
     tokenList = new TokenList();
-    errorList = new  ArrayList<Token>();
 %init}
 
+%public
 %class Lexer
 %type Token
 %function nextToken
@@ -47,7 +44,7 @@ NUMERO_REAL = {NUMERO_ENTERO}"."{NUMERO_ENTERO_POSITIVO} ("E"{NUMERO_ENTERO})?
 STRING = "'" ([^'])* "'"
 CARACTER = "#"{NUMERO_ENTERO_POSITIVO} | "'" [^'] "'" 
 
-IDENTIFICADORES = {EXP_ALPHA}({EXP_ALPHA_NUMERICA})*
+IDENTIFICADORES = {EXP_ALPHA}({EXP_ALPHA_NUMERICA}){0, 126}
 LITERALES = {NUMERO_REAL} | {NUMERO_ENTERO} | {CARACTER} | {STRING}
 
 COMENTARIO_LINEA = "//" ([^\r\n])* {FIN_DE_LINEA}?
@@ -90,6 +87,6 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 . {
     Token token = new Token(yytext(), "ERROR", yyline, yycolumn);
-    errorList.add(token);
+    tokenList.addError(token);
     return token;
 }
