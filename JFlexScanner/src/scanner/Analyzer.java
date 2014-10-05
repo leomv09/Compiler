@@ -70,9 +70,6 @@ public class Analyzer {
         
         System.out.println();
 
-        //AnalysisReport report = new AnalysisReport(file, lexScanner.getTokenList(), lexScanner.getErrorList());
-        //report.writeToFile();
-
         return scanner.getTokenList();
     }
     
@@ -80,36 +77,26 @@ public class Analyzer {
      * Analyze a file.
      * 
      * @param file The file to analyze.
-     * @param savingFilePath The path where the report will be saved.
      * @return The list of tokens read.
      */
-    public AnalysisReport analyze(File file, String savingFilePath)
+    public TokenList analyze(File file)
     {
-        System.out.println("Analyzing \"" + file.getAbsolutePath() + "\"\n");
         FileReader fr = createFileReader(file);
         TokenList tokens = this.analyze(fr);
-        AnalysisReport report = new AnalysisReport(tokens);
-        System.out.println(report);
-        report.writeToFile(savingFilePath);
-        return report;
+        return tokens;
     }
     
     /**
      * Analyze a string.
      * 
      * @param input The string to analyze.
-     * @param savingFilePath The path where the file will be saved.
      * @return The list of tokens read.
      */
-    public AnalysisReport analyze(String input, String savingFilePath)
+    public TokenList analyze(String input)
     {
-        System.out.println("Analyzing Input String\n");
         StringReader sr = new StringReader(input);
         TokenList tokens = this.analyze(sr);
-        AnalysisReport report = new AnalysisReport(tokens);
-        System.out.println(report);
-        report.writeToFile(savingFilePath);
-        return report;
+        return tokens;
     }
     
     

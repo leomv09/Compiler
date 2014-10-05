@@ -5,13 +5,9 @@
  */
 package jflexscanner.gui;
 
-import fileManager.FileWriter;
-import fileManager.ReportManager;
-import java.io.File;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import scanner.Analyzer;
 import scanner.AnalysisReport;
+import scanner.Analyzer;
+import scanner.TokenList;
 
 /**
  *
@@ -131,59 +127,16 @@ public class WindowScanner extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    /**
-     * Method that saves the user's input code to a file.
-     * 
-     * @param filePath The path where the file will be saved.
-     */
-    private void saveCode(String filePath)
-    {
-        FileWriter file = new FileWriter();
-        file.writeToFile(filePath, this.codeArea.getText());
-    }
-    
-    /**
-     * Method that set visible the report window and loads the report information.
-     * 
-     * @param report The report generated during the analysis phase.
-     */
-    private void openReport(AnalysisReport report)
-    {
-        System.out.println("Reporto de tokens: "+ report.getReportTokens());
-        System.out.println("Reporto de errores: "+ report.getReportErrors());
-        this.tokenResultArea.setText(report.getReportTokens());
-        this.tokenResultArea.setText(report.getReportErrors());
-        
-    }
-    
     
     private void analyzeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_analyzeButtonActionPerformed
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Specify a file to save the report");   
+        Analyzer analyzer = new Analyzer();
+        TokenList tokens = analyzer.analyze(this.codeArea.getText());
+        
+        AnalysisReport report = new AnalysisReport(tokens);
+        report.writeToFile("report");
 
-        int userSelection = fileChooser.showSaveDialog(this);
-
-        if (userSelection == JFileChooser.APPROVE_OPTION) {
-            File fileToSave = fileChooser.getSelectedFile();
-            saveCode("C:/Users/Leo/Documents/Compiladores e Intérpretes/JFlexScanner/Input Code/code.txt");
-            
-            Analyzer analyzer = new Analyzer();
-            File file = new File("C:/Users/Leo/Documents/Compiladores e Intérpretes/JFlexScanner/Input Code/code.txt");
-            AnalysisReport report = analyzer.analyze(this.codeArea.getText(), fileToSave.getAbsolutePath()); 
-            
-            int option = JOptionPane.showConfirmDialog(null,
-                    "Análisis realizado con éxito.\n"
-                            + "Desea abrir el reporte?",
-                    "Abrir Reporte",
-                    JOptionPane.YES_NO_OPTION);
-            
-            
-            if(option == JOptionPane.YES_OPTION)
-            {
-                openReport(report);
-            }
-        }
+        errorResultArea.setText(report.getReportErrors());
+        tokenResultArea.setText(report.getReportTokens());
     }//GEN-LAST:event_analyzeButtonActionPerformed
 
     /**
@@ -215,6 +168,7 @@ public class WindowScanner extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new WindowScanner().setVisible(true);
             }
