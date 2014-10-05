@@ -3,7 +3,7 @@ build/
 dist/
 samples/
 
-Scanner_Report_*
+Scanner_Report*
 
 *.java~
 *.class
