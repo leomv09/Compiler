@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fileManager;
+package file.utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -15,7 +15,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jflexscanner.gui.WindowScanner;
+import scanner.gui.WindowScanner;
 
 /**
  *
@@ -26,14 +26,14 @@ public class FileManager {
     /**
      * Method that writes the content given to a file.
      * 
-     * @param filePath The path where the file will be saved.
+     * @param file The file to save.
      * @param fileContent The content of the file.
      */
-    public void writeToFile(String filePath, String fileContent)
+    public void writeToFile(File file, String fileContent)
     {
         Writer writer;
         try {
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), "utf-8"));
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "utf-8"));
             writer.write(fileContent);
             writer.close();
         }
@@ -43,6 +43,12 @@ public class FileManager {
         } 
     }
     
+    /**
+     * Read the contents of a file.
+     * 
+     * @param file The file to read.
+     * @return The contents of the file.
+     */
     public String readFile(File file)
     {
         BufferedReader br;

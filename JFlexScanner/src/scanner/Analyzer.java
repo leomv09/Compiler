@@ -99,8 +99,6 @@ public class Analyzer {
         return tokens;
     }
     
-    
-    
     /**
      * The main method.
      * 
@@ -109,13 +107,17 @@ public class Analyzer {
     public static void main(String[] args)
     {
         Analyzer analyzer = new Analyzer();
+        AnalysisReport report;
+        TokenList tokens;
         File file;
         
         // Analize each file given in the command line arguments.
         for (String arg : args)
         {
             file = new File(arg);
-            //analyzer.analyze(file);
+            tokens = analyzer.analyze(file);
+            report = new AnalysisReport(tokens);
+            System.out.println(report);
         }
     }
 

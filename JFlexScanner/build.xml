@@ -10,6 +10,12 @@
 <project name="JFlexScanner" default="default" basedir=".">
     <description>Builds, tests, and runs the project JFlexScanner.</description>
     <import file="nbproject/build-impl.xml"/>
+
+    <target name="-post-jar">
+       <copy description="Copy JAR" file="${dist.dir}/JFlexScanner.jar" todir="../JFlexScanner GUI/lib/"  />
+       <copy description="Copy JAR" file="${dist.dir}/lib/jflex-1.6.0.jar" todir="../JFlexScanner GUI/lib/lib/"  />
+    </target>
+
     <!--
 
     There exist several targets which are by default empty and which can be 

@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package jflexscanner.gui;
+package scanner.gui;
 
-import fileManager.FileManager;
+import file.utils.FileManager;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -199,10 +199,16 @@ public class WindowScanner extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
     
-    private void saveCode(String filePath)
+    private void saveReport(File file)
     {
-        FileManager file = new FileManager();
-        file.writeToFile(filePath, this.report.getReportContent());
+        FileManager manager = new FileManager();
+        manager.writeToFile(file, this.report.getReportContent());
+    }
+    
+    private String readFile(File file)
+    {
+        FileManager manager = new FileManager();
+        return manager.readFile(file);
     }
     
     private void analyzeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_analyzeButtonActionPerformed
@@ -222,9 +228,9 @@ public class WindowScanner extends javax.swing.JFrame {
         
         if (userSelection == JFileChooser.APPROVE_OPTION)
         {
-            File fileToSave = fileChooser.getSelectedFile();
-            saveCode(fileToSave.getAbsolutePath());
-            JOptionPane.showMessageDialog(this, "Reporte guardado exitosamente en:\n" + fileToSave.getAbsolutePath());
+            File file = fileChooser.getSelectedFile();
+            this.saveReport(file);
+            JOptionPane.showMessageDialog(this, "Reporte guardado exitosamente en:\n" + file.getAbsolutePath());
         }
     }//GEN-LAST:event_saveReportButtonActionPerformed
 
@@ -236,8 +242,7 @@ public class WindowScanner extends javax.swing.JFrame {
         if (userSelection == JFileChooser.APPROVE_OPTION)
         {
             File file = fileChooser.getSelectedFile();
-            FileManager manager = new FileManager();
-            String fileContent = manager.readFile(file);
+            String fileContent = this.readFile(file);
             this.codeArea.setText(fileContent);
         }
     }//GEN-LAST:event_loadFileButtonActionPerformed
