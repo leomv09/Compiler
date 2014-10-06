@@ -136,24 +136,31 @@ public class AnalysisReport {
      */
     private void generateReportTokens()
     {
-        StringBuilder sb = new StringBuilder();
         Collection<TokenInfo> tokens = this.tokenList.getTokens();
-        Iterator<TokenInfo> iterator = tokens.iterator();
-        TokenInfo token;
-        
-        while (iterator.hasNext())
+        if (!tokens.isEmpty())
         {
-            token = iterator.next();
-            addTokenInfo(sb, token);
-            addTokenLinesInfo(sb, token.getLines());
-            
-            if (iterator.hasNext())
+            StringBuilder sb = new StringBuilder();
+            Iterator<TokenInfo> iterator = tokens.iterator();
+            TokenInfo token;
+
+            while (iterator.hasNext())
             {
-                sb.append("\n");
+                token = iterator.next();
+                addTokenInfo(sb, token);
+                addTokenLinesInfo(sb, token.getLines());
+
+                if (iterator.hasNext())
+                {
+                    sb.append("\n");
+                }
             }
+
+            this.reportTokens = sb.toString();
         }
-        
-        this.reportTokens = sb.toString();
+        else
+        {
+            this.reportTokens = "None";
+        }
     }
     
     /**
@@ -161,14 +168,25 @@ public class AnalysisReport {
      */
     private void generateReportErrors()
     {
-        StringBuilder sb = new StringBuilder();
- 
-        for (Token token : this.tokenList.getErrors())
+        Collection<Token> errors = this.tokenList.getErrors();
+        if (!errors.isEmpty())
         {
-            sb.append("Token: ").append(token.getToken()).append(" at line: ").append(token.getLine()).append(", column: ").append(token.getColumn());
-        }
+            StringBuilder sb = new StringBuilder();
 
-        this.reportErrors = sb.toString();
+            for (Token token : errors)
+            {
+                sb.append("Token: ").append(token.getToken());
+                sb.append(" at line ").append(token.getLine());
+                sb.append(", column ").append(token.getColumn());
+                sb.append("\n");
+            }
+
+            this.reportErrors = sb.toString();
+        }
+        else
+        {
+            this.reportErrors = "None";
+        }
     }
     
     /**
@@ -184,25 +202,11 @@ public class AnalysisReport {
         
         sb.append("* TOKEN LIST").append("\n");
         sb.append("------------").append("\n\n");
-        if (this.reportTokens.isEmpty())
-        {
-            sb.append("None").append("\n\n");
-        }
-        else
-        {
-            sb.append(this.reportTokens).append("\n");
-        }
+        sb.append(this.reportTokens).append("\n");
         
         sb.append("* ERROR LIST").append("\n");
         sb.append("------------").append("\n\n");
-        if (this.reportErrors.isEmpty())
-        {
-            sb.append("None");
-        }
-        else
-        {
-            sb.append(this.reportErrors);
-        }
+        sb.append(this.reportErrors);
         
         this.reportContent = sb.toString();
     }

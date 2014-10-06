@@ -5,9 +5,18 @@
  */
 package jflexscanner.gui;
 
-import fileManager.FileWriter;
+import fileManager.FileManager;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import scanner.AnalysisReport;
 import scanner.Analyzer;
@@ -19,13 +28,16 @@ import scanner.TokenList;
  */
 public class WindowScanner extends javax.swing.JFrame {
 
+    
+    private AnalysisReport report;
+    
     /**
      * Creates new form WindowScanner
      */
-    
-    private AnalysisReport report;
-    public WindowScanner() {
+    public WindowScanner()
+    {
         initComponents();
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
     /**
@@ -37,21 +49,84 @@ public class WindowScanner extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        analyzeButton = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         codeArea = new javax.swing.JTextArea();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        errorResultArea = new javax.swing.JTextArea();
         jScrollPane5 = new javax.swing.JScrollPane();
         tokenResultArea = new javax.swing.JTextArea();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        errorResultArea = new javax.swing.JTextArea();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        analyzeButton = new javax.swing.JButton();
         saveReportButton = new javax.swing.JButton();
+        loadFileButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Scanner GUI");
 
-        jLabel1.setText("Ingrese el texto a analizar:");
+        jPanel1.setLayout(new java.awt.BorderLayout());
+
+        jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.LINE_AXIS));
+
+        codeArea.setColumns(20);
+        codeArea.setRows(5);
+        codeArea.setMinimumSize(new java.awt.Dimension(0, 1000));
+        jScrollPane2.setViewportView(codeArea);
+
+        jPanel2.add(jScrollPane2);
+
+        tokenResultArea.setEditable(false);
+        tokenResultArea.setColumns(20);
+        tokenResultArea.setRows(5);
+        jScrollPane5.setViewportView(tokenResultArea);
+
+        jPanel2.add(jScrollPane5);
+
+        errorResultArea.setEditable(false);
+        errorResultArea.setColumns(20);
+        errorResultArea.setRows(5);
+        jScrollPane4.setViewportView(errorResultArea);
+
+        jPanel2.add(jScrollPane4);
+
+        jPanel1.add(jPanel2, java.awt.BorderLayout.CENTER);
+
+        jLabel3.setText("Errores:");
+
+        jLabel2.setText("Tokens:");
+
+        jLabel1.setText("Texto a analizar:");
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 149, Short.MAX_VALUE)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 208, Short.MAX_VALUE)
+                .addComponent(jLabel3)
+                .addContainerGap(206, Short.MAX_VALUE))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel1))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel1.add(jPanel4, java.awt.BorderLayout.NORTH);
 
         analyzeButton.setText("Analizar");
         analyzeButton.addActionListener(new java.awt.event.ActionListener() {
@@ -59,24 +134,6 @@ public class WindowScanner extends javax.swing.JFrame {
                 analyzeButtonActionPerformed(evt);
             }
         });
-
-        codeArea.setColumns(20);
-        codeArea.setRows(5);
-        jScrollPane2.setViewportView(codeArea);
-
-        jLabel2.setText("Tokens:");
-
-        jLabel3.setText("Errores:");
-
-        errorResultArea.setEditable(false);
-        errorResultArea.setColumns(20);
-        errorResultArea.setRows(5);
-        jScrollPane4.setViewportView(errorResultArea);
-
-        tokenResultArea.setEditable(false);
-        tokenResultArea.setColumns(20);
-        tokenResultArea.setRows(5);
-        jScrollPane5.setViewportView(tokenResultArea);
 
         saveReportButton.setText("Guardar Reporte");
         saveReportButton.setEnabled(false);
@@ -86,63 +143,56 @@ public class WindowScanner extends javax.swing.JFrame {
             }
         });
 
+        loadFileButton.setText("Cargar Archivo");
+        loadFileButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadFileButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(analyzeButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(loadFileButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(saveReportButton)
+                .addContainerGap(389, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(analyzeButton)
+                    .addComponent(saveReportButton)
+                    .addComponent(loadFileButton))
+                .addContainerGap(13, Short.MAX_VALUE))
+        );
+
+        loadFileButton.getAccessibleContext().setAccessibleName("");
+
+        jPanel1.add(jPanel3, java.awt.BorderLayout.SOUTH);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(analyzeButton)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 139, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel2)
-                            .addGap(222, 222, 222)
-                            .addComponent(jLabel3)
-                            .addGap(212, 212, 212))
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addContainerGap()))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(saveReportButton)
-                        .addContainerGap())))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(20, 20, 20)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(529, Short.MAX_VALUE)))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(15, 15, 15)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(analyzeButton)
-                    .addComponent(saveReportButton))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(53, 53, 53)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(48, Short.MAX_VALUE)))
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
@@ -151,7 +201,7 @@ public class WindowScanner extends javax.swing.JFrame {
     
     private void saveCode(String filePath)
     {
-        FileWriter file = new FileWriter();
+        FileManager file = new FileManager();
         file.writeToFile(filePath, this.report.getReportContent());
     }
     
@@ -160,25 +210,37 @@ public class WindowScanner extends javax.swing.JFrame {
         TokenList tokens = analyzer.analyze(this.codeArea.getText());
         
         this.report = new AnalysisReport(tokens);
-        this.report.writeToFile("report");
-
-        errorResultArea.setText(this.report.getReportErrors());
-        tokenResultArea.setText(this.report.getReportTokens());
+        this.errorResultArea.setText(this.report.getReportErrors());
+        this.tokenResultArea.setText(this.report.getReportTokens());
         this.saveReportButton.setEnabled(true);
     }//GEN-LAST:event_analyzeButtonActionPerformed
 
     private void saveReportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveReportButtonActionPerformed
-        // TODO add your handling code here:
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Specify a file to save the report");   
         int userSelection = fileChooser.showSaveDialog(this);
         
-        if (userSelection == JFileChooser.APPROVE_OPTION) {
+        if (userSelection == JFileChooser.APPROVE_OPTION)
+        {
             File fileToSave = fileChooser.getSelectedFile();
             saveCode(fileToSave.getAbsolutePath());
-            JOptionPane.showMessageDialog(this, "Reporte guardado exitosamente en: "+"\n"+fileToSave.getAbsolutePath());
+            JOptionPane.showMessageDialog(this, "Reporte guardado exitosamente en:\n" + fileToSave.getAbsolutePath());
         }
     }//GEN-LAST:event_saveReportButtonActionPerformed
+
+    private void loadFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadFileButtonActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Specify a file to read");   
+        int userSelection = fileChooser.showSaveDialog(this);
+        
+        if (userSelection == JFileChooser.APPROVE_OPTION)
+        {
+            File file = fileChooser.getSelectedFile();
+            FileManager manager = new FileManager();
+            String fileContent = manager.readFile(file);
+            this.codeArea.setText(fileContent);
+        }
+    }//GEN-LAST:event_loadFileButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -223,9 +285,14 @@ public class WindowScanner extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JButton loadFileButton;
     private javax.swing.JButton saveReportButton;
     private javax.swing.JTextArea tokenResultArea;
     // End of variables declaration//GEN-END:variables
