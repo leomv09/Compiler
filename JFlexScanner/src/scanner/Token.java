@@ -19,15 +19,6 @@ public class Token extends Symbol{
      */
     private final String type;
     
-    /**
-     * The line in which the token was read.
-     */
-    private final int line;
-    
-    /**
-     * The column in which the token was read.
-     */
-    private final int column;
     
     /**
      * Instantiates a new Token.
@@ -43,8 +34,6 @@ public class Token extends Symbol{
         super(type,line,column,token);
         this.token = token;
         this.type = typeName;
-        this.line = line;
-        this.column = column;
     }
 
     /**
@@ -74,7 +63,7 @@ public class Token extends Symbol{
      */
     public int getLine()
     {
-        return line;
+        return this.left;
     }
 
     /**
@@ -84,13 +73,13 @@ public class Token extends Symbol{
      */
     public int getColumn()
     {
-        return column;
+        return this.right;
     }
 
     @Override
     public String toString()
     {
-        return "Token {" + "token=" + token + ", type=" + type + ", line=" + line + ", column=" + column + '}';
+        return "Token {" + "token=" + token + ", type=" + type + ", line=" + this.left + ", column=" + this.right + '}';
     }
     
 }
