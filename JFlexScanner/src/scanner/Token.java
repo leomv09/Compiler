@@ -10,30 +10,23 @@ import java_cup.runtime.Symbol;
 public class Token extends Symbol{
     
     /**
-     * The token itself.
-     */
-    private final String token;
-    
-    /**
      * The token category or type.
      */
     private final String type;
-    
     
     /**
      * Instantiates a new Token.
      * 
      * @param token The token itself.
-     * @param type The token category or type.
+     * @param sym The token category or type.
      * @param line The line in which the token was read.
      * @param column The column in which the token was read.
-     * @param typeName The name of token category or type
+     * @param type The name of token category or type
      */
-    public Token (int type, int line, int column, String token, String typeName)
+    public Token (int sym, String type, String token, int line, int column)
     {
-        super(type,line,column,token);
-        this.token = token;
-        this.type = typeName;
+        super(sym, line, column, token);
+        this.type = type;
     }
 
     /**
@@ -43,7 +36,7 @@ public class Token extends Symbol{
      */
     public String getToken()
     {
-        return token;
+        return this.value.toString();
     }
 
     /**
@@ -79,7 +72,7 @@ public class Token extends Symbol{
     @Override
     public String toString()
     {
-        return "Token {" + "token=" + token + ", type=" + type + ", line=" + this.left + ", column=" + this.right + '}';
+        return "Token {" + "token=" + this.value + ", type=" + type + ", line=" + this.left + ", column=" + this.right + '}';
     }
     
 }
