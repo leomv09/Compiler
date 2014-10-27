@@ -10,7 +10,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import scanner.gui.WindowScanner;
 
 /**
  *
@@ -71,7 +70,7 @@ public class FileManager {
         }
         catch (IOException ex)
         {
-            Logger.getLogger(WindowScanner.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FileManager.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         return result;

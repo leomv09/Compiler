@@ -7,7 +7,7 @@ import java.io.File;
  * 
  * @author Leo
  */
-public class JFlexScanner {
+public class JFlexBuilder {
 
     /**
      * @param args the command line arguments

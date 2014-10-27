@@ -2,6 +2,7 @@ package scanner.lexer;
 
 import scanner.Token;
 import scanner.TokenList;
+import java_cup.runtime.*;
 
 %%
 
@@ -20,11 +21,11 @@ import scanner.TokenList;
 
 %public
 %class Lexer
-%type Token
-%function nextToken
 %unicode
 %line
 %column
+%cupsym ParserSym
+%cup
 
 PALABRASRESERVADAS = "ARRAY" | "BEGIN" | "BOOLEAN" | "BYTE" | "CASE" | "CHAR" | "CONST" | "DO" | "DOWNTO" | "ELSE" | "END" | "FALSE" | "FILE" | "FOR" | "FORWARD" | "FUNCTION" | "GOTO" | "IF" | "IN" | "INLINE" | "INT" | "LABEL" | "LONGINT" | "NIL" | "OF" | "PACKED" | "PROCEDURE" | "PROGRAM" | "READ" | "REAL" | "RECORD" | "REPEAT" | "SET" | "SHORTINT" | "STRING" | "THEN" | "TO" | "TRUE" | "TYPE" | "UNTIL" | "VAR" | "WHILE" | "WITH" | "WRITE"
 OPERADORES = "," | ";" | "++" | "--" | ">=" | ">" | "<=" | "<" | "<>" | "=" | "+" | "-" | "*" | "/" | "(" | ")" | "[" | "]" | ":=" | "." | ":" | "+=" | "-=" | "*=" | "/=" | ">>" | "<<" | "<<=" | ">>=" | "NOT" | "OR" | "AND" | "XOR" | "DIV" | "MOD"
@@ -53,6 +54,7 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 %%
 
+//<CUPSYM>.EOF
 {ESPACIOS} {
     /*Ignore*/
 }

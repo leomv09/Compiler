@@ -1,0 +1,26 @@
+package scanner.lexer;
+
+import java_cup.runtime.*;
+import java.io.Reader;
+import java.io.FileReader;
+
+class Parser;
+
+parser code {:
+
+    public static void main(String[] args)
+    {
+        try
+        {
+            Reader reader = new FileReader(args[0]);
+            Lexer scanner = new Lexer(reader);
+            Parser parser = new Parser(scanner);
+            Object result = parser.parse().value;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
+:};
