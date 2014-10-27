@@ -7,7 +7,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Class used to build the Parser.java and the ParserSym.java class from the Cup.cup file.
+ * 
  * @author jose
  */
 public class CupBuilder
@@ -33,26 +34,53 @@ public class CupBuilder
         }
     }
     
-    public static void moveFile(String path)
+    /**
+     * Move a file to the current package.
+     * 
+     * @param filePath The path of the file.
+     */
+    private static void moveFile(String filePath)
     {
-        File file = new File(path);
+        File file = new File(filePath);
         
         if (file.exists())
         {
-            Path currentPath = Paths.get("");
+            String destinationPath = getDestinationPath(file);
             
-            StringBuilder sb = new StringBuilder();
-            sb.append(currentPath.toAbsolutePath().toString()).append(File.separator);
-            sb.append("src").append(File.separator);
-            sb.append("scanner").append(File.separator);
-            sb.append("lexer").append(File.separator);
-            sb.append(file.getName());
-            String destinationPath = sb.toString();
+            File newFile = new File(destinationPath);
             
-            File oldFile = new File(destinationPath);
-            oldFile.delete();
-            file.renameTo(new File(destinationPath));
+            if (newFile.exists())
+            {
+                newFile.delete();
+            }
+            
+            file.renameTo(newFile);
         }
     }
     
+    /**
+     * Get the absolute path of a file in the current package.
+     * Example:
+     *  file = ../../Foo.java
+     *  package = java.util
+     * 
+     *   returns = java/util/Foo.java
+     * 
+     * @param file The file to obtain the path.
+     * @return The absolute path of a file in the current package.
+     */
+    private static String getDestinationPath(File file)
+    {
+        Path currentPath = Paths.get("");
+        String packageName = CupBuilder.class.getPackage().getName();
+            
+        StringBuilder sb = new StringBuilder();
+        sb.append(currentPath.toAbsolutePath().toString()).append(File.separator);
+        sb.append("src").append(File.separator);
+        sb.append(packageName.replace(".", File.separator)).append(File.separator);
+        sb.append(file.getName());
+        
+        return sb.toString();
+    }
+            
 }

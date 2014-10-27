@@ -24,8 +24,15 @@ import java_cup.runtime.*;
 %unicode
 %line
 %column
-%cupsym ParserSym
-%cup
+
+// Enable CUP Compatibility Mode.
+%implements java_cup.runtime.Scanner
+%function next_token
+%type Token
+%eofval{
+  return new Token(0, null, null, yyline, yycolumn);
+%eofval}
+%eofclose
 
 PALABRASRESERVADAS = "ARRAY" | "BEGIN" | "BOOLEAN" | "BYTE" | "CASE" | "CHAR" | "CONST" | "DO" | "DOWNTO" | "ELSE" | "END" | "FALSE" | "FILE" | "FOR" | "FORWARD" | "FUNCTION" | "GOTO" | "IF" | "IN" | "INLINE" | "INT" | "LABEL" | "LONGINT" | "NIL" | "OF" | "PACKED" | "PROCEDURE" | "PROGRAM" | "READ" | "REAL" | "RECORD" | "REPEAT" | "SET" | "SHORTINT" | "STRING" | "THEN" | "TO" | "TRUE" | "TYPE" | "UNTIL" | "VAR" | "WHILE" | "WITH" | "WRITE"
 OPERADORES = "," | ";" | "++" | "--" | ">=" | ">" | "<=" | "<" | "<>" | "=" | "+" | "-" | "*" | "/" | "(" | ")" | "[" | "]" | ":=" | "." | ":" | "+=" | "-=" | "*=" | "/=" | ">>" | "<<" | "<<=" | ">>=" | "NOT" | "OR" | "AND" | "XOR" | "DIV" | "MOD"
@@ -54,7 +61,6 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 %%
 
-//<CUPSYM>.EOF
 {ESPACIOS} {
     /*Ignore*/
 }
@@ -64,31 +70,31 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 }
 
 {PALABRASRESERVADAS} {
-    Token token = new Token(yytext(), "PALABRA RESERVADA", yyline, yycolumn);
+    Token token = new Token(0, "PALABRA RESERVADA", yytext(), yyline, yycolumn);
     tokenList.addToken(token);
     return token;
 }
 
 {OPERADORES} {
-    Token token = new Token(yytext(), "OPERADOR", yyline, yycolumn);
+    Token token = new Token(0, "OPERADOR", yytext(), yyline, yycolumn);
     tokenList.addToken(token);
     return token;
 }
 
 {LITERALES} {
-    Token token = new Token(yytext(), "LITERAL", yyline, yycolumn);
+    Token token = new Token(0, "LITERAL", yytext(), yyline, yycolumn);
     tokenList.addToken(token);
     return token;
 }
 
 {IDENTIFICADORES} {
-    Token token = new Token(yytext(), "IDENTIFICADOR", yyline, yycolumn);
+    Token token = new Token(0, "IDENTIFICADOR", yytext(), yyline, yycolumn);
     tokenList.addToken(token);
     return token;
 }
 
 . {
-    Token token = new Token(yytext(), "ERROR", yyline, yycolumn);
+    Token token = new Token(0, "ERROR",yytext(), yyline, yycolumn);
     tokenList.addError(token);
     return token;
 }

@@ -4,6 +4,7 @@ package scanner.lexer;
 
 import scanner.Token;
 import scanner.TokenList;
+import java_cup.runtime.*;
 
 
 /**
@@ -11,7 +12,7 @@ import scanner.TokenList;
  * <a href="http://www.jflex.de/">JFlex</a> 1.6.0
  * from the specification file <tt>src/scanner/lexer/Lexer.flex</tt>
  */
-public class Lexer {
+public class Lexer implements java_cup.runtime.Scanner {
 
   /** This character denotes the end of file */
   public static final int YYEOF = -1;
@@ -741,13 +742,25 @@ public class Lexer {
 
 
   /**
+   * Contains user EOF-code, which will be executed exactly once,
+   * when the end of file is reached
+   */
+  private void zzDoEOF() throws java.io.IOException {
+    if (!zzEOFDone) {
+      zzEOFDone = true;
+      yyclose();
+    }
+  }
+
+
+  /**
    * Resumes scanning until the next regular expression is matched,
    * the end of input is encountered or an I/O-Error occurs.
    *
    * @return      the next token
    * @exception   java.io.IOException  if any I/O-Error occurs
    */
-  public Token nextToken() throws java.io.IOException {
+  public Token next_token() throws java.io.IOException {
     int zzInput;
     int zzAction;
 
@@ -883,19 +896,19 @@ public class Lexer {
 
       switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
         case 1: 
-          { Token token = new Token(yytext(), "ERROR", yyline, yycolumn);
+          { Token token = new Token(0, "ERROR",yytext(), yyline, yycolumn);
     tokenList.addError(token);
     return token;
           }
         case 7: break;
         case 2: 
-          { Token token = new Token(yytext(), "IDENTIFICADOR", yyline, yycolumn);
+          { Token token = new Token(0, "IDENTIFICADOR", yytext(), yyline, yycolumn);
     tokenList.addToken(token);
     return token;
           }
         case 8: break;
         case 3: 
-          { Token token = new Token(yytext(), "OPERADOR", yyline, yycolumn);
+          { Token token = new Token(0, "OPERADOR", yytext(), yyline, yycolumn);
     tokenList.addToken(token);
     return token;
           }
@@ -905,13 +918,13 @@ public class Lexer {
           }
         case 10: break;
         case 5: 
-          { Token token = new Token(yytext(), "LITERAL", yyline, yycolumn);
+          { Token token = new Token(0, "LITERAL", yytext(), yyline, yycolumn);
     tokenList.addToken(token);
     return token;
           }
         case 11: break;
         case 6: 
-          { Token token = new Token(yytext(), "PALABRA RESERVADA", yyline, yycolumn);
+          { Token token = new Token(0, "PALABRA RESERVADA", yytext(), yyline, yycolumn);
     tokenList.addToken(token);
     return token;
           }
@@ -919,7 +932,9 @@ public class Lexer {
         default: 
           if (zzInput == YYEOF && zzStartRead == zzCurrentPos) {
             zzAtEOF = true;
-            return null;
+            zzDoEOF();
+              {   return new Token(0, null, null, yyline, yycolumn);
+ }
           } 
           else {
             zzScanError(ZZ_NO_MATCH);

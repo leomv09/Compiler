@@ -55,7 +55,7 @@ public class Analyzer {
         {
             try
             {
-                token = scanner.nextToken();
+                token = scanner.next_token();
             } 
             catch (IOException ex)
             {
