@@ -1,11 +1,13 @@
 package scanner;
 
+import java_cup.runtime.Symbol;
+
 /**
  * Represent a Token read by the scanner.
  * 
  * @author Leo
  */
-public class Token {
+public class Token extends Symbol{
     
     /**
      * The token itself.
@@ -35,10 +37,11 @@ public class Token {
      * @param line The line in which the token was read.
      * @param column The column in which the token was read.
      */
-    public Token (String token, String type, int line, int column)
+    public Token (int type, int line, int column, String token)
     {
+        super(type,line,column,token);
         this.token = token;
-        this.type = type;
+        this.type = Integer.toString(type);
         this.line = line;
         this.column = column;
     }
