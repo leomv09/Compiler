@@ -36,12 +36,13 @@ public class Token extends Symbol{
      * @param type The token category or type.
      * @param line The line in which the token was read.
      * @param column The column in which the token was read.
+     * @param typeName The name of token category or type
      */
-    public Token (int type, int line, int column, String token)
+    public Token (int type, int line, int column, String token, String typeName)
     {
         super(type,line,column,token);
         this.token = token;
-        this.type = Integer.toString(type);
+        this.type = typeName;
         this.line = line;
         this.column = column;
     }
