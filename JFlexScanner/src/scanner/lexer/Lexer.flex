@@ -77,14 +77,31 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 }
 
 {NUMERO_ENTERO} { return newToken(ParserSym.NUMBER, new Integer(yytext())); }
+{NUMERO_REAL} { return newToken(ParserSym.REAL, new Double(yytext())); }
+{CARACTER} { return newToken(ParserSym.CHARACTER, new Character(yytext())); }
+{STRING} { return newToken(ParserSym.STRING, new String(yytext())); }
+{IDENTIFICADORES} { return newToken(ParserSym.IDENTIFIER, new String(yytext())); }
+{PALABRASRESERVADAS} { return newToken(ParserSym.RESERVED_WORDS, new String(yytext())); }
 
 "+" { return newToken(ParserSym.PLUS, yytext()); }
 
+"+=" { return newToken(ParserSym.PLUS_EQUALS, yytext()); }
+
 "-" { return newToken(ParserSym.MINUS, yytext()); }
+
+"-=" { return newToken(ParserSym.MINUS_EQUALS, yytext()); }
 
 "*" { return newToken(ParserSym.TIMES, yytext()); }
 
+"/" { return newToken(ParserSym.DIV, yytext()); }
+
+"/=" { return newToken(ParserSym.DIV_EQUALS, yytext()); }
+
+"*=" { return newToken(ParserSym.TIMES_EQUALS, yytext()); }
+
 "=" { return newToken(ParserSym.EQUALS, yytext()); }
+
+"MOD" { return newToken(ParserSym.MOD, yytext()); }
 
 "<>" { return newToken(ParserSym.NOT_EQUALS, yytext()); }
 
@@ -113,6 +130,11 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 ">>=" { return newToken(ParserSym.SHIFT_RIGHT_EQUALS, yytext()); }
 
 ":=" { return newToken(ParserSym.ASSIGNMENT, yytext()); }
+
+"(" { return newToken(ParserSym.LPAREN, yytext()); }
+")" { return newToken(ParserSym.RPAREN, yytext()); }
+"[" { return newToken(ParserSym.LBRACKET, yytext()); }
+"]" { return newToken(ParserSym.RBRACKET, yytext()); }
 
 /*
 
