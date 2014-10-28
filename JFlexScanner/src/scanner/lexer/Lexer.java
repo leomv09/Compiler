@@ -838,7 +838,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           }
         case 55: break;
         case 26: 
-          { return newToken(ParserSym.STRING);
+          { return newToken(ParserSym.STRING, String(yytext()));
           }
         case 56: break;
         case 27: 
@@ -861,7 +861,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           if (zzInput == YYEOF && zzStartRead == zzCurrentPos) {
             zzAtEOF = true;
             zzDoEOF();
-              {   return new Token(0, null, yyline, yycolumn);
+              {   return new Token(ParserSym.EOF, yytext(), yyline, yycolumn);
  }
           } 
           else {
