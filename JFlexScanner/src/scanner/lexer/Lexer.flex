@@ -14,6 +14,13 @@ import java_cup.runtime.*;
         return this.tokenList;
     }
 
+    private Token newToken(int type)
+    {
+        Token token = new Token(type, yytext(), yyline, yycolumn);
+        tokenList.addToken(token);
+        return token;
+    }
+
     private Token newToken(int type, Object value)
     {
         Token token = new Token(type, value, yyline, yycolumn);
@@ -37,7 +44,7 @@ import java_cup.runtime.*;
 %function next_token
 %type Token
 %eofval{
-  return new Token(0, null, yyline, yycolumn);
+  return new Token(ParserSym.EOF, yytext(), yyline, yycolumn);
 %eofval}
 %eofclose
 
@@ -77,64 +84,72 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 }
 
 {NUMERO_ENTERO} { return newToken(ParserSym.NUMBER, new Integer(yytext())); }
+
 {NUMERO_REAL} { return newToken(ParserSym.REAL, new Double(yytext())); }
+
 {CARACTER} { return newToken(ParserSym.CHARACTER, new Character(yytext())); }
-{STRING} { return newToken(ParserSym.STRING, new String(yytext())); }
-{IDENTIFICADORES} { return newToken(ParserSym.IDENTIFIER, new String(yytext())); }
-{PALABRASRESERVADAS} { return newToken(ParserSym.RESERVED_WORDS, new String(yytext())); }
 
-"+" { return newToken(ParserSym.PLUS, yytext()); }
+{STRING} { return newToken(ParserSym.STRING); }
 
-"+=" { return newToken(ParserSym.PLUS_EQUALS, yytext()); }
+{IDENTIFICADORES} { return newToken(ParserSym.IDENTIFIER); }
 
-"-" { return newToken(ParserSym.MINUS, yytext()); }
+{PALABRASRESERVADAS} { return newToken(ParserSym.RESERVED_WORDS); }
 
-"-=" { return newToken(ParserSym.MINUS_EQUALS, yytext()); }
+"+" { return newToken(ParserSym.PLUS); }
 
-"*" { return newToken(ParserSym.TIMES, yytext()); }
+"+=" { return newToken(ParserSym.PLUS_EQUALS); }
 
-"/" { return newToken(ParserSym.DIV, yytext()); }
+"-" { return newToken(ParserSym.MINUS); }
 
-"/=" { return newToken(ParserSym.DIV_EQUALS, yytext()); }
+"-=" { return newToken(ParserSym.MINUS_EQUALS); }
 
-"*=" { return newToken(ParserSym.TIMES_EQUALS, yytext()); }
+"*" { return newToken(ParserSym.TIMES); }
 
-"=" { return newToken(ParserSym.EQUALS, yytext()); }
+"/" { return newToken(ParserSym.DIV); }
 
-"MOD" { return newToken(ParserSym.MOD, yytext()); }
+"/=" { return newToken(ParserSym.DIV_EQUALS); }
 
-"<>" { return newToken(ParserSym.NOT_EQUALS, yytext()); }
+"*=" { return newToken(ParserSym.TIMES_EQUALS); }
 
-">" { return newToken(ParserSym.GREATER_THAN, yytext()); }
+"=" { return newToken(ParserSym.EQUALS); }
 
-"<" { return newToken(ParserSym.LESS_THAN, yytext()); }
+"<>" { return newToken(ParserSym.NOT_EQUALS); }
 
-">=" { return newToken(ParserSym.GREATER_EQUALS_THAN, yytext()); }
+">" { return newToken(ParserSym.GREATER_THAN); }
 
-"<=" { return newToken(ParserSym.GREATER_LESS_THAN, yytext()); }
+"<" { return newToken(ParserSym.LESS_THAN); }
 
-"NOT" { return newToken(ParserSym.NOT, yytext()); }
+">=" { return newToken(ParserSym.GREATER_EQUALS_THAN); }
 
-"AND" { return newToken(ParserSym.AND, yytext()); }
+"<=" { return newToken(ParserSym.GREATER_LESS_THAN); }
 
-"OR" { return newToken(ParserSym.OR, yytext()); }
+"MOD" { return newToken(ParserSym.MOD); }
 
-"XOR" { return newToken(ParserSym.XOR, yytext()); }
+"NOT" { return newToken(ParserSym.NOT); }
 
-"<<" { return newToken(ParserSym.SHIFT_LEFT, yytext()); }
+"AND" { return newToken(ParserSym.AND); }
 
-">>" { return newToken(ParserSym.SHIFT_RIGHT, yytext()); }
+"OR" { return newToken(ParserSym.OR); }
 
-"<<=" { return newToken(ParserSym.SHIFT_LEFT_EQUALS, yytext()); }
+"XOR" { return newToken(ParserSym.XOR); }
 
-">>=" { return newToken(ParserSym.SHIFT_RIGHT_EQUALS, yytext()); }
+"<<" { return newToken(ParserSym.SHIFT_LEFT); }
 
-":=" { return newToken(ParserSym.ASSIGNMENT, yytext()); }
+">>" { return newToken(ParserSym.SHIFT_RIGHT); }
 
-"(" { return newToken(ParserSym.LPAREN, yytext()); }
-")" { return newToken(ParserSym.RPAREN, yytext()); }
-"[" { return newToken(ParserSym.LBRACKET, yytext()); }
-"]" { return newToken(ParserSym.RBRACKET, yytext()); }
+"<<=" { return newToken(ParserSym.SHIFT_LEFT_EQUALS); }
+
+">>=" { return newToken(ParserSym.SHIFT_RIGHT_EQUALS); }
+
+":=" { return newToken(ParserSym.ASSIGNMENT); }
+
+"(" { return newToken(ParserSym.LPAREN); }
+
+")" { return newToken(ParserSym.RPAREN); }
+
+"[" { return newToken(ParserSym.LBRACKET); }
+
+"]" { return newToken(ParserSym.RBRACKET); }
 
 /*
 

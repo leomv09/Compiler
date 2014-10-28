@@ -14,13 +14,13 @@ public class Token extends Symbol {
      * Instantiates a new Token.
      * 
      * @param token The token itself.
-     * @param sym The token category or type.
+     * @param type The token category or type.
      * @param line The line in which the token was read.
      * @param column The column in which the token was read.
      */
-    public Token (int sym, Object token, int line, int column)
+    public Token (int type, Object token, int line, int column)
     {
-        super(sym, line, column, token);
+        super(type, line, column, token);
     }
 
     /**
@@ -66,7 +66,7 @@ public class Token extends Symbol {
     @Override
     public String toString()
     {
-        return "Token {" + "token=" + this.value + ", type=" + this.getType() + ", line=" + this.left + ", column=" + this.right + '}';
+        return "Token {" + "token=" + this.getToken() + ", type=" + this.getType() + ", line=" + this.getLine() + ", column=" + this.getColumn() + '}';
     }
     
 }
