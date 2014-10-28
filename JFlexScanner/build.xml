@@ -12,8 +12,10 @@
     <import file="nbproject/build-impl.xml"/>
 
     <target name="-post-jar">
-       <copy description="Copy JAR" file="${dist.dir}/JFlexScanner.jar" todir="../JFlexScanner GUI/lib/"  />
-       <copy description="Copy JAR" file="${dist.dir}/lib/jflex-1.6.0.jar" todir="../JFlexScanner GUI/lib/lib/"  />
+      <copy description="Copy JAR" file="${dist.dir}/JFlexScanner.jar" todir="../JFlexScanner GUI/lib/"  />
+      <copy todir="../JFlexScanner GUI/lib/lib/">
+        <fileset dir="${dist.dir}/lib"/>
+      </copy>
     </target>
 
     <path id="lib.classpath">
@@ -22,14 +24,28 @@
       </fileset>
     </path>
 
-    <taskdef name="cup"
+    <taskdef
+      name="cup"
       classname="java_cup.anttask.CUPTask"
+      classpathref="lib.classpath"
+    />
+
+    <taskdef
+      name="jflex"
+      classname="jflex.anttask.JFlexTask"
       classpathref="lib.classpath"
     />
 
     <target name="cup">
       <cup 
         srcfile="src/scanner/lexer/Cup.cup"
+        destdir="src/scanner/lexer"
+      />
+    </target>
+
+    <target name="jflex">
+      <jflex
+        file="src/scanner/lexer/Lexer.flex"
         destdir="src/scanner/lexer"
       />
     </target>
