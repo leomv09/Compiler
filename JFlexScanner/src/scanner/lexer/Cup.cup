@@ -16,6 +16,8 @@ parser code {:
             Lexer scanner = new Lexer(reader);
             Parser parser = new Parser(scanner);
             Object result = parser.parse().value;
+            System.out.println("\n*** Resultados finales ***");
+            System.out.println(result);
         }
         catch (Exception ex)
         {
@@ -25,118 +27,39 @@ parser code {:
 
 :};
 
-/* ------------Declaracion de simbolos terminales y no terminales---------- */
-   
-/* Terminales (tokens obtenidos por el analizador lexico).  
+/* Terminals (tokens returned by the scanner). */
 
-   Terminales que no tienen un valor son listados primero, los terminales que
-   tienen un valor como los enteros son listados en la segunda o demas lineas. */
-terminal           SEMI, OP_SUMA, OP_RESTA, OP_MULT, PARENIZQ, PARENDER;
-terminal Integer   ENTERO;
-   
-/* No terminales usados en la seccion gramatical. 
+// Paréntesis.
+terminal LPAREN, RPAREN, LBRACKET, RBRACKET;
 
-   Primero se lista los no terminales que tienen un valor Object y despues
-   se lista los no terminales que tienen un entero. Un Object se refiere a que
-   no tienen tipo, pudiendo ser entero o String. */
-non terminal Object     expr_list, expr_part;
-non terminal Integer    expr, factor, termino;
-   
+// Operadores aritméticos.
+terminal PLUS, MINUS, DIV, TIMES, MOD, PLUS_EQUALS, MINUS_EQUALS, DIV_EQUALS, TIMES_EQUALS;
 
-/* -------------Seccion de predencia y asociacion de los terminales----------- */
-   
-/*
-  Precedencia de los no terminales, no sirve con simbolos terminales.
-  Por eso no la usamos. Además indica si se asocia a izquierda o derecha.
-*/
-  /*precedence left OP_SUMA, OP_RESTA; 
-  precedence left OP_MULT;*/
+// Operadores de comparación.
+terminal EQUALS, NOT_EQUALS, GREATER_THAN, LESS_THAN, GREATER_EQUALS_THAN, GREATER_LESS_THAN, OR, AND, NOT, XOR;
 
+// Operadores de bit.
+terminal SHIFT_LEFT, SHIFT_RIGHT, SHIFT_LEFT_EQUALS, SHIFT_RIGHT_EQUALS;
 
-/* ------------------- Seccion de la gramatica ------------------------ */
-   
-/* La gramatica de nuestro analizador.
-   
-   expr_list ::=   expr_list expr_part
-                 | expr_part
-   expr_part ::=   expr SEMI
-   expr      ::=   expr PLUS factor
-                 | expr MINUS factor
-                 | factor
-   factor    ::=   factor TIMES term
-                 | factor DIVIDE term
-                 | term
-   term     ::=    LPAREN expr RPAREN
-                 | NUMBER
-                 | ID     
-*/
-   
-/* 'expr_list' es la raiz de la gramatica. Una 'expr_list' puede ser una 'expr_list'
-   seguida de una expr_part, o puede ser una expr_part.
-   Un terminal o no terminal se define <termino> ::= termino1 termino2 ... terminoN.;
-   donde termino puede ser terminal o no terminal, solo se permite un simbolo a la
-   izquierda. La | sirve para indicar que es una produccion u otra.
-   Debemos pasar de simbolos no terminales a simbolos terminales. Una gramatica que no
-   termina en simbolos terminales se dice que no reduce, y por lo tanto nunca se finaliza
-   su procesado.
-*/
-   
-    expr_list ::= expr_list expr_part
-                  |
-                  expr_part
-                  ;
-/* 'expr_part' se compone de una expr seguida de SEMI, o de una asign seguida de SEMI.
-   asign:a esta estableciendo que a representa al objeto asociado a asign, entre {: :}
-   se coloca el sodigo en java para las acciones a tomar al cumplirse una produccion.
-*/
-   
-   expr_part ::= expr:e
-                  {:
-                    System.out.println(" = " + e); 
-                  :} 
-                  SEMI
-                 ;
-                  
-/* 'expr' puede ser una expresion que inicia por numero entero op_suma expr,
-  de esa forma se realiza una suma. Tambien puede ser un numero entero, con esto
-  se devuelve el valor del entero. En RESULT se almacena el valor de las acciones,
-  y se pasa al siguiente nivel de la gramatica.
-*/              
+// Operadores de asignación.
+terminal ASSIGNMENT;
 
-   expr      ::=  expr:e OP_SUMA factor:f
-                  {:
-                    RESULT = new Integer(e.intValue() + f.intValue());
-                  :}
-                  |
-                  expr:e OP_RESTA factor:f
-                  {:
-                    RESULT = new Integer(e.intValue() - f.intValue());
-                  :}
-                  |
-                  factor:n
-                  {:
-                    RESULT = n; 
-                  :}
-                  ;
+terminal Integer NUMBER;
+terminal Double REAL;
+terminal String STRING;
+terminal Character CHARACTER;
+terminal String IDENTIFIER;
+terminal String RESERVED_WORDS;
 
-factor        ::=  factor:f OP_MULT termino:e
-                  {:
-                    RESULT = new Integer(f.intValue() * e.intValue());
-                  :}
-                  |
-                  termino:t
-                  {:
-                    RESULT = t;
-                  :}
-                  ;
+/* Non terminals */
+non terminal Integer expr;
 
-termino       ::=  PARENIZQ expr:e PARENDER
-                  {:
-                    RESULT = e;
-                  :}
-                  |
-                  ENTERO:e
-                  {:
-                    RESULT = e;
-                  :}
-                  ; 
+/* Precedences */
+precedence left PLUS, MINUS;
+precedence left TIMES, DIV;
+
+expr  ::= expr:e1 PLUS  expr:e2        {: RESULT = e1+e2; :}
+        | expr:e1 MINUS expr:e2        {: RESULT = e1-e2; :}
+        | expr:e1 TIMES expr:e2        {: RESULT = e1*e2; :}
+        | MINUS expr:e                 {: RESULT = -e;    :}
+        | NUMBER:n	               {: RESULT = n;     :};

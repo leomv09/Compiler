@@ -13,6 +13,13 @@ import java_cup.runtime.*;
     {
         return this.tokenList;
     }
+
+    private Token newToken(int type, Object value)
+    {
+        Token token = new Token(type, value, yyline, yycolumn);
+        tokenList.addToken(token);
+        return token;
+    }
 %}
 
 %init{
@@ -30,7 +37,7 @@ import java_cup.runtime.*;
 %function next_token
 %type Token
 %eofval{
-  return new Token(0, null, null, yyline, yycolumn);
+  return new Token(0, null, yyline, yycolumn);
 %eofval}
 %eofclose
 
@@ -69,32 +76,44 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
     /*Ignore*/
 }
 
+{NUMERO_ENTERO} { return newToken(ParserSym.NUMBER, new Integer(yytext())); }
+
+"+" { return newToken(ParserSym.PLUS, yytext()); }
+
+"-" { return newToken(ParserSym.MINUS, yytext()); }
+
+"*" { return newToken(ParserSym.TIMES, yytext()); }
+
+/*
+
 {PALABRASRESERVADAS} {
-    Token token = new Token(0, "PALABRA RESERVADA", yytext(), yyline, yycolumn);
+    Token token = new Token(0, yytext(), yyline, yycolumn);
     tokenList.addToken(token);
     return token;
 }
 
 {OPERADORES} {
-    Token token = new Token(0, "OPERADOR", yytext(), yyline, yycolumn);
+    Token token = new Token(0, yytext(), yyline, yycolumn);
     tokenList.addToken(token);
     return token;
 }
 
 {LITERALES} {
-    Token token = new Token(0, "LITERAL", yytext(), yyline, yycolumn);
+    Token token = new Token(0, yytext(), yyline, yycolumn);
     tokenList.addToken(token);
     return token;
 }
 
 {IDENTIFICADORES} {
-    Token token = new Token(0, "IDENTIFICADOR", yytext(), yyline, yycolumn);
+    Token token = new Token(0, yytext(), yyline, yycolumn);
     tokenList.addToken(token);
     return token;
 }
 
+*/
+
 . {
-    Token token = new Token(0, "ERROR",yytext(), yyline, yycolumn);
+    Token token = new Token(0, yytext(), yyline, yycolumn);
     tokenList.addError(token);
     return token;
 }

@@ -1,18 +1,14 @@
 package scanner;
 
 import java_cup.runtime.Symbol;
+import scanner.lexer.ParserSym;
 
 /**
  * Represent a Token read by the scanner.
  * 
  * @author Leo
  */
-public class Token extends Symbol{
-    
-    /**
-     * The token category or type.
-     */
-    private final String type;
+public class Token extends Symbol {
     
     /**
      * Instantiates a new Token.
@@ -21,12 +17,10 @@ public class Token extends Symbol{
      * @param sym The token category or type.
      * @param line The line in which the token was read.
      * @param column The column in which the token was read.
-     * @param type The name of token category or type
      */
-    public Token (int sym, String type, String token, int line, int column)
+    public Token (int sym, Object token, int line, int column)
     {
         super(sym, line, column, token);
-        this.type = type;
     }
 
     /**
@@ -46,7 +40,7 @@ public class Token extends Symbol{
      */
     public String getType()
     {
-        return type;
+        return ParserSym.terminalNames[this.sym];
     }
 
     /**
@@ -72,7 +66,7 @@ public class Token extends Symbol{
     @Override
     public String toString()
     {
-        return "Token {" + "token=" + this.value + ", type=" + type + ", line=" + this.left + ", column=" + this.right + '}';
+        return "Token {" + "token=" + this.value + ", type=" + this.getType() + ", line=" + this.left + ", column=" + this.right + '}';
     }
     
 }

@@ -16,6 +16,24 @@
        <copy description="Copy JAR" file="${dist.dir}/lib/jflex-1.6.0.jar" todir="../JFlexScanner GUI/lib/lib/"  />
     </target>
 
+    <path id="lib.classpath">
+      <fileset dir="lib/">
+        <include name="**/*.jar" />
+      </fileset>
+    </path>
+
+    <taskdef name="cup"
+      classname="java_cup.anttask.CUPTask"
+      classpathref="lib.classpath"
+    />
+
+    <target name="cup">
+      <cup 
+        srcfile="src/scanner/lexer/Cup.cup"
+        destdir="src/scanner/lexer"
+      />
+    </target>
+
     <!--
 
     There exist several targets which are by default empty and which can be 

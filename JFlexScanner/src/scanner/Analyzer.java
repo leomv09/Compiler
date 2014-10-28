@@ -9,6 +9,7 @@ import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import scanner.lexer.Lexer;
+import scanner.lexer.Parser;
 
 /**
  * Lexical Scanner.
@@ -106,6 +107,7 @@ public class Analyzer {
      */
     public static void main(String[] args)
     {
+        /*
         Analyzer analyzer = new Analyzer();
         AnalysisReport report;
         TokenList tokens;
@@ -119,6 +121,10 @@ public class Analyzer {
             report = new AnalysisReport(tokens);
             System.out.println(report);
         }
+        */
+        String[] archivoPrueba = {"../samples/code.txt"};
+        Parser.main(archivoPrueba);
+        System.out.println("Ejecutado!");
     }
 
 }
