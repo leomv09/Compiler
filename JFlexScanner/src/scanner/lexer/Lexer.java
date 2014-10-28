@@ -838,11 +838,26 @@ public class Lexer implements java_cup.runtime.Scanner {
           }
         case 55: break;
         case 26: 
-          { return newToken(ParserSym.STRING, String(yytext()));
+          { return newToken(ParserSym.STRING);
           }
         case 56: break;
         case 27: 
-          { return newToken(ParserSym.CHARACTER, new Character(yytext()));
+          { String text = yytext();
+    Character c = null;
+
+    // El caracter es de tipo #65, #97, etc..
+    if (text.startsWith("#"))
+    {
+        int code = Integer.valueOf(text.substring(1));
+        c = Character.toChars(code)[0];
+    }
+    // El caracter es de tipo 'A', 'b', etc...
+    else
+    {
+        c = new Character(text.charAt(1));
+    }
+
+    return newToken(ParserSym.CHARACTER, c);
           }
         case 57: break;
         case 28: 

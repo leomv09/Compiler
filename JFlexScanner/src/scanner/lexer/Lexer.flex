@@ -87,105 +87,116 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 {NUMERO_REAL} { return newToken(ParserSym.REAL, new Double(yytext())); }
 
-{CARACTER} { return newToken(ParserSym.CHARACTER, new Character(yytext())); }
+{CARACTER} { 
+    String text = yytext();
+    Character c = null;
 
-{STRING} { return newToken(ParserSym.STRING, String(yytext())); }
+    // El caracter es de tipo #65, #97, etc..
+    if (text.startsWith("#"))
+    {
+        int code = Integer.valueOf(text.substring(1));
+        c = Character.toChars(code)[0];
+    }
+    // El caracter es de tipo 'A', 'b', etc...
+    else
+    {
+        c = new Character(text.charAt(1));
+    }
+
+    return newToken(ParserSym.CHARACTER, c);
+}
+
+{STRING} { return newToken(ParserSym.STRING); }
 
 {IDENTIFICADORES} { return newToken(ParserSym.IDENTIFIER); }
  
-"ARRAY" { return newToken(ParserSym.RESERVED_WORDS, String(yytext() ); }
+"ARRAY" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"BEGIN" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"BEGIN" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"BOOLEAN" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"BOOLEAN" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"BYTE" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"BYTE" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"CASE" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"CASE" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"CHAR" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"CHAR" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"CONST" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"CONST" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"DO" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"DO" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"DOWNTO" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"DOWNTO" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"ELSE"  { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"ELSE"  { return newToken(ParserSym.RESERVED_WORDS); }
 
-"END" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"END" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"FALSE" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"FALSE" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"FILE" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"FILE" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"FOR"  { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"FOR"  { return newToken(ParserSym.RESERVED_WORDS); }
 
-"FORWARD" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"FORWARD" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"FUNCTION" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"FUNCTION" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"GOTO" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"GOTO" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"IF" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"IF" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"IN" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"IN" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"INLINE" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"INLINE" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"INT" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"INT" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"LABEL" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"LABEL" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"LONGINT" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"LONGINT" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"NIL" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"NIL" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"OF" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"OF" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"PACKED" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"PACKED" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"PROCEDURE" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"PROCEDURE" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"PROGRAM" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"PROGRAM" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"READ" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"READ" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"REAL" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"REAL" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"RECORD" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"RECORD" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"REPEAT" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"REPEAT" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"SET" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"SET" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"SHORTINT" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"SHORTINT" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"STRING" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"STRING" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"THEN" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"THEN" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"TO" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"TO" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"TRUE" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"TRUE" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"TYPE" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"TYPE" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"UNTIL" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"UNTIL" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"VAR" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"VAR" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"WHILE" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"WHILE" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"WITH" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
+"WITH" { return newToken(ParserSym.RESERVED_WORDS); }
 
-"WRITE" { return newToken(ParserSym.RESERVED_WORDS, String(yytext()); }
-
-
-
-
-
-
+"WRITE" { return newToken(ParserSym.RESERVED_WORDS); }
 
 "+" { return newToken(ParserSym.PLUS); }
 
@@ -242,34 +253,6 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 "[" { return newToken(ParserSym.LBRACKET); }
 
 "]" { return newToken(ParserSym.RBRACKET); }
-
-/*
-
-{PALABRASRESERVADAS} {
-    Token token = new Token(0, yytext(), yyline, yycolumn);
-    tokenList.addToken(token);
-    return token;
-}
-
-{OPERADORES} {
-    Token token = new Token(0, yytext(), yyline, yycolumn);
-    tokenList.addToken(token);
-    return token;
-}
-
-{LITERALES} {
-    Token token = new Token(0, yytext(), yyline, yycolumn);
-    tokenList.addToken(token);
-    return token;
-}
-
-{IDENTIFICADORES} {
-    Token token = new Token(0, yytext(), yyline, yycolumn);
-    tokenList.addToken(token);
-    return token;
-}
-
-*/
 
 . {
     Token token = new Token(0, yytext(), yyline, yycolumn);
