@@ -16,7 +16,6 @@ parser code {:
             Lexer scanner = new Lexer(reader);
             Parser parser = new Parser(scanner);
             Object result = parser.parse().value;
-            System.out.println("\n*** Resultados finales ***");
             System.out.println(result);
         }
         catch (Exception ex)
@@ -44,12 +43,14 @@ terminal SHIFT_LEFT, SHIFT_RIGHT, SHIFT_LEFT_EQUALS, SHIFT_RIGHT_EQUALS;
 // Operadores de asignación.
 terminal ASSIGNMENT;
 
+// Palabras reservadas.
+terminal ARRAY, BEGIN, BOOLEAN, BYTE, CASE, CHAR, CONST, DO, DOWNTO, ELSE, END, FALSE, FILE, FOR, FORWARD, FUNCTION, GOTO, IF, IN, INLINE, INT, LABEL, LONGINT, NIL, OF, PACKED, PROCEDURE, PROGRAM, READ, REAL, RECORD, REPEAT, SET, SHORTINT, STRING, THEN, TO, TRUE, TYPE, UNTIL, VAR, WHILE, WITH, WRITE
+
 terminal Integer NUMBER;
-terminal Double REAL;
-terminal String STRING;
+terminal Double DOUBLE;
+terminal String XTRING;
 terminal Character CHARACTER;
 terminal String IDENTIFIER;
-terminal String RESERVED_WORDS;
 
 /* Non terminals */
 non terminal Integer expr;
@@ -58,8 +59,9 @@ non terminal Integer expr;
 precedence left PLUS, MINUS;
 precedence left TIMES, DIV;
 
-expr  ::= expr:e1 PLUS  expr:e2        {: RESULT = e1+e2; :}
-        | expr:e1 MINUS expr:e2        {: RESULT = e1-e2; :}
-        | expr:e1 TIMES expr:e2        {: RESULT = e1*e2; :}
-        | MINUS expr:e                 {: RESULT = -e;    :}
-        | NUMBER:n	               {: RESULT = n;     :};
+expr  ::= expr:e1 PLUS  expr:e2         {: RESULT = e1 + e2; :}
+        | expr:e1 MINUS expr:e2         {: RESULT = e1 - e2; :}
+        | expr:e1 TIMES expr:e2         {: RESULT = e1 * e2; :}
+        | expr:e1 DIV expr:e2           {: RESULT = e1 / e2; :}
+        | MINUS expr:e                  {: RESULT = -e;      :}
+        | NUMBER:n                      {: RESULT = n;       :};
