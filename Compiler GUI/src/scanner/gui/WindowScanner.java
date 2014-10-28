@@ -5,8 +5,8 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import scanner.AnalysisReport;
-import scanner.Analyzer;
+import scanner.LexicalAnalysisReport;
+import scanner.LexicalAnalyzer;
 import scanner.TokenList;
 
 /**
@@ -15,7 +15,7 @@ import scanner.TokenList;
  */
 public class WindowScanner extends javax.swing.JFrame {
     
-    private AnalysisReport report;
+    private LexicalAnalysisReport report;
     
     /**
      * Creates new form WindowScanner.
@@ -198,10 +198,10 @@ public class WindowScanner extends javax.swing.JFrame {
     }
     
     private void analyzeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_analyzeButtonActionPerformed
-        Analyzer analyzer = new Analyzer();
+        LexicalAnalyzer analyzer = new LexicalAnalyzer();
         TokenList tokens = analyzer.analyze(this.codeArea.getText());
         
-        this.report = new AnalysisReport(tokens);
+        this.report = new LexicalAnalysisReport(tokens);
         this.errorResultArea.setText(this.report.getReportErrors());
         this.tokenResultArea.setText(this.report.getReportTokens());
         this.saveReportButton.setEnabled(true);

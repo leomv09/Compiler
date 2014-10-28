@@ -1,5 +1,9 @@
-package scanner;
+package compiler.scanner;
 
+import compiler.LineContainer;
+import compiler.Token;
+import compiler.TokenInfo;
+import compiler.TokenList;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,7 +22,7 @@ import java.util.logging.Logger;
  * 
  * @author jose
  */
-public class AnalysisReport {
+public class LexicalAnalysisReport {
     
     /**
      * List of tokens read.
@@ -60,7 +64,7 @@ public class AnalysisReport {
      * 
      * @param tokenList List of tokens read.
      */
-    public AnalysisReport(TokenList tokenList)
+    public LexicalAnalysisReport(TokenList tokenList)
     {
         this.date = new Date();
         this.tokenList = tokenList;
@@ -239,7 +243,7 @@ public class AnalysisReport {
         }
         catch (IOException ex)
         {
-          Logger.getLogger(AnalysisReport.class.getName()).log(Level.SEVERE, null, ex);
+          Logger.getLogger(LexicalAnalysisReport.class.getName()).log(Level.SEVERE, null, ex);
         } 
     }
 

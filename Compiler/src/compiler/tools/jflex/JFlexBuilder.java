@@ -1,5 +1,6 @@
-package scanner.lexer;
+package compiler.tools.jflex;
 
+import compiler.tools.FileTools;
 import java.io.File;
 
 /**
@@ -14,9 +15,10 @@ public class JFlexBuilder {
      */
     public static void main(String[] args)
     {
-        String path = "src/scanner/lexer/Lexer.flex";
+        String path = "src/compiler/tools/jflex/Lexer.flex";
         File file = new File(path);
         jflex.Main.generate(file);
+        FileTools.moveFileToPackage("src/compiler/tools/jflex/Lexer.java", "compiler.scanner");
     }
     
 }

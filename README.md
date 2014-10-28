@@ -1,7 +1,7 @@
-Scanner
+Compilador
 ===============
 
-Scanner léxico escrito en Java con la herramienta [JFLEX](http://jflex.de/index.html).  
+Compilador escrito en Java con las herramientas [JFLEX](http://jflex.de/index.html) y [CUP](http://www2.cs.tum.edu/projects/cup/).  
 
 - - -
 

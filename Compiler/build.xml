@@ -8,12 +8,12 @@
 <!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
 <!-- in the project's Project Properties dialog box.-->
 <project name="JFlexScanner" default="default" basedir=".">
-    <description>Builds, tests, and runs the project JFlexScanner.</description>
+    <description>Builds, tests, and runs the project Compiler.</description>
     <import file="nbproject/build-impl.xml"/>
 
     <target name="-post-jar">
-      <copy description="Copy JAR" file="${dist.dir}/JFlexScanner.jar" todir="../JFlexScanner GUI/lib/"  />
-      <copy todir="../JFlexScanner GUI/lib/lib/">
+      <copy description="Copy JAR" file="${dist.dir}/Compiler.jar" todir="../Compiler GUI/lib/"  />
+      <copy todir="../Compiler GUI/lib/lib/">
         <fileset dir="${dist.dir}/lib"/>
       </copy>
     </target>

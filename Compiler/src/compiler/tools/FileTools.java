@@ -1,51 +1,28 @@
-package scanner.lexer;
+package compiler.tools;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
- * Class used to build the Parser.java and the ParserSym.java class from the Cup.cup file.
- * 
+ *
  * @author jose
  */
-public class CupBuilder
+public class FileTools
 {
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args)
-    {
-        String path = "src/scanner/lexer/Cup.cup";
-        String[] cupArgs = {path};
-        
-        try
-        {
-            java_cup.Main.main(cupArgs);
-            moveFile("Parser.java");
-            moveFile("ParserSym.java");
-        } 
-        catch (Exception ex)
-        {
-            Logger.getLogger(CupBuilder.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
     /**
      * Move a file to the current package.
      * 
      * @param filePath The path of the file.
+     * @param packageName The destination package.
      */
-    private static void moveFile(String filePath)
+    public static void moveFileToPackage(String filePath, String packageName)
     {
         File file = new File(filePath);
         
         if (file.exists())
         {
-            String destinationPath = getDestinationPath(file);
+            String destinationPath = getDestinationPath(file, packageName);
             
             File newFile = new File(destinationPath);
             
@@ -67,12 +44,12 @@ public class CupBuilder
      *   returns = java/util/Foo.java
      * 
      * @param file The file to obtain the path.
+     * @param packageName The destination package.
      * @return The absolute path of a file in the current package.
      */
-    private static String getDestinationPath(File file)
+    private static String getDestinationPath(File file, String packageName)
     {
         Path currentPath = Paths.get("");
-        String packageName = CupBuilder.class.getPackage().getName();
             
         StringBuilder sb = new StringBuilder();
         sb.append(currentPath.toAbsolutePath().toString()).append(File.separator);
@@ -82,5 +59,5 @@ public class CupBuilder
         
         return sb.toString();
     }
-            
+    
 }

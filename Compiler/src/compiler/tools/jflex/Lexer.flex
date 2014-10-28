@@ -1,8 +1,9 @@
-package scanner.lexer;
+package compiler.scanner;
 
-import scanner.Token;
-import scanner.TokenList;
-import java_cup.runtime.*;
+import java_cup.runtime.Symbol;
+import compiler.Token;
+import compiler.TokenList;
+import compiler.parser.ParserSym;
 
 %%
 
@@ -123,6 +124,8 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 "CHAR" { return newToken(ParserSym.CHAR); }
 
 "CONST" { return newToken(ParserSym.CONST); }
+
+"DIV" { return newToken(ParserSym.DIV); }
 
 "DO" { return newToken(ParserSym.DO); }
 

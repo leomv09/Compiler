@@ -1,7 +1,7 @@
-package scanner;
+package compiler;
 
+import compiler.parser.ParserSym;
 import java_cup.runtime.Symbol;
-import scanner.lexer.ParserSym;
 
 /**
  * Represent a Token read by the scanner.
