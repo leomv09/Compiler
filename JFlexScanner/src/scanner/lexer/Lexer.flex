@@ -110,93 +110,93 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 {IDENTIFICADORES} { return newToken(ParserSym.IDENTIFIER); }
  
-"ARRAY" { return newToken(ParserSym.RESERVED_WORDS); }
+"ARRAY" { return newToken(ParserSym.ARRAY); }
 
-"BEGIN" { return newToken(ParserSym.RESERVED_WORDS); }
+"BEGIN" { return newToken(ParserSym.BEGIN); }
 
-"BOOLEAN" { return newToken(ParserSym.RESERVED_WORDS); }
+"BOOLEAN" { return newToken(ParserSym.BOOLEAN); }
 
-"BYTE" { return newToken(ParserSym.RESERVED_WORDS); }
+"BYTE" { return newToken(ParserSym.BYTE); }
 
-"CASE" { return newToken(ParserSym.RESERVED_WORDS); }
+"CASE" { return newToken(ParserSym.CASE); }
 
-"CHAR" { return newToken(ParserSym.RESERVED_WORDS); }
+"CHAR" { return newToken(ParserSym.CHAR); }
 
-"CONST" { return newToken(ParserSym.RESERVED_WORDS); }
+"CONST" { return newToken(ParserSym.CONST); }
 
-"DO" { return newToken(ParserSym.RESERVED_WORDS); }
+"DO" { return newToken(ParserSym.DO); }
 
-"DOWNTO" { return newToken(ParserSym.RESERVED_WORDS); }
+"DOWNTO" { return newToken(ParserSym.DOWNTO); }
 
-"ELSE"  { return newToken(ParserSym.RESERVED_WORDS); }
+"ELSE"  { return newToken(ParserSym.ELSE); }
 
-"END" { return newToken(ParserSym.RESERVED_WORDS); }
+"END" { return newToken(ParserSym.END); }
 
-"FALSE" { return newToken(ParserSym.RESERVED_WORDS); }
+"FALSE" { return newToken(ParserSym.FALSE); }
 
-"FILE" { return newToken(ParserSym.RESERVED_WORDS); }
+"FILE" { return newToken(ParserSym.FILE); }
 
-"FOR"  { return newToken(ParserSym.RESERVED_WORDS); }
+"FOR"  { return newToken(ParserSym.FOR); }
 
-"FORWARD" { return newToken(ParserSym.RESERVED_WORDS); }
+"FORWARD" { return newToken(ParserSym.FORWARD); }
 
-"FUNCTION" { return newToken(ParserSym.RESERVED_WORDS); }
+"FUNCTION" { return newToken(ParserSym.FUNCTION); }
 
-"GOTO" { return newToken(ParserSym.RESERVED_WORDS); }
+"GOTO" { return newToken(ParserSym.GOTO); }
 
-"IF" { return newToken(ParserSym.RESERVED_WORDS); }
+"IF" { return newToken(ParserSym.IF); }
 
-"IN" { return newToken(ParserSym.RESERVED_WORDS); }
+"IN" { return newToken(ParserSym.RIN); }
 
-"INLINE" { return newToken(ParserSym.RESERVED_WORDS); }
+"INLINE" { return newToken(ParserSym.INLINE); }
 
-"INT" { return newToken(ParserSym.RESERVED_WORDS); }
+"INT" { return newToken(ParserSym.INT); }
 
-"LABEL" { return newToken(ParserSym.RESERVED_WORDS); }
+"LABEL" { return newToken(ParserSym.LABEL); }
 
-"LONGINT" { return newToken(ParserSym.RESERVED_WORDS); }
+"LONGINT" { return newToken(ParserSym.LONGINT); }
 
-"NIL" { return newToken(ParserSym.RESERVED_WORDS); }
+"NIL" { return newToken(ParserSym.NIL); }
 
-"OF" { return newToken(ParserSym.RESERVED_WORDS); }
+"OF" { return newToken(ParserSym.OF); }
 
-"PACKED" { return newToken(ParserSym.RESERVED_WORDS); }
+"PACKED" { return newToken(ParserSym.PACKED); }
 
-"PROCEDURE" { return newToken(ParserSym.RESERVED_WORDS); }
+"PROCEDURE" { return newToken(ParserSym.PROCEDURE); }
 
-"PROGRAM" { return newToken(ParserSym.RESERVED_WORDS); }
+"PROGRAM" { return newToken(ParserSym.PROGRAM); }
 
-"READ" { return newToken(ParserSym.RESERVED_WORDS); }
+"READ" { return newToken(ParserSym.READ); }
 
-"REAL" { return newToken(ParserSym.RESERVED_WORDS); }
+"REAL" { return newToken(ParserSym.REAL); }
 
-"RECORD" { return newToken(ParserSym.RESERVED_WORDS); }
+"RECORD" { return newToken(ParserSym.RECORD); }
 
-"REPEAT" { return newToken(ParserSym.RESERVED_WORDS); }
+"REPEAT" { return newToken(ParserSym.REPEAT); }
 
-"SET" { return newToken(ParserSym.RESERVED_WORDS); }
+"SET" { return newToken(ParserSym.SET); }
 
-"SHORTINT" { return newToken(ParserSym.RESERVED_WORDS); }
+"SHORTINT" { return newToken(ParserSym.SHORTINTS); }
 
-"STRING" { return newToken(ParserSym.RESERVED_WORDS); }
+"STRING" { return newToken(ParserSym.STRING); }
 
-"THEN" { return newToken(ParserSym.RESERVED_WORDS); }
+"THEN" { return newToken(ParserSym.THEN); }
 
-"TO" { return newToken(ParserSym.RESERVED_WORDS); }
+"TO" { return newToken(ParserSym.TO); }
 
-"TRUE" { return newToken(ParserSym.RESERVED_WORDS); }
+"TRUE" { return newToken(ParserSym.TRUE); }
 
-"TYPE" { return newToken(ParserSym.RESERVED_WORDS); }
+"TYPE" { return newToken(ParserSym.TYPE); }
 
-"UNTIL" { return newToken(ParserSym.RESERVED_WORDS); }
+"UNTIL" { return newToken(ParserSym.UNTIL); }
 
-"VAR" { return newToken(ParserSym.RESERVED_WORDS); }
+"VAR" { return newToken(ParserSym.VAR); }
 
-"WHILE" { return newToken(ParserSym.RESERVED_WORDS); }
+"WHILE" { return newToken(ParserSym.WHILE); }
 
-"WITH" { return newToken(ParserSym.RESERVED_WORDS); }
+"WITH" { return newToken(ParserSym.WITH); }
 
-"WRITE" { return newToken(ParserSym.RESERVED_WORDS); }
+"WRITE" { return newToken(ParserSym.WRITE); }
 
 "+" { return newToken(ParserSym.PLUS); }
 
