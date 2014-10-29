@@ -41,6 +41,7 @@
         srcfile="src/Parser.cup"
         destdir="src/"
         noWarn="true"
+        locations="false"
       />
     </target>
 

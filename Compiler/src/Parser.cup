@@ -1,9 +1,6 @@
 package compiler.parser;
 
 import java_cup.runtime.Symbol;
-import compiler.scanner.Lexer;
-import java.io.Reader;
-import java.io.FileReader;
 
 class Parser;
 
@@ -56,25 +53,26 @@ parser code {:
 // Paréntesis.
 terminal LPAREN, RPAREN, LBRACKET, RBRACKET;
 
-// Operadores aritméticos.
-terminal PLUS, MINUS, DIV, TIMES, MOD, PLUS_EQUALS, MINUS_EQUALS, DIV_EQUALS, TIMES_EQUALS;
+// Operadores aritméticos y de asignación.
+terminal PLUS, MINUS, DIV, TIMES, MOD, ASSIGNMENT, PLUS_EQUALS, MINUS_EQUALS, DIV_EQUALS, TIMES_EQUALS;
 
 // Operadores de comparación.
-terminal EQUALS, NOT_EQUALS, GREATER_THAN, LESS_THAN, GREATER_EQUALS_THAN, LESS_EQUALS_THAN, OR, AND, NOT, XOR;
+terminal EQUALS, NOT_EQUALS, GREATER_THAN, LESS_THAN, GREATER_EQUALS_THAN, LESS_EQUALS_THAN;
+
+// Operadores lógicos.
+terminal AND, OR, XOR, NOT;
 
 // Operadores de bit.
 terminal SHIFT_LEFT, SHIFT_RIGHT, SHIFT_LEFT_EQUALS, SHIFT_RIGHT_EQUALS;
 
-// Operadores de asignación.
-terminal ASSIGNMENT;
-
 // Palabras reservadas.
-terminal ARRAY, BEGIN, BOOLEAN, BYTE, CASE, CHAR, CONST, DO, DOWNTO, ELSE, END, FILE, FOR, FORWARD, FUNCTION, GOTO, IF, IN, INLINE, INT, LABEL, LONGINT, NIL, OF, PACKED, PROCEDURE, PROGRAM, READ, REAL, RECORD, REPEAT, SET, SHORTINT, STRING, THEN, TO, TYPE, UNTIL, VAR, WHILE, WITH, WRITE;
+terminal ARRAY, BEGIN, BOOLEAN, BYTE, CASE, CHAR, CONST, DO, DOWNTO, ELSE, END, FILE, FOR, FORWARD, FUNCTION, GOTO, IF, IN, INLINE, INT, LABEL, LONGINT, OF, PACKED, PROCEDURE, PROGRAM, READ, REAL, RECORD, REPEAT, SET, SHORTINT, STRING, THEN, TO, TYPE, UNTIL, VAR, WHILE, WITH, WRITE;
 
 // Otros
 terminal SEMI;
 
 // Terminales con valor.
+terminal Object NIL;
 terminal Integer NUMBER;
 terminal Double DOUBLE;
 terminal String XTRING;
@@ -83,25 +81,25 @@ terminal String IDENTIFIER;
 terminal Boolean TRUE, FALSE;
 
 /* Non terminals */
-non terminal Double expr;
+non terminal Integer expr;
 non terminal Object term;
-non terminal Boolean condition_list, condition;
+non terminal Boolean condition_number, condition, condition_list;
 
 /* Precedences */
 precedence left PLUS, MINUS;
 precedence left TIMES, DIV, MOD;
 precedence left AND, OR, XOR;
+precedence left LPAREN, RPAREN; 
 
 start with condition_list;
 
-expr ::= expr:e1 PLUS  expr:e2           {: RESULT = e1 + e2;         :}
-       | expr:e1 MINUS expr:e2           {: RESULT = e1 - e2;         :}
-       | expr:e1 TIMES expr:e2           {: RESULT = e1 * e2;         :}
-       | expr:e1 DIV   expr:e2           {: RESULT = e1 / e2;         :}
-       | expr:e1 MOD   expr:e2           {: RESULT = e1 % e2;         :}
-       | MINUS expr:e                    {: RESULT = -e;              :}
-       | NUMBER:n                        {: RESULT = n.doubleValue(); :}
-       | DOUBLE:d                        {: RESULT = d;               :};
+expr ::= expr:e1 PLUS  expr:e2           {: RESULT = e1 + e2; :}
+       | expr:e1 MINUS expr:e2           {: RESULT = e1 - e2; :}
+       | expr:e1 TIMES expr:e2           {: RESULT = e1 * e2; :}
+       | expr:e1 DIV   expr:e2           {: RESULT = e1 / e2; :}
+       | expr:e1 MOD   expr:e2           {: RESULT = e1 % e2; :}
+       | MINUS expr:e                    {: RESULT = -e;      :}
+       | NUMBER:n                        {: RESULT = n;       :};
 
 term ::= LPAREN expr:e RPAREN      {: RESULT = e; :}
        | NUMBER:n                  {: RESULT = n; :}
@@ -110,18 +108,35 @@ term ::= LPAREN expr:e RPAREN      {: RESULT = e; :}
        | CHARACTER:c               {: RESULT = c; :}
        | IDENTIFIER:i              {: RESULT = i; :}
        | TRUE:t                    {: RESULT = t; :}
-       | FALSE:f                   {: RESULT = f; :};
+       | FALSE:f                   {: RESULT = f; :}
+       | NIL:n                     {: RESULT = n; :};
 
-condition ::= term:t1 EQUALS term:t2                    {: RESULT = t1.equals(t2);                       :}
-            | term:t1 NOT_EQUALS term:t2                {: RESULT = !t1.equals(t2);                      :}
-            | term:t1 GREATER_THAN term:t2              {: RESULT = ((Comparable)t1).compareTo(t2) > 0;  :}
-            | term:t1 LESS_THAN term:t2                 {: RESULT = ((Comparable)t1).compareTo(t2) < 0;  :}
-            | term:t1 GREATER_EQUALS_THAN term:t2       {: RESULT = ((Comparable)t1).compareTo(t2) >= 0; :}
-            | term:t1 LESS_EQUALS_THAN term:t2          {: RESULT = ((Comparable)t1).compareTo(t2) <= 0; :}
-            | TRUE:t                                    {: RESULT = t; :}
-            | FALSE:f                                   {: RESULT = f; :}; 
+condition_number ::= NUMBER:n1 GREATER_THAN NUMBER:n2              {: RESULT = n1.compareTo(n2) >  0;               :}
+                   | NUMBER:n1 LESS_THAN NUMBER:n2                 {: RESULT = n1.compareTo(n2) <  0;               :}
+                   | NUMBER:n1 GREATER_EQUALS_THAN NUMBER:n2       {: RESULT = n1.compareTo(n2) >= 0;               :}
+                   | NUMBER:n1 LESS_EQUALS_THAN NUMBER:n2          {: RESULT = n1.compareTo(n2) <= 0;               :}
+                   | DOUBLE:d1 GREATER_THAN DOUBLE:d2              {: RESULT = d1.compareTo(d2) >  0;               :}
+                   | DOUBLE:d1 LESS_THAN DOUBLE:d2                 {: RESULT = d1.compareTo(d2) <  0;               :}
+                   | DOUBLE:d1 GREATER_EQUALS_THAN DOUBLE:d2       {: RESULT = d1.compareTo(d2) >= 0;               :}
+                   | DOUBLE:d1 LESS_EQUALS_THAN DOUBLE:d2          {: RESULT = d1.compareTo(d2) <= 0;               :}
+                   | NUMBER:n1 GREATER_THAN DOUBLE:d2              {: RESULT = new Double(n1).compareTo(d2) >  0;   :}
+                   | NUMBER:n1 LESS_THAN DOUBLE:d2                 {: RESULT = new Double(n1).compareTo(d2) <  0;   :}
+                   | NUMBER:n1 GREATER_EQUALS_THAN DOUBLE:d2       {: RESULT = new Double(n1).compareTo(d2) >= 0;   :}
+                   | NUMBER:n1 LESS_EQUALS_THAN DOUBLE:d2          {: RESULT = new Double(n1).compareTo(d2) <= 0;   :}
+                   | DOUBLE:d1 GREATER_THAN NUMBER:n2              {: RESULT = d1.compareTo(n2.doubleValue()) >  0; :}
+                   | DOUBLE:d1 LESS_THAN NUMBER:n2                 {: RESULT = d1.compareTo(n2.doubleValue()) <  0; :}
+                   | DOUBLE:d1 GREATER_EQUALS_THAN NUMBER:n2       {: RESULT = d1.compareTo(n2.doubleValue()) >= 0; :}
+                   | DOUBLE:d1 LESS_EQUALS_THAN NUMBER:n2          {: RESULT = d1.compareTo(n2.doubleValue()) <= 0; :};
 
-condition_list ::= condition_list:c1 AND condition_list:c2        {: RESULT = c1 && c2; :}
+condition ::= LPAREN condition:c RPAREN                 {: RESULT = c;              :}
+            | condition_number:cn                       {: RESULT = cn;             :}
+            | term:t1 EQUALS term:t2                    {: RESULT = t1.equals(t2);  :}
+            | term:t1 NOT_EQUALS term:t2                {: RESULT = !t1.equals(t2); :}
+            | TRUE:t                                    {: RESULT = t;              :}
+            | FALSE:f                                   {: RESULT = f;              :}; 
+
+condition_list ::= LPAREN condition_list:cl RPAREN                {: RESULT = cl;       :}
+                 | condition_list:c1 AND condition_list:c2        {: RESULT = c1 && c2; :}
                  | condition_list:c1 OR  condition_list:c2        {: RESULT = c1 || c2; :}
                  | condition_list:c1 XOR condition_list:c2        {: RESULT = c1 ^ c2;  :}
                  | condition:c                                    {: RESULT = c;        :};
