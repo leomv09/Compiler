@@ -2,6 +2,7 @@ package compiler.scanner;
 
 import compiler.Token;
 import compiler.TokenList;
+import compiler.parser.ParserSym;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -56,19 +57,12 @@ public class LexicalAnalyzer {
             try
             {
                 token = scanner.next_token();
-            } 
+            }
             catch (IOException ex)
             {
                 Logger.getLogger(LexicalAnalyzer.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
-            if (token != null)
-            {
-                // Do something with token here.
-            }
-        } while (token != null);
-        
-        System.out.println();
+        } while (token != null && token.sym != ParserSym.EOF);
 
         return scanner.getTokenList();
     }

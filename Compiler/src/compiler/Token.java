@@ -66,7 +66,16 @@ public class Token extends Symbol {
     @Override
     public String toString()
     {
-        return "Token {" + "token=" + this.getToken() + ", type=" + this.getType() + ", line=" + this.getLine() + ", column=" + this.getColumn() + '}';
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append("Token {");
+        sb.append("token=").append(this.getToken());
+        sb.append(", type=").append(this.getType());
+        sb.append(", line=").append(this.getLine());
+        sb.append(", column=").append(this.getColumn());
+        sb.append("}");
+        
+        return sb.toString();
     }
     
 }

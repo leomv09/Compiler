@@ -49,9 +49,6 @@ import compiler.parser.ParserSym;
 %eofval}
 %eofclose
 
-PALABRASRESERVADAS = "ARRAY" | "BEGIN" | "BOOLEAN" | "BYTE" | "CASE" | "CHAR" | "CONST" | "DO" | "DOWNTO" | "ELSE" | "END" | "FALSE" | "FILE" | "FOR" | "FORWARD" | "FUNCTION" | "GOTO" | "IF" | "IN" | "INLINE" | "INT" | "LABEL" | "LONGINT" | "NIL" | "OF" | "PACKED" | "PROCEDURE" | "PROGRAM" | "READ" | "REAL" | "RECORD" | "REPEAT" | "SET" | "SHORTINT" | "STRING" | "THEN" | "TO" | "TRUE" | "TYPE" | "UNTIL" | "VAR" | "WHILE" | "WITH" | "WRITE"
-OPERADORES = "," | ";" | "++" | "--" | ">=" | ">" | "<=" | "<" | "<>" | "=" | "+" | "-" | "*" | "/" | "(" | ")" | "[" | "]" | ":=" | "." | ":" | "+=" | "-=" | "*=" | "/=" | ">>" | "<<" | "<<=" | ">>=" | "NOT" | "OR" | "AND" | "XOR" | "DIV" | "MOD"
-
 FIN_DE_LINEA = \r | \n | \r\n
 ESPACIOS = {FIN_DE_LINEA} | [ \t\f]
 
@@ -68,7 +65,6 @@ STRING = "'" ([^'])* "'"
 CARACTER = "#"{NUMERO_ENTERO_POSITIVO} | "'" [^'] "'" 
 
 IDENTIFICADORES = {EXP_ALPHA}({EXP_ALPHA_NUMERICA}){0, 126}
-LITERALES = {NUMERO_REAL} | {NUMERO_ENTERO} | {CARACTER} | {STRING}
 
 COMENTARIO_LINEA = "//" ([^\r\n])* {FIN_DE_LINEA}?
 COMENTARIO_BLOQUE = "(*" [^*] ~"*)" | "(*" "*"+ ")" | "{" [^}] ~"}"
@@ -84,33 +80,6 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
     /*Ignore*/
 }
 
-{NUMERO_ENTERO} { return newToken(ParserSym.NUMBER, new Integer(yytext())); }
-
-{NUMERO_REAL} { return newToken(ParserSym.REAL, new Double(yytext())); }
-
-{CARACTER} { 
-    String text = yytext();
-    Character c = null;
-
-    // El caracter es de tipo #65, #97, etc..
-    if (text.startsWith("#"))
-    {
-        int code = Integer.valueOf(text.substring(1));
-        c = Character.toChars(code)[0];
-    }
-    // El caracter es de tipo 'A', 'b', etc...
-    else
-    {
-        c = new Character(text.charAt(1));
-    }
-
-    return newToken(ParserSym.CHARACTER, c);
-}
-
-{STRING} { return newToken(ParserSym.STRING); }
-
-{IDENTIFICADORES} { return newToken(ParserSym.IDENTIFIER); }
- 
 "ARRAY" { return newToken(ParserSym.ARRAY); }
 
 "BEGIN" { return newToken(ParserSym.BEGIN); }
@@ -135,7 +104,7 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 "END" { return newToken(ParserSym.END); }
 
-"FALSE" { return newToken(ParserSym.FALSE); }
+"FALSE" { return newToken(ParserSym.FALSE, Boolean.FALSE); }
 
 "FILE" { return newToken(ParserSym.FILE); }
 
@@ -149,7 +118,7 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 "IF" { return newToken(ParserSym.IF); }
 
-"IN" { return newToken(ParserSym.RIN); }
+"IN" { return newToken(ParserSym.IN); }
 
 "INLINE" { return newToken(ParserSym.INLINE); }
 
@@ -159,7 +128,7 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 "LONGINT" { return newToken(ParserSym.LONGINT); }
 
-"NIL" { return newToken(ParserSym.NIL); }
+"NIL" { return newToken(ParserSym.NIL, null); }
 
 "OF" { return newToken(ParserSym.OF); }
 
@@ -179,7 +148,7 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 "SET" { return newToken(ParserSym.SET); }
 
-"SHORTINT" { return newToken(ParserSym.SHORTINTS); }
+"SHORTINT" { return newToken(ParserSym.SHORTINT); }
 
 "STRING" { return newToken(ParserSym.STRING); }
 
@@ -187,7 +156,7 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 "TO" { return newToken(ParserSym.TO); }
 
-"TRUE" { return newToken(ParserSym.TRUE); }
+"TRUE" { return newToken(ParserSym.TRUE, Boolean.TRUE); }
 
 "TYPE" { return newToken(ParserSym.TYPE); }
 
@@ -227,7 +196,7 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 ">=" { return newToken(ParserSym.GREATER_EQUALS_THAN); }
 
-"<=" { return newToken(ParserSym.GREATER_LESS_THAN); }
+"<=" { return newToken(ParserSym.LESS_EQUALS_THAN); }
 
 "MOD" { return newToken(ParserSym.MOD); }
 
@@ -257,8 +226,41 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 "]" { return newToken(ParserSym.RBRACKET); }
 
+";" { return newToken(ParserSym.SEMI); }
+
+{NUMERO_ENTERO} { return newToken(ParserSym.NUMBER, new Integer(yytext())); }
+
+{NUMERO_REAL} { 
+    Double d = Double.valueOf(yytext());
+    return newToken(ParserSym.DOUBLE, d);
+}
+
+{CARACTER} { 
+    String text = yytext();
+    Character c = null;
+
+    // El caracter es de tipo #65, #97, etc..
+    if (text.startsWith("#"))
+    {
+        int code = Integer.valueOf(text.substring(1));
+        c = Character.toChars(code)[0];
+    }
+    // El caracter es de tipo 'A', 'b', etc...
+    else
+    {
+        c = new Character(text.charAt(1));
+    }
+
+    return newToken(ParserSym.CHARACTER, c);
+}
+
+{STRING} { 
+    String s = yytext().replace("\'", "");
+    return newToken(ParserSym.XTRING, s);
+}
+
+{IDENTIFICADORES} { return newToken(ParserSym.IDENTIFIER); }
+ 
 . {
-    Token token = new Token(0, yytext(), yyline, yycolumn);
-    tokenList.addError(token);
-    return token;
+    return newToken(ParserSym.error);
 }

@@ -1,0 +1,127 @@
+package compiler.parser;
+
+import java_cup.runtime.Symbol;
+import compiler.scanner.Lexer;
+import java.io.Reader;
+import java.io.FileReader;
+
+class Parser;
+
+parser code {:
+ 
+    public void report_error(String message, Object info)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("ERROR: ");
+        sb.append(message).append(". ");
+        
+        if (info instanceof Symbol)
+        {
+            Symbol s = ((Symbol) info);
+            sb.append("Token ").append(s.value);
+
+            if (s.left >= 0)
+            {                
+                sb.append(" in line ").append(s.left);
+                if (s.right >= 0)
+                {
+                    sb.append(", column ").append(s.right).append(".");
+                }
+            }
+        }
+
+        System.err.println(sb);
+    }
+   
+    public void report_fatal_error(String message, Object info)
+    {
+        report_error(message, info);
+        System.exit(1);    
+    }
+
+    public void syntax_error(Symbol current_token)
+    {
+        report_error("Syntax Error", current_token); 
+    }
+
+    public void unrecovered_syntax_error(Symbol current_token)
+    {
+        report_fatal_error("Couldn't repair and continue parse", current_token);
+    }
+    
+:};
+
+/* Terminals (tokens returned by the scanner). */
+
+// Paréntesis.
+terminal LPAREN, RPAREN, LBRACKET, RBRACKET;
+
+// Operadores aritméticos.
+terminal PLUS, MINUS, DIV, TIMES, MOD, PLUS_EQUALS, MINUS_EQUALS, DIV_EQUALS, TIMES_EQUALS;
+
+// Operadores de comparación.
+terminal EQUALS, NOT_EQUALS, GREATER_THAN, LESS_THAN, GREATER_EQUALS_THAN, LESS_EQUALS_THAN, OR, AND, NOT, XOR;
+
+// Operadores de bit.
+terminal SHIFT_LEFT, SHIFT_RIGHT, SHIFT_LEFT_EQUALS, SHIFT_RIGHT_EQUALS;
+
+// Operadores de asignación.
+terminal ASSIGNMENT;
+
+// Palabras reservadas.
+terminal ARRAY, BEGIN, BOOLEAN, BYTE, CASE, CHAR, CONST, DO, DOWNTO, ELSE, END, FILE, FOR, FORWARD, FUNCTION, GOTO, IF, IN, INLINE, INT, LABEL, LONGINT, NIL, OF, PACKED, PROCEDURE, PROGRAM, READ, REAL, RECORD, REPEAT, SET, SHORTINT, STRING, THEN, TO, TYPE, UNTIL, VAR, WHILE, WITH, WRITE;
+
+// Otros
+terminal SEMI;
+
+// Terminales con valor.
+terminal Integer NUMBER;
+terminal Double DOUBLE;
+terminal String XTRING;
+terminal Character CHARACTER;
+terminal String IDENTIFIER;
+terminal Boolean TRUE, FALSE;
+
+/* Non terminals */
+non terminal Double expr;
+non terminal Object term;
+non terminal Boolean condition_list, condition;
+
+/* Precedences */
+precedence left PLUS, MINUS;
+precedence left TIMES, DIV, MOD;
+precedence left AND, OR, XOR;
+
+start with condition_list;
+
+expr ::= expr:e1 PLUS  expr:e2           {: RESULT = e1 + e2;         :}
+       | expr:e1 MINUS expr:e2           {: RESULT = e1 - e2;         :}
+       | expr:e1 TIMES expr:e2           {: RESULT = e1 * e2;         :}
+       | expr:e1 DIV   expr:e2           {: RESULT = e1 / e2;         :}
+       | expr:e1 MOD   expr:e2           {: RESULT = e1 % e2;         :}
+       | MINUS expr:e                    {: RESULT = -e;              :}
+       | NUMBER:n                        {: RESULT = n.doubleValue(); :}
+       | DOUBLE:d                        {: RESULT = d;               :};
+
+term ::= LPAREN expr:e RPAREN      {: RESULT = e; :}
+       | NUMBER:n                  {: RESULT = n; :}
+       | DOUBLE:d                  {: RESULT = d; :}
+       | XTRING:s                  {: RESULT = s; :}
+       | CHARACTER:c               {: RESULT = c; :}
+       | IDENTIFIER:i              {: RESULT = i; :}
+       | TRUE:t                    {: RESULT = t; :}
+       | FALSE:f                   {: RESULT = f; :};
+
+condition ::= term:t1 EQUALS term:t2                    {: RESULT = t1.equals(t2);                       :}
+            | term:t1 NOT_EQUALS term:t2                {: RESULT = !t1.equals(t2);                      :}
+            | term:t1 GREATER_THAN term:t2              {: RESULT = ((Comparable)t1).compareTo(t2) > 0;  :}
+            | term:t1 LESS_THAN term:t2                 {: RESULT = ((Comparable)t1).compareTo(t2) < 0;  :}
+            | term:t1 GREATER_EQUALS_THAN term:t2       {: RESULT = ((Comparable)t1).compareTo(t2) >= 0; :}
+            | term:t1 LESS_EQUALS_THAN term:t2          {: RESULT = ((Comparable)t1).compareTo(t2) <= 0; :}
+            | TRUE:t                                    {: RESULT = t; :}
+            | FALSE:f                                   {: RESULT = f; :}; 
+
+condition_list ::= condition_list:c1 AND condition_list:c2        {: RESULT = c1 && c2; :}
+                 | condition_list:c1 OR  condition_list:c2        {: RESULT = c1 || c2; :}
+                 | condition_list:c1 XOR condition_list:c2        {: RESULT = c1 ^ c2;  :}
+                 | condition:c                                    {: RESULT = c;        :};

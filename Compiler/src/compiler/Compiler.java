@@ -1,6 +1,15 @@
 package compiler;
 
 import compiler.parser.Parser;
+import compiler.scanner.Lexer;
+import compiler.scanner.LexicalAnalysisReport;
+import compiler.scanner.LexicalAnalyzer;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -16,9 +25,43 @@ public class Compiler
      */
     public static void main(String[] args)
     {
-        String[] parserArgs = {"../samples/code.txt"};
-        Parser.main(parserArgs);
-        System.out.println("Ejecutado!");
+        try (Reader reader = new FileReader("../samples/code.txt"))
+        {
+            //runLexicalAnalysis(reader);
+            runSyntacticAnalysis(reader);   
+        }
+        catch (FileNotFoundException ex)
+        {
+            System.err.println("ERROR: File Not Found.");
+        }
+        catch (IOException ex)
+        {
+            Logger.getLogger(Compiler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private static void runLexicalAnalysis(Reader reader)
+    {
+        LexicalAnalyzer analyzer = new LexicalAnalyzer();
+        TokenList tokenList = analyzer.analyze(reader);
+        LexicalAnalysisReport report = new LexicalAnalysisReport(tokenList);
+        System.out.println(report);
+    }
+    
+    private static void runSyntacticAnalysis(Reader reader)
+    {
+        try
+        {
+            Lexer scanner = new Lexer(reader);
+            Parser parser = new Parser(scanner);
+            Object result = parser.parse().value;
+            System.out.println("Resultado:");
+            System.out.println(result);
+        }
+        catch (Exception ex)
+        {
+            Logger.getLogger(Compiler.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
 }

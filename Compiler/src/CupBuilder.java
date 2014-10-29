@@ -1,6 +1,3 @@
-package compiler.tools.cup;
-
-import compiler.tools.FileTools;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,14 +14,12 @@ public class CupBuilder
      */
     public static void main(String[] args)
     {
-        String path = "src/compiler/tools/cup/Cup.cup";
-        String[] cupArgs = {path};
+        String path = "src/Parser.cup";
+        args = new String[] {"-destdir", "src/compiler/parser", "-nowarn", path};
         
         try
         {
-            java_cup.Main.main(cupArgs);
-            FileTools.moveFileToPackage("Parser.java", "compiler.parser");
-            FileTools.moveFileToPackage("ParserSym.java", "compiler.parser");
+            java_cup.Main.main(args);
         } 
         catch (Exception ex)
         {
