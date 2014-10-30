@@ -72,7 +72,7 @@ terminal ASSIGNMENT;
 terminal ARRAY, BEGIN, BOOLEAN, BYTE, CASE, CHAR, CONST, DO, DOWNTO, ELSE, END, FILE, FOR, FORWARD, FUNCTION, GOTO, IF, IN, INLINE, INT, LABEL, LONGINT, NIL, OF, PACKED, PROCEDURE, PROGRAM, READ, REAL, RECORD, REPEAT, SET, SHORTINT, STRING, THEN, TO, TYPE, UNTIL, VAR, WHILE, WITH, WRITE;
 
 // Otros
-terminal SEMI;
+terminal SEMI, COMMA, COLON, DOT;
 
 // Terminales con valor.
 terminal Integer NUMBER;
@@ -125,3 +125,37 @@ condition_list ::= condition_list:c1 AND condition_list:c2        {: RESULT = c1
                  | condition_list:c1 OR  condition_list:c2        {: RESULT = c1 || c2; :}
                  | condition_list:c1 XOR condition_list:c2        {: RESULT = c1 ^ c2;  :}
                  | condition:c                                    {: RESULT = c;        :};
+
+identifiers::= identifiers COMMA IDENTIFIER
+                  | IDENTIFIER;
+
+data_type ::= STRING | CHAR | REAL | BYTE | INT | LONGINT | SHORTINT | BOOLEAN;
+
+array_data_type ::= CHAR | INT | LONGINT | SHORTINT;
+
+variable_declaration  ::= identifiers COLON data_type SEMI;
+
+array_declaration ::= IDENTIFIER COLON ARRAY LBRACKET NUMBER DOT DOT DOT NUMBER RBRACKET OF 
+                      array_data_type SEMI;
+
+declaration ::= variable_declaration | array_declaration;
+
+declaration_list ::= declaration_list declaration 
+                  | declaration;
+
+declaration_block ::= VAR declaration_list;
+
+constant_declaration ::= IDENTIFIER EQUALS term SEMI;
+
+constant_declaration_list ::= constant_declaration_list constant_declaration | constant_declaration;
+
+constant_declaration_block ::= CONST constant_declaration_list;
+
+begin_end_block ::= delcaration_block constant_declaration_block 
+                    | declaration_block     
+                    | constant_decalration_block
+
+
+
+
+
