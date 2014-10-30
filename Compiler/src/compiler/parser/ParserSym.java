@@ -10,84 +10,84 @@ public class ParserSym {
   /* terminals */
   public static final int IDENTIFIER = 77;
   public static final int TIMES = 9;
-  public static final int REAL = 58;
-  public static final int MINUS_EQUALS = 12;
-  public static final int LESS_THAN = 18;
-  public static final int PACKED = 54;
-  public static final int TYPE = 66;
-  public static final int READ = 57;
-  public static final int GREATER_THAN = 17;
+  public static final int REAL = 57;
+  public static final int MINUS_EQUALS = 13;
+  public static final int LESS_THAN = 19;
+  public static final int PACKED = 53;
+  public static final int TYPE = 65;
+  public static final int READ = 56;
+  public static final int GREATER_THAN = 18;
   public static final int CONST = 36;
-  public static final int SEMI = 72;
-  public static final int UNTIL = 67;
-  public static final int ASSIGNMENT = 29;
+  public static final int SEMI = 71;
+  public static final int UNTIL = 66;
+  public static final int ASSIGNMENT = 11;
   public static final int RPAREN = 3;
   public static final int DOUBLE = 74;
   public static final int LPAREN = 2;
-  public static final int DIV_EQUALS = 13;
+  public static final int DIV_EQUALS = 14;
   public static final int FALSE = 79;
-  public static final int PLUS_EQUALS = 11;
-  public static final int NOT = 23;
-  public static final int NIL = 52;
+  public static final int PLUS_EQUALS = 12;
+  public static final int NOT = 25;
+  public static final int NIL = 72;
   public static final int ARRAY = 30;
-  public static final int VAR = 68;
-  public static final int SHIFT_RIGHT_EQUALS = 28;
+  public static final int VAR = 67;
+  public static final int SHIFT_RIGHT_EQUALS = 29;
   public static final int INLINE = 48;
-  public static final int THEN = 64;
+  public static final int THEN = 63;
   public static final int GOTO = 45;
-  public static final int RECORD = 59;
+  public static final int RECORD = 58;
   public static final int CHARACTER = 76;
   public static final int MOD = 10;
-  public static final int SHIFT_LEFT = 25;
+  public static final int SHIFT_LEFT = 26;
   public static final int NUMBER = 73;
-  public static final int WRITE = 71;
+  public static final int WRITE = 70;
   public static final int TRUE = 78;
   public static final int PLUS = 6;
-  public static final int NOT_EQUALS = 16;
-  public static final int WHILE = 69;
+  public static final int NOT_EQUALS = 17;
+  public static final int WHILE = 68;
   public static final int CHAR = 35;
   public static final int BOOLEAN = 32;
   public static final int LONGINT = 51;
-  public static final int SHORTINT = 62;
+  public static final int SHORTINT = 61;
   public static final int DO = 37;
   public static final int FOR = 42;
   public static final int DIV = 8;
   public static final int DOWNTO = 38;
   public static final int ELSE = 39;
-  public static final int PROCEDURE = 55;
+  public static final int PROCEDURE = 54;
   public static final int INT = 49;
   public static final int EOF = 0;
-  public static final int SHIFT_RIGHT = 26;
-  public static final int TIMES_EQUALS = 14;
+  public static final int SHIFT_RIGHT = 27;
+  public static final int TIMES_EQUALS = 15;
   public static final int FUNCTION = 44;
-  public static final int GREATER_EQUALS_THAN = 19;
+  public static final int GREATER_EQUALS_THAN = 20;
   public static final int XTRING = 75;
-  public static final int REPEAT = 60;
+  public static final int REPEAT = 59;
   public static final int LABEL = 50;
-  public static final int LESS_EQUALS_THAN = 20;
+  public static final int LESS_EQUALS_THAN = 21;
   public static final int MINUS = 7;
   public static final int IN = 47;
-  public static final int OR = 21;
-  public static final int SET = 61;
+  public static final int OR = 23;
+  public static final int SET = 60;
   public static final int error = 1;
   public static final int IF = 46;
-  public static final int OF = 53;
+  public static final int OF = 52;
   public static final int END = 40;
   public static final int FILE = 41;
   public static final int RBRACKET = 5;
   public static final int BEGIN = 31;
   public static final int CASE = 34;
   public static final int FORWARD = 43;
-  public static final int STRING = 63;
-  public static final int SHIFT_LEFT_EQUALS = 27;
-  public static final int PROGRAM = 56;
+  public static final int STRING = 62;
+  public static final int SHIFT_LEFT_EQUALS = 28;
+  public static final int PROGRAM = 55;
   public static final int BYTE = 33;
   public static final int AND = 22;
-  public static final int TO = 65;
+  public static final int TO = 64;
   public static final int LBRACKET = 4;
-  public static final int WITH = 70;
+  public static final int WITH = 69;
   public static final int XOR = 24;
-  public static final int EQUALS = 15;
+  public static final int EQUALS = 16;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -100,6 +100,7 @@ public class ParserSym {
   "DIV",
   "TIMES",
   "MOD",
+  "ASSIGNMENT",
   "PLUS_EQUALS",
   "MINUS_EQUALS",
   "DIV_EQUALS",
@@ -110,15 +111,14 @@ public class ParserSym {
   "LESS_THAN",
   "GREATER_EQUALS_THAN",
   "LESS_EQUALS_THAN",
-  "OR",
   "AND",
-  "NOT",
+  "OR",
   "XOR",
+  "NOT",
   "SHIFT_LEFT",
   "SHIFT_RIGHT",
   "SHIFT_LEFT_EQUALS",
   "SHIFT_RIGHT_EQUALS",
-  "ASSIGNMENT",
   "ARRAY",
   "BEGIN",
   "BOOLEAN",
@@ -141,7 +141,6 @@ public class ParserSym {
   "INT",
   "LABEL",
   "LONGINT",
-  "NIL",
   "OF",
   "PACKED",
   "PROCEDURE",
@@ -162,6 +161,7 @@ public class ParserSym {
   "WITH",
   "WRITE",
   "SEMI",
+  "NIL",
   "NUMBER",
   "DOUBLE",
   "XTRING",
