@@ -172,9 +172,13 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 "+" { return newToken(ParserSym.PLUS); }
 
+"++" { return newToken(ParserSym.PLUS_PLUS); }
+
 "+=" { return newToken(ParserSym.PLUS_EQUALS); }
 
 "-" { return newToken(ParserSym.MINUS); }
+
+"--" { return newToken(ParserSym.MINUS_MINUS); }
 
 "-=" { return newToken(ParserSym.MINUS_EQUALS); }
 

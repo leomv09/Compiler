@@ -83,9 +83,9 @@ public class LexicalAnalysisReport {
         int tokenCount = this.tokenList.getTokens().size();
         int errorCount = this.tokenList.getErrors().size();
         
-        sb.append("┌ DATE: ").append(this.reportDateFormat.format(this.date)).append("\n");
-        sb.append("├ TOKENS: ").append(tokenCount).append("\n");
-        sb.append("└ ERRORS: ").append(errorCount).append("\n");
+        sb.append("┌ DATE: ").append(this.reportDateFormat.format(this.date)).append(System.lineSeparator());
+        sb.append("├ TOKENS: ").append(tokenCount).append(System.lineSeparator());
+        sb.append("└ ERRORS: ").append(errorCount).append(System.lineSeparator());
         
         this.reportHeaders = sb.toString();
     }
@@ -98,8 +98,8 @@ public class LexicalAnalysisReport {
      */
     private void addTokenInfo(StringBuilder sb, TokenInfo token)
     {
-        sb.append("Token: ").append(token.getToken()).append("\n");
-        sb.append("Type: ").append(token.getType()).append("\n");
+        sb.append("Token: ").append(token.getToken()).append(System.lineSeparator());
+        sb.append("Type: ").append(token.getType()).append(System.lineSeparator());
     }
     
     /**
@@ -132,7 +132,7 @@ public class LexicalAnalysisReport {
             }
         }
         
-        sb.append("\n");
+        sb.append(System.lineSeparator());
     }
     
     /**
@@ -155,7 +155,7 @@ public class LexicalAnalysisReport {
 
                 if (iterator.hasNext())
                 {
-                    sb.append("\n");
+                    sb.append(System.lineSeparator());
                 }
             }
 
@@ -182,7 +182,7 @@ public class LexicalAnalysisReport {
                 sb.append("Token: ").append(token.getToken());
                 sb.append(" at line ").append(token.getLine());
                 sb.append(", column ").append(token.getColumn());
-                sb.append("\n");
+                sb.append(System.lineSeparator());
             }
 
             this.reportErrors = sb.toString();
@@ -200,16 +200,16 @@ public class LexicalAnalysisReport {
     {
         StringBuilder sb = new StringBuilder();
         
-        sb.append("# SCANNER REPORT #").append("\n");
-        sb.append("==================").append("\n\n");
-        sb.append(this.reportHeaders).append("\n");
+        sb.append("# SCANNER REPORT #").append(System.lineSeparator());
+        sb.append("==================").append(System.lineSeparator()).append(System.lineSeparator());
+        sb.append(this.reportHeaders).append(System.lineSeparator());
         
-        sb.append("* TOKEN LIST").append("\n");
-        sb.append("------------").append("\n\n");
-        sb.append(this.reportTokens).append("\n");
+        sb.append("* TOKEN LIST").append(System.lineSeparator());
+        sb.append("------------").append(System.lineSeparator()).append(System.lineSeparator());
+        sb.append(this.reportTokens).append(System.lineSeparator());
         
-        sb.append("* ERROR LIST").append("\n");
-        sb.append("------------").append("\n\n");
+        sb.append("* ERROR LIST").append(System.lineSeparator());
+        sb.append("------------").append(System.lineSeparator()).append(System.lineSeparator());
         sb.append(this.reportErrors);
         
         this.reportContent = sb.toString();

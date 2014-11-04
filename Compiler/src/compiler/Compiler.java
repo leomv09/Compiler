@@ -25,18 +25,21 @@ public class Compiler
      */
     public static void main(String[] args)
     {
-        try (Reader reader = new FileReader("../samples/code.txt"))
+        for (String arg : args)
         {
-            //runLexicalAnalysis(reader);
-            runSyntacticAnalysis(reader);   
-        }
-        catch (FileNotFoundException ex)
-        {
-            System.err.println("ERROR: File Not Found.");
-        }
-        catch (IOException ex)
-        {
-            Logger.getLogger(Compiler.class.getName()).log(Level.SEVERE, null, ex);
+            try (Reader reader = new FileReader(arg))
+            {
+                //runLexicalAnalysis(reader);
+                runSyntacticAnalysis(reader);   
+            }
+            catch (FileNotFoundException ex)
+            {
+                System.err.println("ERROR: File Not Found.");
+            }
+            catch (IOException ex)
+            {
+                Logger.getLogger(Compiler.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     
@@ -55,8 +58,6 @@ public class Compiler
             Lexer scanner = new Lexer(reader);
             Parser parser = new Parser(scanner);
             Object result = parser.parse().value;
-            System.out.println("Resultado:");
-            System.out.println(result);
         }
         catch (Exception ex)
         {

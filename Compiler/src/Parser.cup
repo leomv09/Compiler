@@ -54,7 +54,7 @@ parser code {:
 terminal LPAREN, RPAREN, LBRACKET, RBRACKET;
 
 // Operadores aritméticos y de asignación.
-terminal PLUS, MINUS, DIV, TIMES, MOD, ASSIGNMENT, PLUS_EQUALS, MINUS_EQUALS, DIV_EQUALS, TIMES_EQUALS;
+terminal PLUS, PLUS_PLUS, MINUS, MINUS_MINUS, DIV, TIMES, MOD, ASSIGNMENT, PLUS_EQUALS, MINUS_EQUALS, DIV_EQUALS, TIMES_EQUALS;
 
 // Operadores de comparación.
 terminal EQUALS, NOT_EQUALS, GREATER_THAN, LESS_THAN, GREATER_EQUALS_THAN, LESS_EQUALS_THAN;
@@ -81,9 +81,17 @@ terminal String IDENTIFIER;
 terminal Boolean TRUE, FALSE;
 
 /* Non terminals */
-non terminal Integer expr;
-non terminal Object term;
-non terminal Boolean condition_number, condition, condition_list;
+non terminal expr, expr_num;
+non terminal term;
+non terminal condition_number, condition, condition_list;
+non terminal identifier_list, data_type, array_data_type;
+non terminal variable_declaration, array_declaration, declaration, declaration_list, declaration_block;
+non terminal constant_declaration, constant_declaration_list, constant_declaration_block;
+non terminal parameter, parameter_list, parameter_declaration_list, parameter_declaration, function_return, function_block, function;
+non terminal procedure_block, procedure, code_block_item, code_block;
+non terminal assignment_expr, function_call, sentence, sentence_item;
+non terminal for_statement, while_statement, repeat_statement, if_statement, case_statement, case_list, case_item;
+non terminal function_item, function_list, program;
 
 /* Precedences */
 precedence left PLUS, MINUS;
@@ -91,64 +99,67 @@ precedence left TIMES, DIV, MOD;
 precedence left AND, OR, XOR;
 precedence left LPAREN, RPAREN; 
 
-start with condition_list;
+start with program;
 
-expr ::= expr:e1 PLUS  expr:e2           {: RESULT = e1 + e2; :}
-       | expr:e1 MINUS expr:e2           {: RESULT = e1 - e2; :}
-       | expr:e1 TIMES expr:e2           {: RESULT = e1 * e2; :}
-       | expr:e1 DIV   expr:e2           {: RESULT = e1 / e2; :}
-       | expr:e1 MOD   expr:e2           {: RESULT = e1 % e2; :}
-       | MINUS expr:e                    {: RESULT = -e;      :}
-       | NUMBER:n                        {: RESULT = n;       :};
+expr ::= LPAREN expr RPAREN | expr_num;
 
-term ::= LPAREN expr:e RPAREN      {: RESULT = e; :}
-       | NUMBER:n                  {: RESULT = n; :}
-       | DOUBLE:d                  {: RESULT = d; :}
-       | XTRING:s                  {: RESULT = s; :}
-       | CHARACTER:c               {: RESULT = c; :}
-       | IDENTIFIER:i              {: RESULT = i; :}
-       | TRUE:t                    {: RESULT = t; :}
-       | FALSE:f                   {: RESULT = f; :}
-       | NIL:n                     {: RESULT = n; :};
+expr_num ::= expr_num:e1 PLUS  expr_num:e2
+       | expr_num:e1 MINUS expr_num:e2
+       | expr_num:e1 TIMES expr_num:e2
+       | expr_num:e1 DIV   expr_num:e2
+       | expr_num:e1 MOD   expr_num:e2
+       | MINUS expr_num:e
+       | expr_num PLUS_PLUS
+       | expr_num MINUS_MINUS
+       | term; 
 
-condition_number ::= NUMBER:n1 GREATER_THAN NUMBER:n2              {: RESULT = n1.compareTo(n2) >  0;               :}
-                   | NUMBER:n1 LESS_THAN NUMBER:n2                 {: RESULT = n1.compareTo(n2) <  0;               :}
-                   | NUMBER:n1 GREATER_EQUALS_THAN NUMBER:n2       {: RESULT = n1.compareTo(n2) >= 0;               :}
-                   | NUMBER:n1 LESS_EQUALS_THAN NUMBER:n2          {: RESULT = n1.compareTo(n2) <= 0;               :}
-                   | DOUBLE:d1 GREATER_THAN DOUBLE:d2              {: RESULT = d1.compareTo(d2) >  0;               :}
-                   | DOUBLE:d1 LESS_THAN DOUBLE:d2                 {: RESULT = d1.compareTo(d2) <  0;               :}
-                   | DOUBLE:d1 GREATER_EQUALS_THAN DOUBLE:d2       {: RESULT = d1.compareTo(d2) >= 0;               :}
-                   | DOUBLE:d1 LESS_EQUALS_THAN DOUBLE:d2          {: RESULT = d1.compareTo(d2) <= 0;               :}
-                   | NUMBER:n1 GREATER_THAN DOUBLE:d2              {: RESULT = new Double(n1).compareTo(d2) >  0;   :}
-                   | NUMBER:n1 LESS_THAN DOUBLE:d2                 {: RESULT = new Double(n1).compareTo(d2) <  0;   :}
-                   | NUMBER:n1 GREATER_EQUALS_THAN DOUBLE:d2       {: RESULT = new Double(n1).compareTo(d2) >= 0;   :}
-                   | NUMBER:n1 LESS_EQUALS_THAN DOUBLE:d2          {: RESULT = new Double(n1).compareTo(d2) <= 0;   :}
-                   | DOUBLE:d1 GREATER_THAN NUMBER:n2              {: RESULT = d1.compareTo(n2.doubleValue()) >  0; :}
-                   | DOUBLE:d1 LESS_THAN NUMBER:n2                 {: RESULT = d1.compareTo(n2.doubleValue()) <  0; :}
-                   | DOUBLE:d1 GREATER_EQUALS_THAN NUMBER:n2       {: RESULT = d1.compareTo(n2.doubleValue()) >= 0; :}
-                   | DOUBLE:d1 LESS_EQUALS_THAN NUMBER:n2          {: RESULT = d1.compareTo(n2.doubleValue()) <= 0; :};
+term ::= NUMBER:n
+       | DOUBLE:d
+       | XTRING:s
+       | CHARACTER:c
+       | IDENTIFIER:i
+       | TRUE:t
+       | FALSE:f
+       | NIL:n;
 
-condition ::= LPAREN condition:c RPAREN                 {: RESULT = c;              :}
-            | condition_number:cn                       {: RESULT = cn;             :}
-            | term:t1 EQUALS term:t2                    {: RESULT = t1.equals(t2);  :}
-            | term:t1 NOT_EQUALS term:t2                {: RESULT = !t1.equals(t2); :}
-            | TRUE:t                                    {: RESULT = t;              :}
-            | FALSE:f                                   {: RESULT = f;              :}; 
+condition_number ::= NUMBER:n1 GREATER_THAN NUMBER:n2
+                   | NUMBER:n1 LESS_THAN NUMBER:n2
+                   | NUMBER:n1 GREATER_EQUALS_THAN NUMBER:n2
+                   | NUMBER:n1 LESS_EQUALS_THAN NUMBER:n2
+                   | DOUBLE:d1 GREATER_THAN DOUBLE:d2
+                   | DOUBLE:d1 LESS_THAN DOUBLE:d2
+                   | DOUBLE:d1 GREATER_EQUALS_THAN DOUBLE:d2
+                   | DOUBLE:d1 LESS_EQUALS_THAN DOUBLE:d2
+                   | NUMBER:n1 GREATER_THAN DOUBLE:d2
+                   | NUMBER:n1 LESS_THAN DOUBLE:d2
+                   | NUMBER:n1 GREATER_EQUALS_THAN DOUBLE:d2
+                   | NUMBER:n1 LESS_EQUALS_THAN DOUBLE:d2
+                   | DOUBLE:d1 GREATER_THAN NUMBER:n
+                   | DOUBLE:d1 LESS_THAN NUMBER:n
+                   | DOUBLE:d1 GREATER_EQUALS_THAN NUMBER:n
+                   | DOUBLE:d1 LESS_EQUALS_THAN NUMBER:n;
 
-condition_list ::= LPAREN condition_list:cl RPAREN                {: RESULT = cl;       :}
-                 | condition_list:c1 AND condition_list:c2        {: RESULT = c1 && c2; :}
-                 | condition_list:c1 OR  condition_list:c2        {: RESULT = c1 || c2; :}
-                 | condition_list:c1 XOR condition_list:c2        {: RESULT = c1 ^ c2;  :}
-                 | condition:c                                    {: RESULT = c;        :};
+condition ::= LPAREN condition:c RPAREN
+            | condition_number:cn                   
+            | term:t1 EQUALS term:t2                 
+            | term:t1 NOT_EQUALS term:t2              
+            | TRUE:t                                   
+            | FALSE:f;                          
 
-identifiers::= identifiers COMMA IDENTIFIER
+condition_list ::= LPAREN condition_list:cl RPAREN
+                 | condition_list:c1 AND condition_list:c2
+                 | condition_list:c1 OR  condition_list:c2
+                 | condition_list:c1 XOR condition_list:c2
+                 | condition:c;                                    
+
+identifier_list ::= identifier_list COMMA IDENTIFIER
                   | IDENTIFIER;
 
 data_type ::= STRING | CHAR | REAL | BYTE | INT | LONGINT | SHORTINT | BOOLEAN;
 
 array_data_type ::= CHAR | INT | LONGINT | SHORTINT;
 
-variable_declaration  ::= identifiers COLON data_type SEMI;
+variable_declaration  ::= identifier_list COLON data_type SEMI;
 
 array_declaration ::= IDENTIFIER COLON ARRAY LBRACKET NUMBER DOT DOT DOT NUMBER RBRACKET OF 
                       array_data_type SEMI;
@@ -156,21 +167,72 @@ array_declaration ::= IDENTIFIER COLON ARRAY LBRACKET NUMBER DOT DOT DOT NUMBER 
 declaration ::= variable_declaration | array_declaration;
 
 declaration_list ::= declaration_list declaration 
-                  | declaration;
+                   | declaration;
 
-declaration_block ::= VAR declaration_list;
+declaration_block ::= VAR declaration_list | /* Epsilon */ ;
 
 constant_declaration ::= IDENTIFIER EQUALS term SEMI;
 
-constant_declaration_list ::= constant_declaration_list constant_declaration | constant_declaration;
+constant_declaration_list ::= constant_declaration_list constant_declaration
+                            | constant_declaration;
 
-constant_declaration_block ::= CONST constant_declaration_list;
+constant_declaration_block ::= CONST constant_declaration_list  | /* Epsilon */ ;
 
-begin_end_block ::= delcaration_block constant_declaration_block 
-                    | declaration_block     
-                    | constant_decalration_block
+parameter_declaration ::= data_type IDENTIFIER;
 
+parameter_declaration_list ::= parameter_declaration_list COMMA parameter_declaration
+                 | parameter_declaration;
 
+function_return ::= IDENTIFIER ASSIGNMENT expr;
 
+assignment_expr ::= IDENTIFIER ASSIGNMENT expr
+                    | IDENTIFIER PLUS_EQUALS expr
+                    | IDENTIFIER MINUS_EQUALS expr
+                    | IDENTIFIER DIV_EQUALS expr
+                    | IDENTIFIER TIMES_EQUALS expr;
 
+parameter_list ::= parameter_list COMMA expr
+                | expr;
 
+function_call ::= IDENTIFIER LPAREN parameter_list RPAREN;
+
+sentence_item ::= assignment_expr | function_call | expr;
+
+sentence ::= sentence_item SEMI;
+
+code_block_item ::= sentence | for_statement | while_statement | repeat_statement | if_statement | case_statement;
+
+code_block ::= code_block code_block_item
+             | code_block_item;
+
+function_block ::= declaration_block constant_declaration_block code_block function_return;
+
+function ::= FUNCTION IDENTIFIER LPAREN parameter_declaration_list RPAREN COLON data_type BEGIN function_block END;
+
+procedure_block ::= declaration_block constant_declaration_block code_block;
+
+procedure ::= PROCEDURE IDENTIFIER LPAREN parameter_declaration_list RPAREN BEGIN procedure_block END;
+
+for_statement ::= FOR IDENTIFIER ASSIGNMENT expr TO expr DO BEGIN code_block END;
+
+while_statement ::= WHILE condition_list DO BEGIN code_block END;
+
+repeat_statement ::= REPEAT code_block UNTIL condition_list;
+
+if_statement ::= IF condition_list THEN sentence ELSE sentence
+                | IF condition_list THEN sentence; 
+
+case_item ::= expr COLON sentence;
+
+case_list ::= case_list case_item
+            | case_item;
+
+case_statement ::= CASE IDENTIFIER OF case_list ELSE sentence;
+
+function_item ::= function | procedure;
+
+function_list ::= function_list function_item
+                | function_item
+                | /* Epsilon */;
+
+program ::= PROGRAM IDENTIFIER constant_declaration_block declaration_block function_list BEGIN code_block END;
