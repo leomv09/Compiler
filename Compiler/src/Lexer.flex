@@ -17,7 +17,7 @@ import compiler.parser.ParserSym;
 
     private Token newToken(int type)
     {
-        Token token = new Token(type, yytext(), yyline, yycolumn);
+        Token token = new Token(type, yytext().toLowerCase(), yyline, yycolumn);
         tokenList.addToken(token);
         return token;
     }
@@ -48,6 +48,7 @@ import compiler.parser.ParserSym;
   return new Token(ParserSym.EOF, yytext(), yyline, yycolumn);
 %eofval}
 %eofclose
+%ignorecase
 
 FIN_DE_LINEA = \r | \n | \r\n
 ESPACIOS = {FIN_DE_LINEA} | [ \t\f]
@@ -231,6 +232,10 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 "]" { return newToken(ParserSym.RBRACKET); }
 
 ";" { return newToken(ParserSym.SEMI); }
+
+"," { return newToken(ParserSym.COMMA); }
+
+":" { return newToken(ParserSym.COLON); }
 
 {NUMERO_ENTERO} { return newToken(ParserSym.NUMBER, new Integer(yytext())); }
 

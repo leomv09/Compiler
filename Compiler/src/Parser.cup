@@ -85,7 +85,7 @@ non terminal expr, expr_num;
 non terminal term;
 non terminal condition_number, condition, condition_list;
 non terminal identifier_list, data_type, array_data_type;
-non terminal variable_declaration, array_declaration, declaration, declaration_list, declaration_block;
+non terminal declaration, declaration_list, declaration_block;
 non terminal constant_declaration, constant_declaration_list, constant_declaration_block;
 non terminal parameter, parameter_list, parameter_declaration_list, parameter_declaration, function_return, function_block, function;
 non terminal procedure_block, procedure, code_block_item, code_block;
@@ -99,58 +99,58 @@ precedence left TIMES, DIV, MOD;
 precedence left AND, OR, XOR;
 precedence left LPAREN, RPAREN; 
 
-start with program;
+start with case_statement;
 
 expr ::= LPAREN expr RPAREN | expr_num;
 
-expr_num ::= expr_num:e1 PLUS  expr_num:e2
-       | expr_num:e1 MINUS expr_num:e2
-       | expr_num:e1 TIMES expr_num:e2
-       | expr_num:e1 DIV   expr_num:e2
-       | expr_num:e1 MOD   expr_num:e2
-       | MINUS expr_num:e
+expr_num ::= expr_num PLUS  expr_num
+       | expr_num MINUS expr_num
+       | expr_num TIMES expr_num
+       | expr_num DIV   expr_num
+       | expr_num MOD   expr_num
+       | MINUS expr_num
        | expr_num PLUS_PLUS
        | expr_num MINUS_MINUS
        | term; 
 
-term ::= NUMBER:n
-       | DOUBLE:d
-       | XTRING:s
-       | CHARACTER:c
-       | IDENTIFIER:i
-       | TRUE:t
-       | FALSE:f
-       | NIL:n;
+term ::= NUMBER
+       | DOUBLE
+       | XTRING
+       | CHARACTER
+       | IDENTIFIER
+       | TRUE
+       | FALSE
+       | NIL;
 
-condition_number ::= NUMBER:n1 GREATER_THAN NUMBER:n2
-                   | NUMBER:n1 LESS_THAN NUMBER:n2
-                   | NUMBER:n1 GREATER_EQUALS_THAN NUMBER:n2
-                   | NUMBER:n1 LESS_EQUALS_THAN NUMBER:n2
-                   | DOUBLE:d1 GREATER_THAN DOUBLE:d2
-                   | DOUBLE:d1 LESS_THAN DOUBLE:d2
-                   | DOUBLE:d1 GREATER_EQUALS_THAN DOUBLE:d2
-                   | DOUBLE:d1 LESS_EQUALS_THAN DOUBLE:d2
-                   | NUMBER:n1 GREATER_THAN DOUBLE:d2
-                   | NUMBER:n1 LESS_THAN DOUBLE:d2
-                   | NUMBER:n1 GREATER_EQUALS_THAN DOUBLE:d2
-                   | NUMBER:n1 LESS_EQUALS_THAN DOUBLE:d2
-                   | DOUBLE:d1 GREATER_THAN NUMBER:n
-                   | DOUBLE:d1 LESS_THAN NUMBER:n
-                   | DOUBLE:d1 GREATER_EQUALS_THAN NUMBER:n
-                   | DOUBLE:d1 LESS_EQUALS_THAN NUMBER:n;
+condition_number ::= NUMBER GREATER_THAN NUMBER
+                   | NUMBER LESS_THAN NUMBER
+                   | NUMBER GREATER_EQUALS_THAN NUMBER
+                   | NUMBER LESS_EQUALS_THAN NUMBER
+                   | DOUBLE GREATER_THAN DOUBLE
+                   | DOUBLE LESS_THAN DOUBLE
+                   | DOUBLE GREATER_EQUALS_THAN DOUBLE
+                   | DOUBLE LESS_EQUALS_THAN DOUBLE
+                   | NUMBER GREATER_THAN DOUBLE
+                   | NUMBER LESS_THAN DOUBLE
+                   | NUMBER GREATER_EQUALS_THAN DOUBLE
+                   | NUMBER LESS_EQUALS_THAN DOUBLE
+                   | DOUBLE GREATER_THAN NUMBER
+                   | DOUBLE LESS_THAN NUMBER
+                   | DOUBLE GREATER_EQUALS_THAN NUMBER
+                   | DOUBLE LESS_EQUALS_THAN NUMBER;
 
-condition ::= LPAREN condition:c RPAREN
-            | condition_number:cn                   
-            | term:t1 EQUALS term:t2                 
-            | term:t1 NOT_EQUALS term:t2              
-            | TRUE:t                                   
-            | FALSE:f;                          
+condition ::= LPAREN condition RPAREN
+            | condition_number
+            | term EQUALS term                 
+            | term NOT_EQUALS term              
+            | TRUE                                   
+            | FALSE;                          
 
-condition_list ::= LPAREN condition_list:cl RPAREN
-                 | condition_list:c1 AND condition_list:c2
-                 | condition_list:c1 OR  condition_list:c2
-                 | condition_list:c1 XOR condition_list:c2
-                 | condition:c;                                    
+condition_list ::= LPAREN condition_list RPAREN
+                 | condition_list AND condition_list
+                 | condition_list OR  condition_list
+                 | condition_list XOR condition_list
+                 | condition;                                    
 
 identifier_list ::= identifier_list COMMA IDENTIFIER
                   | IDENTIFIER;
@@ -159,24 +159,20 @@ data_type ::= STRING | CHAR | REAL | BYTE | INT | LONGINT | SHORTINT | BOOLEAN;
 
 array_data_type ::= CHAR | INT | LONGINT | SHORTINT;
 
-variable_declaration  ::= identifier_list COLON data_type SEMI;
-
-array_declaration ::= IDENTIFIER COLON ARRAY LBRACKET NUMBER DOT DOT DOT NUMBER RBRACKET OF 
-                      array_data_type SEMI;
-
-declaration ::= variable_declaration | array_declaration;
+declaration  ::= identifier_list COLON data_type SEMI
+               | identifier_list COLON ARRAY LBRACKET NUMBER DOT DOT DOT NUMBER RBRACKET OF array_data_type SEMI;
 
 declaration_list ::= declaration_list declaration 
                    | declaration;
 
-declaration_block ::= VAR declaration_list | /* Epsilon */ ;
+declaration_block ::= VAR declaration_list  /* Epsilon */ ;
 
-constant_declaration ::= IDENTIFIER EQUALS term SEMI;
+constant_declaration ::= IDENTIFIER EQUALS expr SEMI;
 
 constant_declaration_list ::= constant_declaration_list constant_declaration
                             | constant_declaration;
 
-constant_declaration_block ::= CONST constant_declaration_list  | /* Epsilon */ ;
+constant_declaration_block ::= CONST constant_declaration_list   /* Epsilon */ ;
 
 parameter_declaration ::= data_type IDENTIFIER;
 
@@ -227,12 +223,12 @@ case_item ::= expr COLON sentence;
 case_list ::= case_list case_item
             | case_item;
 
-case_statement ::= CASE IDENTIFIER OF case_list ELSE sentence;
+case_statement ::= CASE IDENTIFIER OF case_list ELSE sentence | error;
 
 function_item ::= function | procedure;
 
 function_list ::= function_list function_item
                 | function_item
-                | /* Epsilon */;
+                 /* Epsilon */;
 
 program ::= PROGRAM IDENTIFIER constant_declaration_block declaration_block function_list BEGIN code_block END;
