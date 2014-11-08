@@ -76,16 +76,16 @@ terminal Object NIL;
 terminal Integer NUMBER;
 terminal Double DOUBLE;
 terminal String XTRING;
+terminal Byte XBYTE;
 terminal Character CHARACTER;
 terminal String IDENTIFIER;
 terminal Boolean TRUE, FALSE;
 
 /* Non terminals */
-non terminal expr, expr_num;
-non terminal term;
+non terminal expr, expr_num, expr_identifier, expr_byte, term;
 non terminal condition, condition_list;
 non terminal identifier_list, data_type, array_data_type;
-non terminal declaration, declaration_list, declaration_block;
+non terminal declaration, declaration_list, variable_declaration_block, declaration_block;
 non terminal constant_declaration, constant_declaration_list, constant_declaration_block;
 non terminal parameter, parameter_list, parameter_declaration_list, parameter_declaration, function_block, function;
 non terminal procedure_block, procedure, code_block_item, code_block;
@@ -97,40 +97,47 @@ non terminal function_item, function_list, functions_declaration, program;
 precedence left PLUS, MINUS;
 precedence left TIMES, DIV, MOD;
 precedence left AND, OR, XOR;
-precedence left LPAREN, RPAREN; 
+precedence left LPAREN, RPAREN;
+precedence left PLUS_PLUS, MINUS_MINUS;
 
-start with condition;
+start with program;
 
-expr ::= LPAREN expr RPAREN | function_call | expr_num;
+expr ::= LPAREN expr RPAREN | function_call | expr_num | expr_identifier | expr_byte | term;
 
-expr_num ::= expr_num PLUS  expr_num
+expr_num ::= expr_num PLUS expr_num
        | expr_num MINUS expr_num
        | expr_num TIMES expr_num
-       | expr_num DIV   expr_num
-       | expr_num MOD   expr_num
+       | expr_num DIV expr_num
+       | expr_num MOD expr_num
        | MINUS expr_num
-       | expr_num PLUS_PLUS
-       | expr_num MINUS_MINUS
-       | term; 
+       | NUMBER
+       | DOUBLE; 
 
-term ::= NUMBER
-       | DOUBLE
-       | XTRING
+expr_identifier ::= expr_identifier PLUS_PLUS
+                | expr_identifier MINUS_MINUS
+                | PLUS_PLUS expr_identifier
+                | MINUS_MINUS expr_identifier
+                | IDENTIFIER;
+
+expr_byte ::= expr_byte SHIFT_LEFT NUMBER
+            | expr_byte SHIFT_RIGHT NUMBER
+            | XBYTE;
+
+term ::= XTRING
        | CHARACTER
-       | IDENTIFIER
        | TRUE
        | FALSE
        | NIL;
 
-condition ::= LPAREN condition RPAREN {: System.out.println(1); :}
-            | term EQUALS term        {: System.out.println(2); :}      
-            | term NOT_EQUALS term   {: System.out.println(3); :}
-            | term GREATER_THAN term {: System.out.println(4); :}
-            | term LESS_THAN term {: System.out.println(5); :}
-            | term GREATER_EQUALS_THAN term {: System.out.println(6); :}
-            | term LESS_EQUALS_THAN term {: System.out.println(7); :}
-            | TRUE {: System.out.println(8); :}
-            | FALSE {: System.out.println(9); :};                        
+condition ::= LPAREN condition RPAREN
+            | term EQUALS term      
+            | term NOT_EQUALS term 
+            | term GREATER_THAN term
+            | term LESS_THAN term 
+            | term GREATER_EQUALS_THAN term
+            | term LESS_EQUALS_THAN term
+            | TRUE 
+            | FALSE;
 
 condition_list ::= LPAREN condition_list RPAREN
                  | condition_list AND condition_list
@@ -146,12 +153,12 @@ data_type ::= STRING | CHAR | REAL | BYTE | INT | LONGINT | SHORTINT | BOOLEAN;
 array_data_type ::= CHAR | INT | LONGINT | SHORTINT;
 
 declaration  ::= identifier_list COLON data_type SEMI
-               | identifier_list COLON ARRAY LBRACKET NUMBER DOT DOT DOT NUMBER RBRACKET OF array_data_type SEMI;
+               | identifier_list COLON ARRAY LBRACKET NUMBER DOT DOT NUMBER RBRACKET OF array_data_type SEMI;
 
 declaration_list ::= declaration_list declaration 
                    | declaration;
 
-declaration_block ::= VAR declaration_list END | /* Epsilon */ ;
+variable_declaration_block ::= VAR declaration_list END | /* Epsilon */ ;
 
 constant_declaration ::= IDENTIFIER EQUALS expr SEMI;
 
@@ -159,6 +166,8 @@ constant_declaration_list ::= constant_declaration_list constant_declaration
                             | constant_declaration;
 
 constant_declaration_block ::= CONST constant_declaration_list END | /* Epsilon */ ;
+
+declaration_block ::= constant_declaration_block variable_declaration_block;
 
 parameter_declaration ::= data_type IDENTIFIER;
 
@@ -169,10 +178,13 @@ assignment_expr ::= IDENTIFIER ASSIGNMENT expr
                     | IDENTIFIER PLUS_EQUALS expr
                     | IDENTIFIER MINUS_EQUALS expr
                     | IDENTIFIER DIV_EQUALS expr
-                    | IDENTIFIER TIMES_EQUALS expr;
-
+                    | IDENTIFIER TIMES_EQUALS expr
+                    | IDENTIFIER SHIFT_LEFT_EQUALS NUMBER
+                    | IDENTIFIER SHIFT_RIGHT_EQUALS NUMBER;
+    
 parameter_list ::= parameter_list COMMA expr
-                | expr;
+                | expr
+                | /* Epsilon */;
 
 function_call ::= IDENTIFIER LPAREN parameter_list RPAREN;
 
@@ -185,11 +197,11 @@ code_block_item ::= sentence | for_statement | while_statement | repeat_statemen
 code_block ::= code_block code_block_item
              | code_block_item;
 
-function_block ::= declaration_block constant_declaration_block code_block assignment_expr;
+function_block ::= declaration_block code_block;
 
 function ::= FUNCTION IDENTIFIER LPAREN parameter_declaration_list RPAREN COLON data_type BEGIN function_block END;
 
-procedure_block ::= declaration_block constant_declaration_block code_block;
+procedure_block ::= declaration_block code_block;
 
 procedure ::= PROCEDURE IDENTIFIER LPAREN parameter_declaration_list RPAREN BEGIN procedure_block END;
 
@@ -207,7 +219,7 @@ case_item ::= expr COLON sentence;
 case_list ::= case_list case_item
             | case_item;
 
-case_statement ::= CASE IDENTIFIER OF case_list ELSE sentence | error;
+case_statement ::= CASE IDENTIFIER OF case_list ELSE sentence;
 
 function_item ::= function | procedure;
 
@@ -216,4 +228,4 @@ function_list ::= function_list function_item
 
 functions_declaration ::= function_list | /* Epsilon */;
 
-program ::= PROGRAM IDENTIFIER constant_declaration_block declaration_block functions_declaration BEGIN code_block END;
+program ::= PROGRAM IDENTIFIER declaration_block functions_declaration BEGIN code_block END;

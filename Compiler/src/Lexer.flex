@@ -238,6 +238,8 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 ":" { return newToken(ParserSym.COLON); }
 
+"." { return newToken(ParserSym.DOT); }
+
 {NUMERO_ENTERO} { return newToken(ParserSym.NUMBER, new Integer(yytext())); }
 
 {NUMERO_REAL} { 

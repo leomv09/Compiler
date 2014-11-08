@@ -9,7 +9,7 @@ package compiler.parser;
 public class ParserSym {
   /* terminals */
   public static final int MINUS_MINUS = 9;
-  public static final int IDENTIFIER = 82;
+  public static final int IDENTIFIER = 83;
   public static final int TIMES = 11;
   public static final int REAL = 59;
   public static final int MINUS_EQUALS = 15;
@@ -27,7 +27,7 @@ public class ParserSym {
   public static final int DOUBLE = 79;
   public static final int LPAREN = 2;
   public static final int DIV_EQUALS = 16;
-  public static final int FALSE = 84;
+  public static final int FALSE = 85;
   public static final int PLUS_EQUALS = 14;
   public static final int NOT = 27;
   public static final int NIL = 77;
@@ -38,13 +38,14 @@ public class ParserSym {
   public static final int THEN = 65;
   public static final int GOTO = 47;
   public static final int PLUS_PLUS = 7;
+  public static final int XBYTE = 81;
   public static final int RECORD = 60;
-  public static final int CHARACTER = 81;
+  public static final int CHARACTER = 82;
   public static final int MOD = 12;
   public static final int SHIFT_LEFT = 28;
   public static final int NUMBER = 78;
   public static final int WRITE = 72;
-  public static final int TRUE = 83;
+  public static final int TRUE = 84;
   public static final int PLUS = 6;
   public static final int NOT_EQUALS = 19;
   public static final int WHILE = 70;
@@ -175,6 +176,7 @@ public class ParserSym {
   "NUMBER",
   "DOUBLE",
   "XTRING",
+  "XBYTE",
   "CHARACTER",
   "IDENTIFIER",
   "TRUE",
