@@ -99,9 +99,9 @@ precedence left TIMES, DIV, MOD;
 precedence left AND, OR, XOR;
 precedence left LPAREN, RPAREN; 
 
-start with function_item;
+start with condition;
 
-expr ::= LPAREN expr RPAREN | expr_num;
+expr ::= LPAREN expr RPAREN | function_call | expr_num;
 
 expr_num ::= expr_num PLUS  expr_num
        | expr_num MINUS expr_num
@@ -122,15 +122,15 @@ term ::= NUMBER
        | FALSE
        | NIL;
 
-condition ::= LPAREN condition RPAREN
-            | term EQUALS term                 
-            | term NOT_EQUALS term   
-            | term GREATER_THAN term
-            | term LESS_THAN term
-            | term GREATER_EQUALS_THAN term
-            | term LESS_EQUALS_THAN term
-            | TRUE                                   
-            | FALSE;                          
+condition ::= LPAREN condition RPAREN {: System.out.println(1); :}
+            | term EQUALS term        {: System.out.println(2); :}      
+            | term NOT_EQUALS term   {: System.out.println(3); :}
+            | term GREATER_THAN term {: System.out.println(4); :}
+            | term LESS_THAN term {: System.out.println(5); :}
+            | term GREATER_EQUALS_THAN term {: System.out.println(6); :}
+            | term LESS_EQUALS_THAN term {: System.out.println(7); :}
+            | TRUE {: System.out.println(8); :}
+            | FALSE {: System.out.println(9); :};                        
 
 condition_list ::= LPAREN condition_list RPAREN
                  | condition_list AND condition_list
@@ -176,7 +176,7 @@ parameter_list ::= parameter_list COMMA expr
 
 function_call ::= IDENTIFIER LPAREN parameter_list RPAREN;
 
-sentence_item ::= assignment_expr | function_call | expr;
+sentence_item ::= assignment_expr | expr;
 
 sentence ::= sentence_item SEMI;
 

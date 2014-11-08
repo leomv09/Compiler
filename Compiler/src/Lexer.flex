@@ -49,6 +49,7 @@ import compiler.parser.ParserSym;
 %eofval}
 %eofclose
 %ignorecase
+%caseless
 
 FIN_DE_LINEA = \r | \n | \r\n
 ESPACIOS = {FIN_DE_LINEA} | [ \t\f]
