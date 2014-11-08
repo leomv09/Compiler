@@ -83,15 +83,15 @@ terminal Boolean TRUE, FALSE;
 /* Non terminals */
 non terminal expr, expr_num;
 non terminal term;
-non terminal condition_number, condition, condition_list;
+non terminal condition, condition_list;
 non terminal identifier_list, data_type, array_data_type;
 non terminal declaration, declaration_list, declaration_block;
 non terminal constant_declaration, constant_declaration_list, constant_declaration_block;
-non terminal parameter, parameter_list, parameter_declaration_list, parameter_declaration, function_return, function_block, function;
+non terminal parameter, parameter_list, parameter_declaration_list, parameter_declaration, function_block, function;
 non terminal procedure_block, procedure, code_block_item, code_block;
 non terminal assignment_expr, function_call, sentence, sentence_item;
 non terminal for_statement, while_statement, repeat_statement, if_statement, case_statement, case_list, case_item;
-non terminal function_item, function_list, program;
+non terminal function_item, function_list, functions_declaration, program;
 
 /* Precedences */
 precedence left PLUS, MINUS;
@@ -99,7 +99,7 @@ precedence left TIMES, DIV, MOD;
 precedence left AND, OR, XOR;
 precedence left LPAREN, RPAREN; 
 
-start with case_statement;
+start with function_item;
 
 expr ::= LPAREN expr RPAREN | expr_num;
 
@@ -122,27 +122,13 @@ term ::= NUMBER
        | FALSE
        | NIL;
 
-condition_number ::= NUMBER GREATER_THAN NUMBER
-                   | NUMBER LESS_THAN NUMBER
-                   | NUMBER GREATER_EQUALS_THAN NUMBER
-                   | NUMBER LESS_EQUALS_THAN NUMBER
-                   | DOUBLE GREATER_THAN DOUBLE
-                   | DOUBLE LESS_THAN DOUBLE
-                   | DOUBLE GREATER_EQUALS_THAN DOUBLE
-                   | DOUBLE LESS_EQUALS_THAN DOUBLE
-                   | NUMBER GREATER_THAN DOUBLE
-                   | NUMBER LESS_THAN DOUBLE
-                   | NUMBER GREATER_EQUALS_THAN DOUBLE
-                   | NUMBER LESS_EQUALS_THAN DOUBLE
-                   | DOUBLE GREATER_THAN NUMBER
-                   | DOUBLE LESS_THAN NUMBER
-                   | DOUBLE GREATER_EQUALS_THAN NUMBER
-                   | DOUBLE LESS_EQUALS_THAN NUMBER;
-
 condition ::= LPAREN condition RPAREN
-            | condition_number
             | term EQUALS term                 
-            | term NOT_EQUALS term              
+            | term NOT_EQUALS term   
+            | term GREATER_THAN term
+            | term LESS_THAN term
+            | term GREATER_EQUALS_THAN term
+            | term LESS_EQUALS_THAN term
             | TRUE                                   
             | FALSE;                          
 
@@ -165,21 +151,19 @@ declaration  ::= identifier_list COLON data_type SEMI
 declaration_list ::= declaration_list declaration 
                    | declaration;
 
-declaration_block ::= VAR declaration_list  /* Epsilon */ ;
+declaration_block ::= VAR declaration_list END | /* Epsilon */ ;
 
 constant_declaration ::= IDENTIFIER EQUALS expr SEMI;
 
 constant_declaration_list ::= constant_declaration_list constant_declaration
                             | constant_declaration;
 
-constant_declaration_block ::= CONST constant_declaration_list   /* Epsilon */ ;
+constant_declaration_block ::= CONST constant_declaration_list END | /* Epsilon */ ;
 
 parameter_declaration ::= data_type IDENTIFIER;
 
 parameter_declaration_list ::= parameter_declaration_list COMMA parameter_declaration
                  | parameter_declaration;
-
-function_return ::= IDENTIFIER ASSIGNMENT expr;
 
 assignment_expr ::= IDENTIFIER ASSIGNMENT expr
                     | IDENTIFIER PLUS_EQUALS expr
@@ -201,7 +185,7 @@ code_block_item ::= sentence | for_statement | while_statement | repeat_statemen
 code_block ::= code_block code_block_item
              | code_block_item;
 
-function_block ::= declaration_block constant_declaration_block code_block function_return;
+function_block ::= declaration_block constant_declaration_block code_block assignment_expr;
 
 function ::= FUNCTION IDENTIFIER LPAREN parameter_declaration_list RPAREN COLON data_type BEGIN function_block END;
 
@@ -228,7 +212,8 @@ case_statement ::= CASE IDENTIFIER OF case_list ELSE sentence | error;
 function_item ::= function | procedure;
 
 function_list ::= function_list function_item
-                | function_item
-                 /* Epsilon */;
+                | function_item;
 
-program ::= PROGRAM IDENTIFIER constant_declaration_block declaration_block function_list BEGIN code_block END;
+functions_declaration ::= function_list | /* Epsilon */;
+
+program ::= PROGRAM IDENTIFIER constant_declaration_block declaration_block functions_declaration BEGIN code_block END;
