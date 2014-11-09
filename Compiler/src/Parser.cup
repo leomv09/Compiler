@@ -201,7 +201,9 @@ variable_declaration_list ::= variable_declaration_list variable_declaration
 
 variable_declaration_block ::= VAR variable_declaration_list END | /* Epsilon */ ;
 
-constant_declaration ::= IDENTIFIER EQUALS expr SEMI;
+constant_declaration ::= IDENTIFIER EQUALS expr SEMI
+                    | IDENTIFIER expr SEMI {: report_error("Missing operator", null); :}
+                    | IDENTIFIER EQUALS SEMI {: report_error("Missing espression", null); :};
 
 constant_declaration_list ::= constant_declaration_list constant_declaration
                             | constant_declaration;
@@ -210,26 +212,40 @@ constant_declaration_block ::= CONST constant_declaration_list END | /* Epsilon 
 
 declaration_block ::= constant_declaration_block variable_declaration_block;
 
-parameter_declaration ::= data_type IDENTIFIER;
+parameter_declaration ::= data_type IDENTIFIER
+                       | error IDENTIFIER {: report_error("Missing data type", null); :}
+                       | data_type error{: report_error("Missing identifier", null); :};
 
 parameter_declaration_list ::= parameter_declaration_list COMMA parameter_declaration
+                 | parameter_declaration_list parameter_declaration {: report_error("Missing comma", null); :}
                  | parameter_declaration;
 
 parameter_list ::= parameter_list COMMA expr
+                | parameter_list COMMA error {: report_error("Missing expression", null); :}
                 | expr
                 | /* Epsilon */;
 
 sentence_item ::= assignment_expr | expr;
 
-sentence ::= sentence_item SEMI;
+sentence ::= sentence_item SEMI; /*Falta poner si no viene punto y coma*/
 
 code_block_item ::= sentence | for_statement | while_statement | repeat_statement | if_statement | case_statement;
 
 code_block ::= code_block code_block_item
              | code_block_item;
 
-for_statement ::= FOR IDENTIFIER ASSIGNMENT expr TO expr DO BEGIN code_block END;
+for_statement ::= FOR IDENTIFIER ASSIGNMENT expr TO expr DO BEGIN code_block END
+                | FOR ASSIGNMENT expr TO expr DO BEGIN code_block END {: report_error("Missing identifier", null); :}
+                | FOR IDENTIFIER expr TO expr DO BEGIN code_block END {: report_error("Missing assignment", null); :}
+                | FOR IDENTIFIER ASSIGNMENT TO expr DO BEGIN code_block END {: report_error("Missing expression", null); :}
+                | FOR IDENTIFIER ASSIGNMENT expr expr DO BEGIN code_block END {: report_error("Missing reserved word", null); :}
+                | FOR IDENTIFIER ASSIGNMENT expr TO error DO BEGIN code_block END {: report_error("Missing expression", null); :};
+                   /*Faltaría poner si no viene  ni expr después de TO o si no viene DO
+                    tal vez se pueda hacer algo más general como:
+                    FOR error ASSIGNMENT error TO error DO BEGIN code_block END {: report_error("Error in For statement (o algo así)", null); :};
+                    o estoy mamando...no sé*/
 
+/*Con los siguientes sería casi lo mismo que con el for*/
 while_statement ::= WHILE condition_list DO BEGIN code_block END;
 
 repeat_statement ::= REPEAT code_block UNTIL condition_list;
@@ -243,6 +259,8 @@ case_list ::= case_list case_item
             | case_item;
 
 case_statement ::= CASE IDENTIFIER OF case_list ELSE sentence;
+
+/*************************************************************/
 
 function ::= FUNCTION IDENTIFIER LPAREN parameter_declaration_list RPAREN COLON data_type BEGIN declaration_block code_block END;
 
