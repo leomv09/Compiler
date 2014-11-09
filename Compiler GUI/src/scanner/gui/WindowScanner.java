@@ -5,9 +5,9 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import scanner.LexicalAnalysisReport;
-import scanner.LexicalAnalyzer;
-import scanner.TokenList;
+import compiler.scanner.LexicalAnalysisReport;
+import compiler.scanner.LexicalAnalyzer;
+import compiler.TokenList;
 
 /**
  *
