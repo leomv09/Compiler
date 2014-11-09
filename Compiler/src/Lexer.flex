@@ -268,7 +268,7 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 {STRING} { 
     String s = yytext().replace("\'", "");
-    return newToken(ParserSym.XTRING, s);
+    return newToken(ParserSym.XSTRING, s);
 }
 
 {IDENTIFICADORES} { return newToken(ParserSym.IDENTIFIER); }

@@ -24,6 +24,7 @@ public class ParserSym {
   public static final int ASSIGNMENT = 13;
   public static final int COMMA = 74;
   public static final int RPAREN = 3;
+  public static final int XSTRING = 80;
   public static final int DOUBLE = 79;
   public static final int LPAREN = 2;
   public static final int DIV_EQUALS = 16;
@@ -66,7 +67,6 @@ public class ParserSym {
   public static final int TIMES_EQUALS = 17;
   public static final int FUNCTION = 46;
   public static final int GREATER_EQUALS_THAN = 22;
-  public static final int XTRING = 80;
   public static final int REPEAT = 61;
   public static final int LABEL = 52;
   public static final int LESS_EQUALS_THAN = 23;
@@ -175,7 +175,7 @@ public class ParserSym {
   "NIL",
   "NUMBER",
   "DOUBLE",
-  "XTRING",
+  "XSTRING",
   "XBYTE",
   "CHARACTER",
   "IDENTIFIER",

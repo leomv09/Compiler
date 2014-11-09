@@ -11,7 +11,7 @@ parser code {:
         StringBuilder sb = new StringBuilder();
         sb.append("ERROR: ");
         sb.append(message).append(". ");
-        
+
         if (info instanceof Symbol)
         {
             Symbol s = ((Symbol) info);
@@ -36,12 +36,12 @@ parser code {:
         System.exit(1);    
     }
 
-    public void syntax_error(Symbol current_token)
+    public void syntax_error(Object current_token)
     {
         report_error("Syntax Error", current_token); 
     }
 
-    public void unrecovered_syntax_error(Symbol current_token)
+    public void unrecovered_syntax_error(Object current_token)
     {
         report_fatal_error("Couldn't repair and continue parse", current_token);
     }
@@ -75,21 +75,22 @@ terminal SEMI, COMMA, COLON, DOT;
 terminal Object NIL;
 terminal Integer NUMBER;
 terminal Double DOUBLE;
-terminal String XTRING;
+terminal String XSTRING;
 terminal Byte XBYTE;
 terminal Character CHARACTER;
-terminal String IDENTIFIER;
+terminal Object IDENTIFIER;
 terminal Boolean TRUE, FALSE;
 
 /* Non terminals */
-non terminal expr, expr_num, expr_identifier, expr_byte, term;
-non terminal condition, condition_list;
+non terminal number_term, literal_term, boolean_term, term;
+non terminal expr, number_expr, identifier_expr, byte_expr, literal_expr, assignment_operator, assignment_expr, function_call;
+non terminal condition_operator, condition_list_operator, condition, condition_list;
 non terminal identifier_list, data_type, array_data_type;
-non terminal declaration, declaration_list, variable_declaration_block, declaration_block;
+non terminal variable_declaration, variable_declaration_list, variable_declaration_block, declaration_block;
 non terminal constant_declaration, constant_declaration_list, constant_declaration_block;
-non terminal parameter, parameter_list, parameter_declaration_list, parameter_declaration, function_block, function;
-non terminal procedure_block, procedure, code_block_item, code_block;
-non terminal assignment_expr, function_call, sentence, sentence_item;
+non terminal parameter, parameter_list, parameter_declaration_list, parameter_declaration;
+non terminal function_block, function, procedure_block, procedure;
+non terminal code_block_item, code_block, sentence, sentence_item;
 non terminal for_statement, while_statement, repeat_statement, if_statement, case_statement, case_list, case_item;
 non terminal function_item, function_list, functions_declaration, program;
 
@@ -102,63 +103,103 @@ precedence left PLUS_PLUS, MINUS_MINUS;
 
 start with program;
 
-expr ::= LPAREN expr RPAREN | function_call | expr_num | expr_identifier | expr_byte | term;
+number_term ::= NUMBER | DOUBLE;
 
-expr_num ::= expr_num PLUS expr_num
-       | expr_num MINUS expr_num
-       | expr_num TIMES expr_num
-       | expr_num DIV expr_num
-       | expr_num MOD expr_num
-       | MINUS expr_num
-       | NUMBER
-       | DOUBLE; 
+literal_term ::= XSTRING | CHARACTER;
 
-expr_identifier ::= expr_identifier PLUS_PLUS
-                | expr_identifier MINUS_MINUS
-                | PLUS_PLUS expr_identifier
-                | MINUS_MINUS expr_identifier
-                | IDENTIFIER;
+boolean_term ::= TRUE | FALSE;
 
-expr_byte ::= expr_byte SHIFT_LEFT NUMBER
-            | expr_byte SHIFT_RIGHT NUMBER
-            | XBYTE;
-
-term ::= XTRING
-       | CHARACTER
-       | TRUE
-       | FALSE
+term ::= number_term
+       | literal_term
+       | boolean_term
+       | BYTE
+       | IDENTIFIER
        | NIL;
 
+expr ::=  LPAREN expr RPAREN
+        | function_call
+        | number_expr 
+        | identifier_expr 
+        | byte_expr
+        | literal_expr 
+        | boolean_term
+        | NIL;
+
+number_expr ::= number_expr PLUS number_expr
+              | number_expr MINUS number_expr
+              | number_expr TIMES number_expr
+              | number_expr DIV number_expr
+              | number_expr MOD number_expr
+              | MINUS number_expr
+              | number_term:n1 error:e number_term:n2 {: report_error("Invalid operator " + e, n1); :}
+              | number_term;
+
+identifier_expr ::= IDENTIFIER PLUS_PLUS
+                | IDENTIFIER MINUS_MINUS
+                | PLUS_PLUS IDENTIFIER
+                | MINUS_MINUS IDENTIFIER
+                | IDENTIFIER;
+
+byte_expr ::= byte_expr SHIFT_LEFT NUMBER
+            | byte_expr SHIFT_RIGHT NUMBER
+            | XBYTE;
+
+literal_expr ::= literal_expr PLUS literal_expr
+               | literal_term;
+
+
+assignment_operator ::= ASSIGNMENT
+                        | PLUS_EQUALS
+                        | MINUS_EQUALS
+                        | DIV_EQUALS
+                        | TIMES_EQUALS
+                        | SHIFT_LEFT_EQUALS
+                        | SHIFT_RIGHT_EQUALS;
+
+assignment_expr ::= IDENTIFIER assignment_operator expr
+                  | IDENTIFIER assignment_operator {: report_error("Expected expression", null); :}
+                  | assignment_operator expr {: report_error("Expected identifier", null); :}
+                  | assignment_operator {: report_error("Expected identifier and expression", null); :};
+
+condition_operator ::= EQUALS
+                    | NOT_EQUALS
+                    | GREATER_THAN
+                    | LESS_THAN
+                    | GREATER_EQUALS_THAN
+                    | LESS_EQUALS_THAN;
+
 condition ::= LPAREN condition RPAREN
-            | term EQUALS term      
-            | term NOT_EQUALS term 
-            | term GREATER_THAN term
-            | term LESS_THAN term 
-            | term GREATER_EQUALS_THAN term
-            | term LESS_EQUALS_THAN term
-            | TRUE 
-            | FALSE;
+            | expr condition_operator expr 
+            | expr
+            | condition_operator expr {: report_error("Expected expression", null); :};
+
+condition_list_operator ::= AND | OR | XOR;
 
 condition_list ::= LPAREN condition_list RPAREN
-                 | condition_list AND condition_list
-                 | condition_list OR  condition_list
-                 | condition_list XOR condition_list
-                 | condition;                                    
+                 | condition_list condition_list_operator condition_list
+                 | NOT condition_list
+                 | condition
+                 | condition_list_operator condition_list {: report_error("Missing condition", null); :}
+                 | NOT error {: report_error("Missing condition", null); :};
 
 identifier_list ::= identifier_list COMMA IDENTIFIER
+                  | identifier_list IDENTIFIER {: report_error("Missing comma", null); :}
+                  | identifier_list COMMA error {: report_error("Missing identifier", null); :}
                   | IDENTIFIER;
 
 data_type ::= STRING | CHAR | REAL | BYTE | INT | LONGINT | SHORTINT | BOOLEAN;
 
 array_data_type ::= CHAR | INT | LONGINT | SHORTINT;
 
-declaration  ::= identifier_list COLON data_type SEMI
-               | identifier_list COLON ARRAY LBRACKET NUMBER DOT DOT NUMBER RBRACKET OF array_data_type SEMI;
+variable_declaration  ::= identifier_list COLON data_type SEMI
+               | identifier_list COLON ARRAY LBRACKET NUMBER DOT DOT NUMBER RBRACKET OF array_data_type SEMI
+               | identifier_list data_type SEMI {: report_error("Missing colon", null); :}
+               | identifier_list COLON SEMI {: report_error("Missing data type", null); :};
 
-declaration_list ::= declaration_list declaration 
-                   | declaration;
+variable_declaration_list ::= variable_declaration_list variable_declaration 
+                   | variable_declaration;
 
-variable_declaration_block ::= VAR declaration_list END | /* Epsilon */ ;
+variable_declaration_block ::= VAR variable_declaration_list END | /* Epsilon */ ;
 
 constant_declaration ::= IDENTIFIER EQUALS expr SEMI;
 
@@ -174,19 +215,9 @@ parameter_declaration ::= data_type IDENTIFIER;
 parameter_declaration_list ::= parameter_declaration_list COMMA parameter_declaration
                  | parameter_declaration;
 
-assignment_expr ::= IDENTIFIER ASSIGNMENT expr
-                    | IDENTIFIER PLUS_EQUALS expr
-                    | IDENTIFIER MINUS_EQUALS expr
-                    | IDENTIFIER DIV_EQUALS expr
-                    | IDENTIFIER TIMES_EQUALS expr
-                    | IDENTIFIER SHIFT_LEFT_EQUALS NUMBER
-                    | IDENTIFIER SHIFT_RIGHT_EQUALS NUMBER;
-    
 parameter_list ::= parameter_list COMMA expr
                 | expr
                 | /* Epsilon */;
-
-function_call ::= IDENTIFIER LPAREN parameter_list RPAREN;
 
 sentence_item ::= assignment_expr | expr;
 
@@ -196,14 +227,6 @@ code_block_item ::= sentence | for_statement | while_statement | repeat_statemen
 
 code_block ::= code_block code_block_item
              | code_block_item;
-
-function_block ::= declaration_block code_block;
-
-function ::= FUNCTION IDENTIFIER LPAREN parameter_declaration_list RPAREN COLON data_type BEGIN function_block END;
-
-procedure_block ::= declaration_block code_block;
-
-procedure ::= PROCEDURE IDENTIFIER LPAREN parameter_declaration_list RPAREN BEGIN procedure_block END;
 
 for_statement ::= FOR IDENTIFIER ASSIGNMENT expr TO expr DO BEGIN code_block END;
 
@@ -221,11 +244,17 @@ case_list ::= case_list case_item
 
 case_statement ::= CASE IDENTIFIER OF case_list ELSE sentence;
 
+function ::= FUNCTION IDENTIFIER LPAREN parameter_declaration_list RPAREN COLON data_type BEGIN declaration_block code_block END;
+
+procedure ::= PROCEDURE IDENTIFIER LPAREN parameter_declaration_list RPAREN BEGIN declaration_block code_block END;
+
 function_item ::= function | procedure;
 
 function_list ::= function_list function_item
                 | function_item;
 
 functions_declaration ::= function_list | /* Epsilon */;
+
+function_call ::= IDENTIFIER LPAREN parameter_list RPAREN;
 
 program ::= PROGRAM IDENTIFIER declaration_block functions_declaration BEGIN code_block END;

@@ -1325,7 +1325,7 @@ public class Lexer implements java_cup.runtime.Scanner {
         case 106: break;
         case 22: 
           { String s = yytext().replace("\'", "");
-    return newToken(ParserSym.XTRING, s);
+    return newToken(ParserSym.XSTRING, s);
           }
         case 107: break;
         case 23: 

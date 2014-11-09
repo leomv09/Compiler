@@ -30,7 +30,7 @@ public class Compiler
             try (Reader reader = new FileReader(arg))
             {
                 //runLexicalAnalysis(reader);
-                runSyntacticAnalysis(reader);   
+                runSyntacticAnalysis(reader);
             }
             catch (FileNotFoundException ex)
             {
