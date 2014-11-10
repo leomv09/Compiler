@@ -14,9 +14,14 @@ import java.util.Map;
 public class TokenList {
     
     /**
-     * Where the tokens are stored.
+     * Where the token info are stored.
      */
     private final Map<String, TokenInfo> tokens;
+    
+    /**
+     * Where the tokens are stored.
+     */
+    private final List<Token> tokenlist;
     
     /**
      * Where the errors are stored.
@@ -29,6 +34,7 @@ public class TokenList {
     public TokenList()
     {
         this.tokens = new HashMap();
+        this.tokenlist = new LinkedList();
         this.errors = new LinkedList();
     }
     
@@ -39,6 +45,8 @@ public class TokenList {
      */
     public void addToken(Token token)
     {
+        this.tokenlist.add(token);
+        
        // If the token has been read previously, add the current apparition.
        if (this.tokens.containsKey(token.getToken()))
        {
@@ -81,6 +89,11 @@ public class TokenList {
     public List<Token> getErrors()
     {
         return this.errors;
+    }
+    
+    public Token getLastToken()
+    {
+        return this.tokenlist.get(this.tokenlist.size() - 1);
     }
 
 }

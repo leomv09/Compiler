@@ -1,6 +1,7 @@
 package compiler.parser;
 
 import java_cup.runtime.Symbol;
+import compiler.scanner.Lexer;
 
 class Parser;
 
@@ -12,10 +13,16 @@ parser code {:
         sb.append("ERROR: ");
         sb.append(message).append(". ");
 
+        Lexer scanner = ((Lexer) this.getScanner());
+        if (info == null)
+        {
+            info = scanner.getLastToken();
+        }
+
         if (info instanceof Symbol)
         {
             Symbol s = ((Symbol) info);
-            sb.append("Token ").append(s.value);
+            sb.append("Last token read ").append(s.value);
 
             if (s.left >= 0)
             {                
@@ -112,7 +119,7 @@ boolean_term ::= TRUE | FALSE;
 term ::= number_term
        | literal_term
        | boolean_term
-       | BYTE
+       | XBYTE
        | IDENTIFIER
        | NIL;
 
@@ -221,9 +228,9 @@ parameter_declaration_list ::= parameter_declaration_list COMMA parameter_declar
                  | parameter_declaration;
 
 parameter_list ::= parameter_list COMMA expr
-                | parameter_list COMMA error {: report_error("Missing expression", null); :}
                 | expr
-                | /* Epsilon */;
+                | /* Epsilon */
+                | error {: report_error("Missing expression", null); :};
 
 sentence_item ::= assignment_expr | expr;
 
@@ -240,31 +247,36 @@ for_statement ::= FOR IDENTIFIER ASSIGNMENT expr TO expr DO BEGIN code_block END
                 | FOR IDENTIFIER ASSIGNMENT TO expr DO BEGIN code_block END {: report_error("Missing expression", null); :}
                 | FOR IDENTIFIER ASSIGNMENT expr expr DO BEGIN code_block END {: report_error("Missing reserved word", null); :}
                 | FOR IDENTIFIER ASSIGNMENT expr TO error DO BEGIN code_block END {: report_error("Missing expression", null); :};
-                   /*Faltaría poner si no viene  ni expr después de TO o si no viene DO
-                    tal vez se pueda hacer algo más general como:
-                    FOR error ASSIGNMENT error TO error DO BEGIN code_block END {: report_error("Error in For statement (o algo así)", null); :};
-                    o estoy mamando...no sé*/
 
-/*Con los siguientes sería casi lo mismo que con el for*/
-while_statement ::= WHILE condition_list DO BEGIN code_block END;
+while_statement ::= WHILE condition_list DO BEGIN code_block END
+                | WHILE error END {: report_error("Error en while", null); :};
 
-repeat_statement ::= REPEAT code_block UNTIL condition_list;
+repeat_statement ::= REPEAT code_block UNTIL condition_list
+                    | REPEAT code_block UNTIL error {: report_error("Missing condition", null); :};
 
 if_statement ::= IF condition_list THEN sentence ELSE sentence
-                | IF condition_list THEN sentence; 
+                | IF condition_list THEN sentence
+                | IF THEN sentence {: report_error("Missing condition", null); :}
+                | IF condition_list THEN error {: report_error("Missing sentence", null); :}
+                | IF condition_list THEN sentence ELSE error {: report_error("Missing else sentence", null); :};
 
-case_item ::= expr COLON sentence;
+case_item ::= expr COLON sentence
+            | expr sentence {: report_error("Missing colon in case item.", null); :}
+            | expr COLON error {: report_error("Missing sentence in case item", null); :}
+            | COLON sentence {: report_error("Missing expression in case item", null); :};
 
 case_list ::= case_list case_item
             | case_item;
 
-case_statement ::= CASE IDENTIFIER OF case_list ELSE sentence;
+case_statement ::= CASE IDENTIFIER OF case_list ELSE sentence
+                | CASE error ELSE {: report_error("Error in case statement", null); :}
+                | CASE IDENTIFIER OF case_list ELSE error {: report_error("Invalid sentence in else.", null); :};
 
-/*************************************************************/
+function ::= FUNCTION IDENTIFIER LPAREN parameter_declaration_list RPAREN COLON data_type BEGIN declaration_block code_block END
+            | FUNCTION error END {: report_error("Error in function", null); :};
 
-function ::= FUNCTION IDENTIFIER LPAREN parameter_declaration_list RPAREN COLON data_type BEGIN declaration_block code_block END;
-
-procedure ::= PROCEDURE IDENTIFIER LPAREN parameter_declaration_list RPAREN BEGIN declaration_block code_block END;
+procedure ::= PROCEDURE IDENTIFIER LPAREN parameter_declaration_list RPAREN BEGIN declaration_block code_block END
+            | PROCEDURE error END  {: report_error("Error in procedure", null); :} ;
 
 function_item ::= function | procedure;
 
@@ -275,4 +287,5 @@ functions_declaration ::= function_list | /* Epsilon */;
 
 function_call ::= IDENTIFIER LPAREN parameter_list RPAREN;
 
-program ::= PROGRAM IDENTIFIER declaration_block functions_declaration BEGIN code_block END;
+program ::= PROGRAM IDENTIFIER declaration_block functions_declaration BEGIN code_block END
+            | error {: report_error("Error in program", null); :} ;

@@ -847,6 +847,11 @@ public class Lexer implements java_cup.runtime.Scanner {
         return this.tokenList;
     }
 
+    public Token getLastToken()
+    {
+        return this.tokenList.getLastToken();
+    }
+
     private Token newToken(int type)
     {
         Token token = new Token(type, yytext().toLowerCase(), yyline, yycolumn);
