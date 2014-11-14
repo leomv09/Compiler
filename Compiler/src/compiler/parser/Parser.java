@@ -1609,7 +1609,7 @@ class CUP$Parser$actions {
 		int n2left = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int n2right = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Object n2 = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 report_error("Invalid operator " + e + ".", n1); 
+		 report_error("Invalid operator " + e + " in expression.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("number_expr",7, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1789,7 +1789,10 @@ class CUP$Parser$actions {
           case 47: // assignment_expr ::= IDENTIFIER assignment_operator 
             {
               Object RESULT =null;
-		 report_error("Expected expression.", null); 
+		int ileft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
+		int iright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
+		Object i = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
+		 report_error("Expected expression in assigment of " + i + " .", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("assignment_expr",12, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1798,7 +1801,7 @@ class CUP$Parser$actions {
           case 48: // assignment_expr ::= assignment_operator expr 
             {
               Object RESULT =null;
-		 report_error("Expected identifier.", null); 
+		 report_error("Expected identifier in assigment.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("assignment_expr",12, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1807,7 +1810,7 @@ class CUP$Parser$actions {
           case 49: // assignment_expr ::= assignment_operator 
             {
               Object RESULT =null;
-		 report_error("Expected identifier and expression.", null); 
+		 report_error("Expected identifier and expression in assigment.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("assignment_expr",12, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1897,7 +1900,7 @@ class CUP$Parser$actions {
           case 59: // condition ::= condition_operator expr 
             {
               Object RESULT =null;
-		 report_error("Expected expression.", null); 
+		 report_error("Expected expression in condition.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("condition",16, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1969,7 +1972,7 @@ class CUP$Parser$actions {
           case 67: // condition_list ::= condition_list_operator condition_list 
             {
               Object RESULT =null;
-		 report_error("Missing condition.", null); 
+		 report_error("Missing condition in condition list.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("condition_list",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1978,7 +1981,7 @@ class CUP$Parser$actions {
           case 68: // condition_list ::= NOT error 
             {
               Object RESULT =null;
-		 report_error("Missing condition.", null); 
+		 report_error("Missing condition in condition list.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("condition_list",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1996,7 +1999,7 @@ class CUP$Parser$actions {
           case 70: // identifier_list ::= identifier_list IDENTIFIER 
             {
               Object RESULT =null;
-		 report_error("Missing comma.", null); 
+		 report_error("Missing comma in identifier list.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("identifier_list",18, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2005,7 +2008,7 @@ class CUP$Parser$actions {
           case 71: // identifier_list ::= identifier_list COMMA error 
             {
               Object RESULT =null;
-		 report_error("Missing identifier.", null); 
+		 report_error("Missing identifier in identifier list.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("identifier_list",18, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2149,7 +2152,7 @@ class CUP$Parser$actions {
           case 87: // variable_declaration ::= identifier_list data_type SEMI 
             {
               Object RESULT =null;
-		 report_error("Missing colon.", null); 
+		 report_error("Missing colon in declaration.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_declaration",21, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2158,7 +2161,7 @@ class CUP$Parser$actions {
           case 88: // variable_declaration ::= identifier_list COLON SEMI 
             {
               Object RESULT =null;
-		 report_error("Missing data type.", null); 
+		 report_error("Missing data type in declaration.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_declaration",21, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2212,7 +2215,7 @@ class CUP$Parser$actions {
           case 94: // constant_declaration ::= IDENTIFIER expr SEMI 
             {
               Object RESULT =null;
-		 report_error("Missing operator.", null); 
+		 report_error("Missing operator in declaration.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("constant_declaration",25, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2221,7 +2224,7 @@ class CUP$Parser$actions {
           case 95: // constant_declaration ::= IDENTIFIER EQUALS SEMI 
             {
               Object RESULT =null;
-		 report_error("Missing espression.", null); 
+		 report_error("Missing espression in declaration.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("constant_declaration",25, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2284,7 +2287,7 @@ class CUP$Parser$actions {
           case 102: // parameter_declaration ::= error IDENTIFIER 
             {
               Object RESULT =null;
-		 report_error("Missing data type.", null); 
+		 report_error("Missing data type in paramater declaration.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("parameter_declaration",32, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2293,7 +2296,7 @@ class CUP$Parser$actions {
           case 103: // parameter_declaration ::= data_type error 
             {
               Object RESULT =null;
-		 report_error("Missing identifier.", null); 
+		 report_error("Missing identifier in parameter declaration.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("parameter_declaration",32, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2374,7 +2377,7 @@ class CUP$Parser$actions {
           case 112: // parameter_list ::= error 
             {
               Object RESULT =null;
-		 report_error("Missing expression.", null); 
+		 report_error("Missing expression in parameter list.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("parameter_list",29, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2491,7 +2494,7 @@ class CUP$Parser$actions {
           case 125: // for_statement ::= FOR ASSIGNMENT expr TO expr DO BEGIN code_block END 
             {
               Object RESULT =null;
-		 report_error("Missing identifier.", null); 
+		 report_error("Missing identifier in for statement.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("for_statement",41, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-8)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2500,7 +2503,7 @@ class CUP$Parser$actions {
           case 126: // for_statement ::= FOR IDENTIFIER expr TO expr DO BEGIN code_block END 
             {
               Object RESULT =null;
-		 report_error("Missing assignment.", null); 
+		 report_error("Missing assignment in for statement.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("for_statement",41, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-8)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2509,7 +2512,7 @@ class CUP$Parser$actions {
           case 127: // for_statement ::= FOR IDENTIFIER ASSIGNMENT TO expr DO BEGIN code_block END 
             {
               Object RESULT =null;
-		 report_error("Missing expression.", null); 
+		 report_error("Missing expression in for statement.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("for_statement",41, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-8)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2518,7 +2521,7 @@ class CUP$Parser$actions {
           case 128: // for_statement ::= FOR IDENTIFIER ASSIGNMENT expr expr DO BEGIN code_block END 
             {
               Object RESULT =null;
-		 report_error("Missing reserved word.", null); 
+		 report_error("Missing reserved word in for statement.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("for_statement",41, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-8)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2527,7 +2530,7 @@ class CUP$Parser$actions {
           case 129: // for_statement ::= FOR IDENTIFIER ASSIGNMENT expr TO error DO BEGIN code_block END 
             {
               Object RESULT =null;
-		 report_error("Missing expression.", null); 
+		 report_error("Missing expression in for statement.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("for_statement",41, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-9)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2545,7 +2548,7 @@ class CUP$Parser$actions {
           case 131: // while_statement ::= WHILE error END 
             {
               Object RESULT =null;
-		 report_error("Error en while.", null); 
+		 report_error("Error in while statement.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("while_statement",42, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2563,7 +2566,7 @@ class CUP$Parser$actions {
           case 133: // repeat_statement ::= REPEAT code_block UNTIL error 
             {
               Object RESULT =null;
-		 report_error("Missing condition.", null); 
+		 report_error("Missing condition in repeat statement.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("repeat_statement",43, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2590,7 +2593,7 @@ class CUP$Parser$actions {
           case 136: // if_statement ::= IF THEN sentence 
             {
               Object RESULT =null;
-		 report_error("Missing condition.", null); 
+		 report_error("Missing condition in if statement.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("if_statement",44, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2599,7 +2602,7 @@ class CUP$Parser$actions {
           case 137: // if_statement ::= IF condition_list THEN error 
             {
               Object RESULT =null;
-		 report_error("Missing sentence.", null); 
+		 report_error("Missing sentence in if statement.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("if_statement",44, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2608,7 +2611,7 @@ class CUP$Parser$actions {
           case 138: // if_statement ::= IF condition_list THEN sentence ELSE error 
             {
               Object RESULT =null;
-		 report_error("Missing else sentence.", null); 
+		 report_error("Missing else sentence in if statement.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("if_statement",44, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-5)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2689,7 +2692,7 @@ class CUP$Parser$actions {
           case 147: // case_statement ::= CASE IDENTIFIER OF case_list ELSE error 
             {
               Object RESULT =null;
-		 report_error("Invalid sentence in else.", null); 
+		 report_error("Invalid sentence in case statement.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("case_statement",45, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-5)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2707,7 +2710,7 @@ class CUP$Parser$actions {
           case 149: // function ::= FUNCTION error END 
             {
               Object RESULT =null;
-		 report_error("Error in function.", null); 
+		 report_error("Error in function declaration.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("function",34, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2725,7 +2728,7 @@ class CUP$Parser$actions {
           case 151: // procedure ::= PROCEDURE error END 
             {
               Object RESULT =null;
-		 report_error("Error in procedure.", null); 
+		 report_error("Error in procedure declaration.", null); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("procedure",36, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
