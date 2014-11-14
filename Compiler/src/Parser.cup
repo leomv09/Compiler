@@ -6,35 +6,31 @@ import compiler.scanner.Lexer;
 class Parser;
 
 parser code {:
+
+    private SyntacticAnalysisResult result = new SyntacticAnalysisResult();
+
+    public SyntacticAnalysisResult getResult()
+    {
+        return this.result;
+    }
+
+    public int error_sync_size()
+    {
+        return 1;
+    }
  
     public void report_error(String message, Object info)
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append("ERROR: ");
-        sb.append(message).append(". ");
-
-        Lexer scanner = ((Lexer) this.getScanner());
         if (info == null)
         {
+            Lexer scanner = ((Lexer) this.getScanner());
             info = scanner.getLastToken();
         }
-
         if (info instanceof Symbol)
         {
             Symbol s = ((Symbol) info);
-            sb.append("Last token read ").append(s.value);
-
-            if (s.left >= 0)
-            {                
-                sb.append(" in line ").append(s.left);
-                if (s.right >= 0)
-                {
-                    sb.append(", column ").append(s.right).append(".");
-                }
-            }
+            this.result.addError(message, s);
         }
-
-        System.err.println(sb);
     }
    
     public void report_fatal_error(String message, Object info)
@@ -43,12 +39,11 @@ parser code {:
         System.exit(1);    
     }
 
-    public void syntax_error(Object current_token)
+    public void syntax_error(Symbol current_token)
     {
-        report_error("Syntax Error", current_token); 
     }
 
-    public void unrecovered_syntax_error(Object current_token)
+    public void unrecovered_syntax_error(Symbol current_token)
     {
         report_fatal_error("Couldn't repair and continue parse", current_token);
     }
@@ -89,13 +84,13 @@ terminal Object IDENTIFIER;
 terminal Boolean TRUE, FALSE;
 
 /* Non terminals */
-non terminal number_term, literal_term, boolean_term, term;
+non terminal number_term, literal_term, boolean_term, term, function_write, function_read;
 non terminal expr, number_expr, identifier_expr, byte_expr, literal_expr, assignment_operator, assignment_expr, function_call;
 non terminal condition_operator, condition_list_operator, condition, condition_list;
 non terminal identifier_list, data_type, array_data_type;
 non terminal variable_declaration, variable_declaration_list, variable_declaration_block, declaration_block;
 non terminal constant_declaration, constant_declaration_list, constant_declaration_block;
-non terminal parameter, parameter_list, parameter_declaration_list, parameter_declaration;
+non terminal parameter, parameter_list, parameter_list_forced, parameter_declaration_list, parameter_declaration;
 non terminal function_block, function, procedure_block, procedure;
 non terminal code_block_item, code_block, sentence, sentence_item;
 non terminal for_statement, while_statement, repeat_statement, if_statement, case_statement, case_list, case_item;
@@ -138,7 +133,7 @@ number_expr ::= number_expr PLUS number_expr
               | number_expr DIV number_expr
               | number_expr MOD number_expr
               | MINUS number_expr
-              | number_term:n1 error:e number_term:n2 {: report_error("Invalid operator " + e, n1); :}
+              | number_term:n1 error:e number_term:n2 {: report_error("Invalid operator " + e + ".", n1); :}
               | number_term;
 
 identifier_expr ::= IDENTIFIER PLUS_PLUS
@@ -154,7 +149,6 @@ byte_expr ::= byte_expr SHIFT_LEFT NUMBER
 literal_expr ::= literal_expr PLUS literal_expr
                | literal_term;
 
-
 assignment_operator ::= ASSIGNMENT
                         | PLUS_EQUALS
                         | MINUS_EQUALS
@@ -164,9 +158,9 @@ assignment_operator ::= ASSIGNMENT
                         | SHIFT_RIGHT_EQUALS;
 
 assignment_expr ::= IDENTIFIER assignment_operator expr
-                  | IDENTIFIER assignment_operator {: report_error("Expected expression", null); :}
-                  | assignment_operator expr {: report_error("Expected identifier", null); :}
-                  | assignment_operator {: report_error("Expected identifier and expression", null); :};
+                  | IDENTIFIER assignment_operator {: report_error("Expected expression.", null); :}
+                  | assignment_operator expr {: report_error("Expected identifier.", null); :}
+                  | assignment_operator {: report_error("Expected identifier and expression.", null); :};
 
 condition_operator ::= EQUALS
                     | NOT_EQUALS
@@ -178,7 +172,7 @@ condition_operator ::= EQUALS
 condition ::= LPAREN condition RPAREN
             | expr condition_operator expr 
             | expr
-            | condition_operator expr {: report_error("Expected expression", null); :};
+            | condition_operator expr {: report_error("Expected expression.", null); :};
 
 condition_list_operator ::= AND | OR | XOR;
 
@@ -186,12 +180,12 @@ condition_list ::= LPAREN condition_list RPAREN
                  | condition_list condition_list_operator condition_list
                  | NOT condition_list
                  | condition
-                 | condition_list_operator condition_list {: report_error("Missing condition", null); :}
-                 | NOT error {: report_error("Missing condition", null); :};
+                 | condition_list_operator condition_list {: report_error("Missing condition.", null); :}
+                 | NOT error {: report_error("Missing condition.", null); :};
 
 identifier_list ::= identifier_list COMMA IDENTIFIER
-                  | identifier_list IDENTIFIER {: report_error("Missing comma", null); :}
-                  | identifier_list COMMA error {: report_error("Missing identifier", null); :}
+                  | identifier_list IDENTIFIER {: report_error("Missing comma.", null); :}
+                  | identifier_list COMMA error {: report_error("Missing identifier.", null); :}
                   | IDENTIFIER;
 
 data_type ::= STRING | CHAR | REAL | BYTE | INT | LONGINT | SHORTINT | BOOLEAN;
@@ -200,8 +194,8 @@ array_data_type ::= CHAR | INT | LONGINT | SHORTINT;
 
 variable_declaration  ::= identifier_list COLON data_type SEMI
                | identifier_list COLON ARRAY LBRACKET NUMBER DOT DOT NUMBER RBRACKET OF array_data_type SEMI
-               | identifier_list data_type SEMI {: report_error("Missing colon", null); :}
-               | identifier_list COLON SEMI {: report_error("Missing data type", null); :};
+               | identifier_list data_type SEMI {: report_error("Missing colon.", null); :}
+               | identifier_list COLON SEMI {: report_error("Missing data type.", null); :};
 
 variable_declaration_list ::= variable_declaration_list variable_declaration 
                    | variable_declaration;
@@ -209,8 +203,8 @@ variable_declaration_list ::= variable_declaration_list variable_declaration
 variable_declaration_block ::= VAR variable_declaration_list END | /* Epsilon */ ;
 
 constant_declaration ::= IDENTIFIER EQUALS expr SEMI
-                    | IDENTIFIER expr SEMI {: report_error("Missing operator", null); :}
-                    | IDENTIFIER EQUALS SEMI {: report_error("Missing espression", null); :};
+                    | IDENTIFIER expr SEMI {: report_error("Missing operator.", null); :}
+                    | IDENTIFIER EQUALS SEMI {: report_error("Missing espression.", null); :};
 
 constant_declaration_list ::= constant_declaration_list constant_declaration
                             | constant_declaration;
@@ -220,21 +214,24 @@ constant_declaration_block ::= CONST constant_declaration_list END | /* Epsilon 
 declaration_block ::= constant_declaration_block variable_declaration_block;
 
 parameter_declaration ::= data_type IDENTIFIER
-                       | error IDENTIFIER {: report_error("Missing data type", null); :}
-                       | data_type error{: report_error("Missing identifier", null); :};
+                       | error IDENTIFIER {: report_error("Missing data type.", null); :}
+                       | data_type error{: report_error("Missing identifier.", null); :};
 
 parameter_declaration_list ::= parameter_declaration_list COMMA parameter_declaration
-                 | parameter_declaration_list parameter_declaration {: report_error("Missing comma", null); :}
-                 | parameter_declaration;
+                 | parameter_declaration
+                 | /* Epsilon */;
+
+parameter_list_forced ::= parameter_list_forced COMMA expr
+                | expr;
 
 parameter_list ::= parameter_list COMMA expr
                 | expr
                 | /* Epsilon */
-                | error {: report_error("Missing expression", null); :};
+                | error {: report_error("Missing expression.", null); :};
 
 sentence_item ::= assignment_expr | expr;
 
-sentence ::= sentence_item SEMI; /*Falta poner si no viene punto y coma*/
+sentence ::= sentence_item SEMI;
 
 code_block_item ::= sentence | for_statement | while_statement | repeat_statement | if_statement | case_statement;
 
@@ -242,41 +239,41 @@ code_block ::= code_block code_block_item
              | code_block_item;
 
 for_statement ::= FOR IDENTIFIER ASSIGNMENT expr TO expr DO BEGIN code_block END
-                | FOR ASSIGNMENT expr TO expr DO BEGIN code_block END {: report_error("Missing identifier", null); :}
-                | FOR IDENTIFIER expr TO expr DO BEGIN code_block END {: report_error("Missing assignment", null); :}
-                | FOR IDENTIFIER ASSIGNMENT TO expr DO BEGIN code_block END {: report_error("Missing expression", null); :}
-                | FOR IDENTIFIER ASSIGNMENT expr expr DO BEGIN code_block END {: report_error("Missing reserved word", null); :}
-                | FOR IDENTIFIER ASSIGNMENT expr TO error DO BEGIN code_block END {: report_error("Missing expression", null); :};
+                | FOR ASSIGNMENT expr TO expr DO BEGIN code_block END {: report_error("Missing identifier.", null); :}
+                | FOR IDENTIFIER expr TO expr DO BEGIN code_block END {: report_error("Missing assignment.", null); :}
+                | FOR IDENTIFIER ASSIGNMENT TO expr DO BEGIN code_block END {: report_error("Missing expression.", null); :}
+                | FOR IDENTIFIER ASSIGNMENT expr expr DO BEGIN code_block END {: report_error("Missing reserved word.", null); :}
+                | FOR IDENTIFIER ASSIGNMENT expr TO error DO BEGIN code_block END {: report_error("Missing expression.", null); :};
 
 while_statement ::= WHILE condition_list DO BEGIN code_block END
-                | WHILE error END {: report_error("Error en while", null); :};
+                | WHILE error END {: report_error("Error en while.", null); :};
 
 repeat_statement ::= REPEAT code_block UNTIL condition_list
-                    | REPEAT code_block UNTIL error {: report_error("Missing condition", null); :};
+                    | REPEAT code_block UNTIL error {: report_error("Missing condition.", null); :};
 
 if_statement ::= IF condition_list THEN sentence ELSE sentence
                 | IF condition_list THEN sentence
-                | IF THEN sentence {: report_error("Missing condition", null); :}
-                | IF condition_list THEN error {: report_error("Missing sentence", null); :}
-                | IF condition_list THEN sentence ELSE error {: report_error("Missing else sentence", null); :};
+                | IF THEN sentence {: report_error("Missing condition.", null); :}
+                | IF condition_list THEN error {: report_error("Missing sentence.", null); :}
+                | IF condition_list THEN sentence ELSE error {: report_error("Missing else sentence.", null); :};
 
 case_item ::= expr COLON sentence
             | expr sentence {: report_error("Missing colon in case item.", null); :}
-            | expr COLON error {: report_error("Missing sentence in case item", null); :}
-            | COLON sentence {: report_error("Missing expression in case item", null); :};
+            | expr COLON error {: report_error("Missing sentence in case item.", null); :}
+            | COLON sentence {: report_error("Missing expression in case item.", null); :};
 
 case_list ::= case_list case_item
             | case_item;
 
 case_statement ::= CASE IDENTIFIER OF case_list ELSE sentence
-                | CASE error ELSE {: report_error("Error in case statement", null); :}
+                | CASE error ELSE {: report_error("Error in case statement.", null); :}
                 | CASE IDENTIFIER OF case_list ELSE error {: report_error("Invalid sentence in else.", null); :};
 
 function ::= FUNCTION IDENTIFIER LPAREN parameter_declaration_list RPAREN COLON data_type BEGIN declaration_block code_block END
-            | FUNCTION error END {: report_error("Error in function", null); :};
+            | FUNCTION error END {: report_error("Error in function.", null); :};
 
 procedure ::= PROCEDURE IDENTIFIER LPAREN parameter_declaration_list RPAREN BEGIN declaration_block code_block END
-            | PROCEDURE error END  {: report_error("Error in procedure", null); :} ;
+            | PROCEDURE error END  {: report_error("Error in procedure.", null); :} ;
 
 function_item ::= function | procedure;
 
@@ -285,7 +282,14 @@ function_list ::= function_list function_item
 
 functions_declaration ::= function_list | /* Epsilon */;
 
-function_call ::= IDENTIFIER LPAREN parameter_list RPAREN;
+function_read ::= READ LPAREN parameter_list RPAREN;
+
+function_write ::= WRITE LPAREN parameter_list_forced RPAREN
+                | WRITE LPAREN RPAREN {: report_error("Function write must have at least one parameter.", null); :};
+
+function_call ::= IDENTIFIER LPAREN parameter_list RPAREN
+                | function_write
+                | function_read;
 
 program ::= PROGRAM IDENTIFIER declaration_block functions_declaration BEGIN code_block END
-            | error {: report_error("Error in program", null); :} ;
+            | error {: report_error("Error in program.", null); :} ;

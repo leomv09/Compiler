@@ -2,41 +2,58 @@ package compiler.scanner;
 
 import java_cup.runtime.Symbol;
 import compiler.Token;
-import compiler.TokenList;
 import compiler.parser.ParserSym;
 
 %%
 
 %{
-    private final TokenList tokenList;
+    private final LexicalAnalysisResult result;
 
-    public TokenList getTokenList()
+    public LexicalAnalysisResult getResult()
     {
-        return this.tokenList;
+        return this.result;
     }
 
     public Token getLastToken()
     {
-        return this.tokenList.getLastToken();
+        return this.result.getLastToken();
     }
 
     private Token newToken(int type)
     {
         Token token = new Token(type, yytext().toLowerCase(), yyline, yycolumn);
-        tokenList.addToken(token);
+
+        if (type == ParserSym.error)
+        {
+            result.addError(token);
+        }
+        else
+        {
+            result.addToken(token);
+        }
+
         return token;
     }
 
     private Token newToken(int type, Object value)
     {
         Token token = new Token(type, value, yyline, yycolumn);
-        tokenList.addToken(token);
+
+        if (type == ParserSym.error)
+        {
+            result.addError(token);
+        }
+        else
+        {
+            result.addToken(token);
+        }
+
         return token;
     }
 %}
 
 %init{
-    tokenList = new TokenList();
+    result = new LexicalAnalysisResult();
 %init}
 
 %public
@@ -279,5 +296,5 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 {IDENTIFICADORES} { return newToken(ParserSym.IDENTIFIER); }
  
 . {
-    return newToken(ParserSym.error);
+    newToken(ParserSym.error);
 }

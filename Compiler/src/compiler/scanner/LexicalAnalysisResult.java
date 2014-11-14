@@ -1,5 +1,7 @@
-package compiler;
+package compiler.scanner;
 
+import compiler.Token;
+import compiler.TokenInfo;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -7,21 +9,21 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represent a container of {@link jflexscanner.Token}.
+ * Represent a container of {@link compiler.Token}.
  * 
  * @author Leo
  */
-public class TokenList {
+public class LexicalAnalysisResult {
     
     /**
      * Where the token info are stored.
      */
-    private final Map<String, TokenInfo> tokens;
+    private final Map<String, TokenInfo> tokenInfo;
     
     /**
      * Where the tokens are stored.
      */
-    private final List<Token> tokenlist;
+    private final List<Token> tokenList;
     
     /**
      * Where the errors are stored.
@@ -31,10 +33,10 @@ public class TokenList {
     /**
      * Instantiates a new TokenList.
      */
-    public TokenList()
+    public LexicalAnalysisResult()
     {
-        this.tokens = new HashMap();
-        this.tokenlist = new LinkedList();
+        this.tokenInfo = new HashMap();
+        this.tokenList = new LinkedList();
         this.errors = new LinkedList();
     }
     
@@ -45,19 +47,19 @@ public class TokenList {
      */
     public void addToken(Token token)
     {
-        this.tokenlist.add(token);
+        this.tokenList.add(token);
         
        // If the token has been read previously, add the current apparition.
-       if (this.tokens.containsKey(token.getToken()))
+       if (this.tokenInfo.containsKey(token.getToken()))
        {
-           TokenInfo info = this.tokens.get(token.getToken());
+           TokenInfo info = this.tokenInfo.get(token.getToken());
            info.addApparition(token);
        }
        // Else add a new token to the list.
        else
        {
            TokenInfo info = new TokenInfo(token);
-           this.tokens.put(token.getToken(), info);
+           this.tokenInfo.put(token.getToken(), info);
        }
     }
     
@@ -70,15 +72,25 @@ public class TokenList {
     {
         this.errors.add(token);
     }
-
+    
     /**
      * Get the tokens.
      * 
+     * @return The list of tokens.
+     */
+    public List<Token> getTokenList()
+    {
+        return this.tokenList;
+    }
+
+    /**
+     * Get the tokens information.
+     * 
      * @return The collection of tokens.
      */
-    public Collection<TokenInfo> getTokens()
+    public Collection<TokenInfo> getTokensInfo()
     {
-        return this.tokens.values();
+        return this.tokenInfo.values();
     }
     
     /**
@@ -91,9 +103,14 @@ public class TokenList {
         return this.errors;
     }
     
+    /**
+     * Get the last token read.
+     * 
+     * @return The last token read.
+     */
     public Token getLastToken()
     {
-        return this.tokenlist.get(this.tokenlist.size() - 1);
+        return this.tokenList.get(this.tokenList.size() - 1);
     }
 
 }

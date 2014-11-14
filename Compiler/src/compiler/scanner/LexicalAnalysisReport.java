@@ -3,7 +3,6 @@ package compiler.scanner;
 import compiler.LineContainer;
 import compiler.Token;
 import compiler.TokenInfo;
-import compiler.TokenList;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,7 +26,7 @@ public class LexicalAnalysisReport {
     /**
      * List of tokens read.
      */
-    private final TokenList tokenList;
+    private final LexicalAnalysisResult tokenList;
     
     /**
      * Date of the report.
@@ -64,7 +63,7 @@ public class LexicalAnalysisReport {
      * 
      * @param tokenList List of tokens read.
      */
-    public LexicalAnalysisReport(TokenList tokenList)
+    public LexicalAnalysisReport(LexicalAnalysisResult tokenList)
     {
         this.date = new Date();
         this.tokenList = tokenList;
@@ -80,7 +79,7 @@ public class LexicalAnalysisReport {
     private void generateReportHeaders()
     {
         StringBuilder sb = new StringBuilder();
-        int tokenCount = this.tokenList.getTokens().size();
+        int tokenCount = this.tokenList.getTokensInfo().size();
         int errorCount = this.tokenList.getErrors().size();
         
         sb.append("┌ DATE: ").append(this.reportDateFormat.format(this.date)).append(System.lineSeparator());
@@ -140,7 +139,7 @@ public class LexicalAnalysisReport {
      */
     private void generateReportTokens()
     {
-        Collection<TokenInfo> tokens = this.tokenList.getTokens();
+        Collection<TokenInfo> tokens = this.tokenList.getTokensInfo();
         if (!tokens.isEmpty())
         {
             StringBuilder sb = new StringBuilder();

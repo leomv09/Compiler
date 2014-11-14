@@ -1,12 +1,13 @@
 package compiler;
 
-import compiler.parser.Parser;
-import compiler.scanner.Lexer;
+import compiler.parser.SyntacticAnalysisReport;
+import compiler.parser.SyntacticAnalysisResult;
+import compiler.parser.SyntacticAnalyzer;
 import compiler.scanner.LexicalAnalysisReport;
+import compiler.scanner.LexicalAnalysisResult;
 import compiler.scanner.LexicalAnalyzer;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.Reader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,8 +17,7 @@ import java.util.logging.Logger;
  * @author jose
  */
 public class Compiler
-{
-    
+{   
     /**
      * The main method.
      * 
@@ -27,42 +27,34 @@ public class Compiler
     {
         for (String arg : args)
         {
-            try (Reader reader = new FileReader(arg))
+            try
             {
-                //runLexicalAnalysis(reader);
-                runSyntacticAnalysis(reader);
-            }
+                //runLexicalAnalysis(arg);
+                runSyntacticAnalysis(arg);
+            } 
             catch (FileNotFoundException ex)
-            {
-                System.err.println("ERROR: File Not Found.");
-            }
-            catch (IOException ex)
             {
                 Logger.getLogger(Compiler.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
     
-    private static void runLexicalAnalysis(Reader reader)
+    private static void runLexicalAnalysis(String filePath) throws FileNotFoundException
     {
+        Reader reader = new FileReader(filePath);
         LexicalAnalyzer analyzer = new LexicalAnalyzer();
-        TokenList tokenList = analyzer.analyze(reader);
-        LexicalAnalysisReport report = new LexicalAnalysisReport(tokenList);
+        LexicalAnalysisResult result = analyzer.analyze(reader);
+        LexicalAnalysisReport report = new LexicalAnalysisReport(result);
         System.out.println(report);
     }
     
-    private static void runSyntacticAnalysis(Reader reader)
+    private static void runSyntacticAnalysis(String filePath) throws FileNotFoundException
     {
-        try
-        {
-            Lexer scanner = new Lexer(reader);
-            Parser parser = new Parser(scanner);
-            Object result = parser.parse().value;
-        }
-        catch (Exception ex)
-        {
-            Logger.getLogger(Compiler.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        Reader reader = new FileReader(filePath);
+        SyntacticAnalyzer analyzer = new SyntacticAnalyzer();
+        SyntacticAnalysisResult result = analyzer.analyze(reader);
+        SyntacticAnalysisReport report = new SyntacticAnalysisReport(result);
+        System.out.println(report);
     }
     
 }

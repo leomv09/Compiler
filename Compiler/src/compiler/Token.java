@@ -20,7 +20,7 @@ public class Token extends Symbol {
      */
     public Token (int type, Object token, int line, int column)
     {
-        super(type, line, column, token);
+        super(type, line + 1, column, token);
     }
 
     /**

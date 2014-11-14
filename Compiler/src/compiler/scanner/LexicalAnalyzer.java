@@ -1,7 +1,6 @@
 package compiler.scanner;
 
 import compiler.Token;
-import compiler.TokenList;
 import compiler.parser.ParserSym;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -47,7 +46,7 @@ public class LexicalAnalyzer {
      * @param reader
      * @return 
      */
-    public TokenList analyze(Reader reader)
+    public LexicalAnalysisResult analyze(Reader reader)
     {
         Lexer scanner = new Lexer(reader);
         Token token = null;
@@ -64,7 +63,7 @@ public class LexicalAnalyzer {
             }
         } while (token != null && token.sym != ParserSym.EOF);
 
-        return scanner.getTokenList();
+        return scanner.getResult();
     }
     
     /**
@@ -73,10 +72,10 @@ public class LexicalAnalyzer {
      * @param file The file to analyze.
      * @return The list of tokens read.
      */
-    public TokenList analyze(File file)
+    public LexicalAnalysisResult analyze(File file)
     {
         FileReader fr = createFileReader(file);
-        TokenList tokens = this.analyze(fr);
+        LexicalAnalysisResult tokens = this.analyze(fr);
         return tokens;
     }
     
@@ -86,10 +85,10 @@ public class LexicalAnalyzer {
      * @param input The string to analyze.
      * @return The list of tokens read.
      */
-    public TokenList analyze(String input)
+    public LexicalAnalysisResult analyze(String input)
     {
         StringReader sr = new StringReader(input);
-        TokenList tokens = this.analyze(sr);
+        LexicalAnalysisResult tokens = this.analyze(sr);
         return tokens;
     }
 

@@ -4,7 +4,6 @@ package compiler.scanner;
 
 import java_cup.runtime.Symbol;
 import compiler.Token;
-import compiler.TokenList;
 import compiler.parser.ParserSym;
 
 
@@ -840,29 +839,47 @@ public class Lexer implements java_cup.runtime.Scanner {
   private int zzFinalHighSurrogate = 0;
 
   /* user code: */
-    private final TokenList tokenList;
+    private final LexicalAnalysisResult result;
 
-    public TokenList getTokenList()
+    public LexicalAnalysisResult getResult()
     {
-        return this.tokenList;
+        return this.result;
     }
 
     public Token getLastToken()
     {
-        return this.tokenList.getLastToken();
+        return this.result.getLastToken();
     }
 
     private Token newToken(int type)
     {
         Token token = new Token(type, yytext().toLowerCase(), yyline, yycolumn);
-        tokenList.addToken(token);
+
+        if (type == ParserSym.error)
+        {
+            result.addError(token);
+        }
+        else
+        {
+            result.addToken(token);
+        }
+
         return token;
     }
 
     private Token newToken(int type, Object value)
     {
         Token token = new Token(type, value, yyline, yycolumn);
-        tokenList.addToken(token);
+
+        if (type == ParserSym.error)
+        {
+            result.addError(token);
+        }
+        else
+        {
+            result.addToken(token);
+        }
+
         return token;
     }
 
@@ -873,7 +890,7 @@ public class Lexer implements java_cup.runtime.Scanner {
    * @param   in  the java.io.Reader to read input from.
    */
   public Lexer(java.io.Reader in) {
-      tokenList = new TokenList();
+      result = new LexicalAnalysisResult();
     this.zzReader = in;
   }
 
@@ -1245,7 +1262,7 @@ public class Lexer implements java_cup.runtime.Scanner {
 
       switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
         case 1: 
-          { return newToken(ParserSym.error);
+          { newToken(ParserSym.error);
           }
         case 86: break;
         case 2: 
