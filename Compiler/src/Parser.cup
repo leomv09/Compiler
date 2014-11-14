@@ -7,11 +7,17 @@ class Parser;
 
 parser code {:
 
-    private SyntacticAnalysisResult result = new SyntacticAnalysisResult();
+    private SyntacticAnalysisResult result;
+    private boolean generateCode;
 
     public SyntacticAnalysisResult getResult()
     {
         return this.result;
+    }
+
+    public void setGenerateCode(boolean flag)
+    {
+        this.generateCode = flag;
     }
 
     public int error_sync_size()
@@ -49,6 +55,13 @@ parser code {:
     }
     
 :};
+
+init with {:
+
+    this.result = new SyntacticAnalysisResult();
+    this.generateCode = true;
+
+:}
 
 /* Terminals (tokens returned by the scanner). */
 

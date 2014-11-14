@@ -15,6 +15,13 @@ import java.util.logging.Logger;
  */
 public class SyntacticAnalyzer {
     
+    private boolean generateCode;
+    
+    public SyntacticAnalyzer(boolean generateCode)
+    {
+        this.generateCode = generateCode;
+    }
+    
     /**
      * Create a file reader for a given file.
      * 
@@ -68,6 +75,16 @@ public class SyntacticAnalyzer {
         StringReader sr = new StringReader(input);
         SyntacticAnalysisResult result = this.analyze(sr);
         return result;
+    }
+
+    public boolean isGenerateCode()
+    {
+        return generateCode;
+    }
+
+    public void setGenerateCode(boolean generateCode)
+    {
+        this.generateCode = generateCode;
     }
     
 }

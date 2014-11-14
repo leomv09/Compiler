@@ -1262,13 +1262,30 @@ public class Parser extends java_cup.runtime.lr_parser {
   public int error_sym() {return 1;}
 
 
+  /** User initialization code. */
+  public void user_init() throws java.lang.Exception
+    {
 
 
-    private SyntacticAnalysisResult result = new SyntacticAnalysisResult();
+    this.result = new SyntacticAnalysisResult();
+    this.generateCode = true;
+
+
+    }
+
+
+
+    private SyntacticAnalysisResult result;
+    private boolean generateCode;
 
     public SyntacticAnalysisResult getResult()
     {
         return this.result;
+    }
+
+    public void setGenerateCode(boolean flag)
+    {
+        this.generateCode = flag;
     }
 
     public int error_sync_size()
