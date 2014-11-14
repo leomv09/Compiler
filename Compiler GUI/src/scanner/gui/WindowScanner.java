@@ -7,7 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import compiler.scanner.LexicalAnalysisReport;
 import compiler.scanner.LexicalAnalyzer;
-import compiler.TokenList;
+import compiler.scanner.LexicalAnalysisResult;
 
 /**
  *
@@ -199,7 +199,7 @@ public class WindowScanner extends javax.swing.JFrame {
     
     private void analyzeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_analyzeButtonActionPerformed
         LexicalAnalyzer analyzer = new LexicalAnalyzer();
-        TokenList tokens = analyzer.analyze(this.codeArea.getText());
+        LexicalAnalysisResult tokens = analyzer.analyze(this.codeArea.getText());
         
         this.report = new LexicalAnalysisReport(tokens);
         this.errorResultArea.setText(this.report.getReportErrors());

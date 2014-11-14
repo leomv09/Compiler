@@ -1,7 +1,5 @@
 package compiler.scanner;
 
-import compiler.Token;
-import compiler.TokenInfo;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;

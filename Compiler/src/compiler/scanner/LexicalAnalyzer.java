@@ -1,6 +1,5 @@
 package compiler.scanner;
 
-import compiler.Token;
 import compiler.parser.ParserSym;
 import java.io.File;
 import java.io.FileNotFoundException;

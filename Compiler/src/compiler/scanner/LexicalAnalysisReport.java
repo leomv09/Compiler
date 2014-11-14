@@ -1,8 +1,5 @@
 package compiler.scanner;
 
-import compiler.LineContainer;
-import compiler.Token;
-import compiler.TokenInfo;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
