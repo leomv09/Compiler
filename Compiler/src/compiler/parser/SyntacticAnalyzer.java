@@ -52,6 +52,7 @@ public class SyntacticAnalyzer {
         {
             Lexer scanner = new Lexer(reader);
             Parser parser = new Parser(scanner);
+            parser.setGenerateCode(this.generateCode);
             parser.parse();
             result = parser.getResult();
         }
