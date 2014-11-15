@@ -16,6 +16,9 @@
       <copy todir="../Compiler GUI/lib/lib/">
         <fileset dir="${dist.dir}/lib"/>
       </copy>
+      <copy todir="../Compiler GUI/dist/lib/">
+        <fileset dir="${dist.dir}/lib"/>
+      </copy>
     </target>
 
     <path id="lib.classpath">
