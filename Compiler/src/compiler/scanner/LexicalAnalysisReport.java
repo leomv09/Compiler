@@ -1,24 +1,19 @@
 package compiler.scanner;
 
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import compiler.Report;
 import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Represent a report of the scanning process.
  * 
  * @author jose
  */
-public class LexicalAnalysisReport {
+public class LexicalAnalysisReport implements Report
+{
     
     /**
      * List of tokens read.
@@ -221,28 +216,6 @@ public class LexicalAnalysisReport {
         this.generateReportErrors();
         this.generateReportContent();
     }
-    
-    /**
-     * Write the report to a file.
-     * 
-     * @param filePath The path where the file will be saved.
-     */
-    public void writeToFile(String filePath)
-    {
-        Writer writer;
-
-        try
-        {
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), "utf-8"));
-            writer.write(this.reportContent);
-            writer.close();
-        }
-        catch (IOException ex)
-        {
-          Logger.getLogger(LexicalAnalysisReport.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-    }
-
 
     /**
      * Set a custom format for the date in the report.
@@ -259,6 +232,7 @@ public class LexicalAnalysisReport {
      * 
      * @return The report headers.
      */
+    @Override
     public String getReportHeaders()
     {
         return reportHeaders;
@@ -269,7 +243,8 @@ public class LexicalAnalysisReport {
      * 
      * @return The report tokens.
      */
-    public String getReportTokens()
+    @Override
+    public String getReportResults()
     {
         return reportTokens;
     }
@@ -279,6 +254,7 @@ public class LexicalAnalysisReport {
      * 
      * @return The report errors.
      */
+    @Override
     public String getReportErrors()
     {
         return reportErrors;
@@ -289,6 +265,7 @@ public class LexicalAnalysisReport {
      * 
      * @return The report content.
      */
+    @Override
     public String getReportContent()
     {
         return reportContent;

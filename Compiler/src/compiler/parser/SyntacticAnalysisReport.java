@@ -1,5 +1,6 @@
 package compiler.parser;
 
+import compiler.Report;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.List;
  *
  * @author jose
  */
-public class SyntacticAnalysisReport
+public class SyntacticAnalysisReport implements Report
 {
     private final SyntacticAnalysisResult result;
     
@@ -122,6 +123,7 @@ public class SyntacticAnalysisReport
      * 
      * @return The report headers.
      */
+    @Override
     public String getReportHeaders()
     {
         return reportHeaders;
@@ -132,16 +134,24 @@ public class SyntacticAnalysisReport
      * 
      * @return The report errors.
      */
+    @Override
     public String getReportErrors()
     {
         return reportErrors;
     }
 
+    @Override
+    public String getReportResults()
+    {
+        return "";
+    }
+    
     /**
      * Gets the full report content.
      * 
      * @return The report content.
      */
+    @Override
     public String getReportContent()
     {
         return reportContent;
@@ -152,5 +162,5 @@ public class SyntacticAnalysisReport
     {
         return this.reportContent;
     }
-    
+
 }
