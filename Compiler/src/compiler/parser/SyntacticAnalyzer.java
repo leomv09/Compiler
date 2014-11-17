@@ -16,6 +16,8 @@ import java.util.logging.Logger;
 public class SyntacticAnalyzer {
     
     private boolean generateCode;
+    private Lexer scanner;
+    private Parser parser;
     
     public SyntacticAnalyzer(boolean generateCode)
     {
@@ -50,11 +52,11 @@ public class SyntacticAnalyzer {
         
         try
         {
-            Lexer scanner = new Lexer(reader);
-            Parser parser = new Parser(scanner);
-            parser.setGenerateCode(this.generateCode);
-            parser.parse();
-            result = parser.getResult();
+            this.scanner = new Lexer(reader);
+            this.parser = new Parser(this.scanner);
+            this.parser.setGenerateCode(this.generateCode);
+            this.parser.parse();
+            result = this.parser.getSyntacticResult();
         }
         catch (Exception ex)
         {
@@ -86,6 +88,16 @@ public class SyntacticAnalyzer {
     public void setGenerateCode(boolean generateCode)
     {
         this.generateCode = generateCode;
+    }
+
+    public Lexer getScanner()
+    {
+        return scanner;
+    }
+
+    public Parser getParser()
+    {
+        return parser;
     }
     
 }

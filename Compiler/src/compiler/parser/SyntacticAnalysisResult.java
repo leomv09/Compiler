@@ -26,4 +26,9 @@ public class SyntacticAnalysisResult
     {
         return this.errors;
     }
+    
+    public boolean haveErrors()
+    {
+        return !this.errors.isEmpty();
+    }
 }

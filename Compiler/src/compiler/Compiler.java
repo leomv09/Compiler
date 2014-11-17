@@ -42,6 +42,7 @@ public class Compiler
     {
         LexicalAnalyzer analyzer = new LexicalAnalyzer();
         LexicalAnalysisResult result;
+        Report report;
         
         for (File file : res.getFiles())
         {
@@ -49,7 +50,7 @@ public class Compiler
             
             if (res.isVerbose())
             {
-                LexicalAnalysisReport report = new LexicalAnalysisReport(result);
+                report = new LexicalAnalysisReport(result);
                 System.out.println(report);
             }
         }
@@ -59,6 +60,7 @@ public class Compiler
     {
         SyntacticAnalyzer analyzer = new SyntacticAnalyzer(false);
         SyntacticAnalysisResult result;
+        Report report;
         
         for (File file : res.getFiles())
         {    
@@ -66,7 +68,7 @@ public class Compiler
             
             if (res.isVerbose())
             {
-                SyntacticAnalysisReport report = new SyntacticAnalysisReport(result);
+                report = new SyntacticAnalysisReport(result);
                 System.out.println(report);
             }
         }
@@ -75,15 +77,22 @@ public class Compiler
     private static void runCompilationProcess(ArgumentParserResult res)
     {
         SyntacticAnalyzer analyzer = new SyntacticAnalyzer(true);
-        SyntacticAnalysisResult result;
+        LexicalAnalysisResult r1;
+        SyntacticAnalysisResult r2;
+        SemanticAnalysisResult r3;
+        Report report;
         
         for (File file : res.getFiles())
         {
-            result = analyzer.analyze(file);
+            analyzer.analyze(file);
+            
+            r1 = analyzer.getScanner().getResult();
+            r2 = analyzer.getParser().getSyntacticResult();
+            r3 = analyzer.getParser().getSemanticResult();
             
             if (res.isVerbose())
             {
-                SyntacticAnalysisReport report = new SyntacticAnalysisReport(result);
+                report = new CompilationReport(r1, r2, r3);
                 System.out.println(report);
             }
         }

@@ -7,6 +7,7 @@ package compiler.parser;
 
 import java_cup.runtime.Symbol;
 import compiler.scanner.Lexer;
+import compiler.SemanticAnalysisResult;
 import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20140808 (SVN rev 54) generated parser.
@@ -1286,7 +1287,8 @@ public class Parser extends java_cup.runtime.lr_parser {
     {
 
 
-    this.result = new SyntacticAnalysisResult();
+    this.syntax_result = new SyntacticAnalysisResult();
+    this.semantic_result = new SemanticAnalysisResult();
     this.generateCode = true;
 
 
@@ -1294,12 +1296,18 @@ public class Parser extends java_cup.runtime.lr_parser {
 
 
 
-    private SyntacticAnalysisResult result;
+    private SyntacticAnalysisResult syntax_result;
+    private SemanticAnalysisResult semantic_result;
     private boolean generateCode;
 
-    public SyntacticAnalysisResult getResult()
+    public SyntacticAnalysisResult getSyntacticResult()
     {
-        return this.result;
+        return this.syntax_result;
+    }
+
+    public SemanticAnalysisResult getSemanticResult()
+    {
+        return this.semantic_result;
     }
 
     public void setGenerateCode(boolean flag)
@@ -1322,14 +1330,14 @@ public class Parser extends java_cup.runtime.lr_parser {
         if (info instanceof Symbol)
         {
             Symbol s = ((Symbol) info);
-            this.result.addError(message, s);
+            this.syntax_result.addError(message, s);
         }
     }
    
     public void report_fatal_error(String message, Object info)
     {
         report_error(message, info);
-        System.exit(1);    
+        this._done_parsing = true;
     }
 
     public void syntax_error(Symbol current_token)

@@ -110,5 +110,10 @@ public class LexicalAnalysisResult {
     {
         return this.tokenList.get(this.tokenList.size() - 1);
     }
+    
+    public boolean haveErrors()
+    {
+        return !this.errors.isEmpty();
+    }
 
 }

@@ -274,7 +274,7 @@ public class LexicalAnalysisReport implements Report
     @Override
     public String toString()
     {
-        return this.reportContent;
+        return this.getReportContent();
     }
 
 }
