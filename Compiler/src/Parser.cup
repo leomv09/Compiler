@@ -264,11 +264,10 @@ while_statement ::= WHILE condition_list DO BEGIN code_block END
 repeat_statement ::= REPEAT code_block UNTIL condition_list
                     | REPEAT code_block UNTIL error {: report_error("Missing condition in repeat statement.", null); :};
 
-if_statement ::= IF condition_list THEN sentence ELSE sentence
-                | IF condition_list THEN sentence
-                | IF THEN sentence {: report_error("Missing condition in if statement.", null); :}
+if_statement ::= IF condition_list THEN code_block ELSE code_block END
+                | IF condition_list THEN code_block END
                 | IF condition_list THEN error {: report_error("Missing sentence in if statement.", null); :}
-                | IF condition_list THEN sentence ELSE error {: report_error("Missing else sentence in if statement.", null); :};
+                | IF condition_list THEN code_block ELSE error {: report_error("Missing else sentence in if statement.", null); :};
 
 case_item ::= expr COLON sentence
             | expr sentence {: report_error("Missing colon in case item.", null); :}

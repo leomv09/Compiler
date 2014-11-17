@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represent a container of {@link compiler.Token}.
+ * Represent a container of {@link compiler.scanner.Token}.
  * 
  * @author Leo
  */

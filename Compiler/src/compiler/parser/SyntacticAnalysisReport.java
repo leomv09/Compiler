@@ -88,7 +88,7 @@ public class SyntacticAnalysisReport implements Report
         StringBuilder sb = new StringBuilder();
         
         sb.append("# PARSER REPORT #").append(System.lineSeparator());
-        sb.append("==================").append(System.lineSeparator()).append(System.lineSeparator());
+        sb.append("=================").append(System.lineSeparator()).append(System.lineSeparator());
         sb.append(this.reportHeaders).append(System.lineSeparator());
         
         sb.append("* ERROR LIST").append(System.lineSeparator());

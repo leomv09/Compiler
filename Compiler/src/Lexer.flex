@@ -1,7 +1,5 @@
 package compiler.scanner;
 
-import java_cup.runtime.Symbol;
-import compiler.Token;
 import compiler.parser.ParserSym;
 
 %%

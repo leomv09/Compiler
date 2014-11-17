@@ -40,10 +40,12 @@ public class Compiler
     
     private static void runLexicalAnalysis(ArgumentParserResult res)
     {
+        LexicalAnalyzer analyzer = new LexicalAnalyzer();
+        LexicalAnalysisResult result;
+        
         for (File file : res.getFiles())
         {
-            LexicalAnalyzer analyzer = new LexicalAnalyzer();
-            LexicalAnalysisResult result = analyzer.analyze(file);
+            result = analyzer.analyze(file);
             
             if (res.isVerbose())
             {
@@ -55,10 +57,12 @@ public class Compiler
     
     private static void runSyntacticAnalysis(ArgumentParserResult res)
     {
+        SyntacticAnalyzer analyzer = new SyntacticAnalyzer(false);
+        SyntacticAnalysisResult result;
+        
         for (File file : res.getFiles())
-        {
-            SyntacticAnalyzer analyzer = new SyntacticAnalyzer(false);
-            SyntacticAnalysisResult result = analyzer.analyze(file);
+        {    
+            result = analyzer.analyze(file);
             
             if (res.isVerbose())
             {
@@ -70,10 +74,12 @@ public class Compiler
     
     private static void runCompilationProcess(ArgumentParserResult res)
     {
+        SyntacticAnalyzer analyzer = new SyntacticAnalyzer(true);
+        SyntacticAnalysisResult result;
+        
         for (File file : res.getFiles())
         {
-            SyntacticAnalyzer analyzer = new SyntacticAnalyzer(true);
-            SyntacticAnalysisResult result = analyzer.analyze(file);
+            result = analyzer.analyze(file);
             
             if (res.isVerbose())
             {
