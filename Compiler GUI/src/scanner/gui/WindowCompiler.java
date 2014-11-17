@@ -1,8 +1,10 @@
 package scanner.gui;
 
+import compiler.CompilationReport;
 import compiler.Report;
-import compiler.parser.SyntacticAnalysisResult;
+import compiler.SemanticAnalysisResult;
 import compiler.parser.SyntacticAnalysisReport;
+import compiler.parser.SyntacticAnalysisResult;
 import compiler.parser.SyntacticAnalyzer;
 import compiler.scanner.LexicalAnalysisReport;
 import compiler.scanner.LexicalAnalysisResult;
@@ -280,8 +282,11 @@ public class WindowCompiler extends javax.swing.JFrame
     private void runCompilationProcess()
     {
         SyntacticAnalyzer analyzer = new SyntacticAnalyzer(true);
-        SyntacticAnalysisResult result = analyzer.analyze(this.codeArea.getText());
-        this.report = new SyntacticAnalysisReport(result);
+        analyzer.analyze(this.codeArea.getText());
+        LexicalAnalysisResult r1 = analyzer.getScanner().getResult();
+        SyntacticAnalysisResult r2 = analyzer.getParser().getSyntacticResult();
+        SemanticAnalysisResult  r3 = analyzer.getParser().getSemanticResult();
+        this.report = new CompilationReport(r1, r2, r3);
     }
     
     private JFileChooser createFileChooser()
