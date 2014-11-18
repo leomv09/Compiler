@@ -3,11 +3,14 @@ package compiler.parser;
 import java_cup.runtime.Symbol;
 import compiler.scanner.Lexer;
 import compiler.SemanticAnalysisResult;
+import java.util.List;
+import java.util.LinkedList;
 
 class Parser;
 
 parser code {:
 
+    private SymbolTable table;
     private SyntacticAnalysisResult syntax_result;
     private SemanticAnalysisResult semantic_result;
     private boolean generateCode;
@@ -65,6 +68,7 @@ parser code {:
 
 init with {:
 
+    this.table = new SymbolTable();
     this.syntax_result = new SyntacticAnalysisResult();
     this.semantic_result = new SemanticAnalysisResult();
     this.generateCode = true;
@@ -89,26 +93,28 @@ terminal AND, OR, XOR, NOT;
 terminal SHIFT_LEFT, SHIFT_RIGHT, SHIFT_LEFT_EQUALS, SHIFT_RIGHT_EQUALS;
 
 // Palabras reservadas.
-terminal ARRAY, BEGIN, BOOLEAN, BYTE, CASE, CHAR, CONST, DO, DOWNTO, ELSE, END, FILE, FOR, FORWARD, FUNCTION, GOTO, IF, IN, INLINE, INT, LABEL, LONGINT, OF, PACKED, PROCEDURE, PROGRAM, READ, REAL, RECORD, REPEAT, SET, SHORTINT, STRING, THEN, TO, TYPE, UNTIL, VAR, WHILE, WITH, WRITE;
+terminal BEGIN, CASE, CONST, DO, DOWNTO, ELSE, END, FILE, FOR, FORWARD, GOTO, IF, IN, INLINE, LABEL, OF, PACKED, PROGRAM, READ, RECORD, REPEAT, SET, THEN, TO, TYPE, UNTIL, VAR, WHILE, WITH, WRITE;
 
 // Otros
 terminal SEMI, COMMA, COLON, DOT;
 
 // Terminales con valor.
+terminal Integer ARRAY, BOOLEAN, BYTE, CHAR, FUNCTION, PROCEDURE, INT, LONGINT, REAL, SHORTINT, STRING;
 terminal Object NIL;
 terminal Integer NUMBER;
 terminal Double DOUBLE;
 terminal String XSTRING;
 terminal Byte XBYTE;
 terminal Character CHARACTER;
-terminal Object IDENTIFIER;
+terminal String IDENTIFIER;
 terminal Boolean TRUE, FALSE;
 
 /* Non terminals */
+non terminal Integer data_type, array_data_type;
+non terminal List<String> identifier_list;
 non terminal number_term, literal_term, boolean_term, term, function_write, function_read;
 non terminal expr, number_expr, identifier_expr, byte_expr, literal_expr, assignment_operator, assignment_expr, function_call;
 non terminal condition_operator, condition_list_operator, condition, condition_list;
-non terminal identifier_list, data_type, array_data_type;
 non terminal variable_declaration, variable_declaration_list, variable_declaration_block, declaration_block;
 non terminal constant_declaration, constant_declaration_list, constant_declaration_block;
 non terminal parameter, parameter_list, parameter_list_forced, parameter_declaration_list, parameter_declaration;
@@ -204,17 +210,44 @@ condition_list ::= LPAREN condition_list RPAREN
                  | condition_list_operator condition_list {: report_error("Missing condition in condition list.", null); :}
                  | NOT error {: report_error("Missing condition in condition list.", null); :};
 
-identifier_list ::= identifier_list COMMA IDENTIFIER
+identifier_list ::= identifier_list:il COMMA IDENTIFIER:id {: il.add(id); RESULT = il; :}
                   | identifier_list IDENTIFIER {: report_error("Missing comma in identifier list.", null); :}
                   | identifier_list COMMA error {: report_error("Missing identifier in identifier list.", null); :}
-                  | IDENTIFIER;
+                  | IDENTIFIER:id {: List<String> list = new LinkedList();
+                                     list.add(id);
+                                     RESULT = list;  
+                                  :};
 
-data_type ::= STRING | CHAR | REAL | BYTE | INT | LONGINT | SHORTINT | BOOLEAN;
+data_type ::= STRING:type   {: RESULT = type; :}
+            | CHAR:type     {: RESULT = type; :}
+            | REAL:type     {: RESULT = type; :}
+            | BYTE:type     {: RESULT = type; :}
+            | INT:type      {: RESULT = type; :}
+            | LONGINT:type  {: RESULT = type; :}
+            | SHORTINT:type {: RESULT = type; :}
+            | BOOLEAN:type  {: RESULT = type; :};
 
-array_data_type ::= CHAR | INT | LONGINT | SHORTINT;
+array_data_type ::= CHAR:type       {: RESULT = type; :}
+                  | INT:type        {: RESULT = type; :}
+                  | LONGINT:type    {: RESULT = type; :}
+                  | SHORTINT:type   {: RESULT = type; :};
 
-variable_declaration  ::= identifier_list COLON data_type SEMI
-               | identifier_list COLON ARRAY LBRACKET NUMBER DOT DOT NUMBER RBRACKET OF array_data_type SEMI
+variable_declaration  ::= identifier_list:il COLON data_type:type SEMI
+                          {:
+                                for (String id : il)
+                                {
+                                     TableRow row = new TableRow(id, type);
+                                     table.declareSymbol(id, row); 
+                                }
+                          :}
+               | identifier_list:il COLON ARRAY:type LBRACKET NUMBER:n1 DOT DOT NUMBER:n2 RBRACKET OF array_data_type:array_type SEMI
+                 {:
+                    for (String id : il)
+                    {
+                        ArrayTableRow row = new ArrayTableRow(id, type, array_type, n2 - n1);
+                        table.declareSymbol(id, row);
+                    }
+                 :}
                | identifier_list data_type SEMI {: report_error("Missing colon in declaration.", null); :}
                | identifier_list COLON SEMI {: report_error("Missing data type in declaration.", null); :};
 

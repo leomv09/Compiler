@@ -102,17 +102,17 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
     /*Ignore*/
 }
 
-"ARRAY" { return newToken(ParserSym.ARRAY); }
+"ARRAY" { return newToken(ParserSym.ARRAY, ParserSym.ARRAY); }
 
 "BEGIN" { return newToken(ParserSym.BEGIN); }
 
-"BOOLEAN" { return newToken(ParserSym.BOOLEAN); }
+"BOOLEAN" { return newToken(ParserSym.BOOLEAN, ParserSym.BOOLEAN); }
 
-"BYTE" { return newToken(ParserSym.BYTE); }
+"BYTE" { return newToken(ParserSym.BYTE, ParserSym.BYTE); }
 
 "CASE" { return newToken(ParserSym.CASE); }
 
-"CHAR" { return newToken(ParserSym.CHAR); }
+"CHAR" { return newToken(ParserSym.CHAR, ParserSym.CHAR); }
 
 "CONST" { return newToken(ParserSym.CONST); }
 
@@ -134,7 +134,7 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 "FORWARD" { return newToken(ParserSym.FORWARD); }
 
-"FUNCTION" { return newToken(ParserSym.FUNCTION); }
+"FUNCTION" { return newToken(ParserSym.FUNCTION, ParserSym.FUNCTION); }
 
 "GOTO" { return newToken(ParserSym.GOTO); }
 
@@ -144,25 +144,25 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 "INLINE" { return newToken(ParserSym.INLINE); }
 
-"INT" { return newToken(ParserSym.INT); }
+"INT" { return newToken(ParserSym.INT, ParserSym.INT); }
 
 "LABEL" { return newToken(ParserSym.LABEL); }
 
-"LONGINT" { return newToken(ParserSym.LONGINT); }
+"LONGINT" { return newToken(ParserSym.LONGINT, ParserSym.LONGINT); }
 
-"NIL" { return newToken(ParserSym.NIL, null); }
+"NIL" { return newToken(ParserSym.NIL); }
 
 "OF" { return newToken(ParserSym.OF); }
 
 "PACKED" { return newToken(ParserSym.PACKED); }
 
-"PROCEDURE" { return newToken(ParserSym.PROCEDURE); }
+"PROCEDURE" { return newToken(ParserSym.PROCEDURE, ParserSym.PROCEDURE); }
 
 "PROGRAM" { return newToken(ParserSym.PROGRAM); }
 
 "READ" { return newToken(ParserSym.READ); }
 
-"REAL" { return newToken(ParserSym.REAL); }
+"REAL" { return newToken(ParserSym.REAL, ParserSym.REAL); }
 
 "RECORD" { return newToken(ParserSym.RECORD); }
 
@@ -170,9 +170,9 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 "SET" { return newToken(ParserSym.SET); }
 
-"SHORTINT" { return newToken(ParserSym.SHORTINT); }
+"SHORTINT" { return newToken(ParserSym.SHORTINT, ParserSym.SHORTINT); }
 
-"STRING" { return newToken(ParserSym.STRING); }
+"STRING" { return newToken(ParserSym.STRING, ParserSym.STRING); }
 
 "THEN" { return newToken(ParserSym.THEN); }
 

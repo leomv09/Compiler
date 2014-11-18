@@ -1445,11 +1445,11 @@ public class Lexer implements java_cup.runtime.Scanner {
           }
         case 127: break;
         case 43: 
-          { return newToken(ParserSym.INT);
+          { return newToken(ParserSym.INT, ParserSym.INT);
           }
         case 128: break;
         case 44: 
-          { return newToken(ParserSym.NIL, null);
+          { return newToken(ParserSym.NIL);
           }
         case 129: break;
         case 45: 
@@ -1489,7 +1489,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           }
         case 138: break;
         case 54: 
-          { return newToken(ParserSym.REAL);
+          { return newToken(ParserSym.REAL, ParserSym.REAL);
           }
         case 139: break;
         case 55: 
@@ -1497,7 +1497,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           }
         case 140: break;
         case 56: 
-          { return newToken(ParserSym.BYTE);
+          { return newToken(ParserSym.BYTE, ParserSym.BYTE);
           }
         case 141: break;
         case 57: 
@@ -1521,7 +1521,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           }
         case 146: break;
         case 62: 
-          { return newToken(ParserSym.CHAR);
+          { return newToken(ParserSym.CHAR, ParserSym.CHAR);
           }
         case 147: break;
         case 63: 
@@ -1533,7 +1533,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           }
         case 149: break;
         case 65: 
-          { return newToken(ParserSym.ARRAY);
+          { return newToken(ParserSym.ARRAY, ParserSym.ARRAY);
           }
         case 150: break;
         case 66: 
@@ -1577,7 +1577,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           }
         case 160: break;
         case 76: 
-          { return newToken(ParserSym.STRING);
+          { return newToken(ParserSym.STRING, ParserSym.STRING);
           }
         case 161: break;
         case 77: 
@@ -1589,11 +1589,11 @@ public class Lexer implements java_cup.runtime.Scanner {
           }
         case 163: break;
         case 79: 
-          { return newToken(ParserSym.BOOLEAN);
+          { return newToken(ParserSym.BOOLEAN, ParserSym.BOOLEAN);
           }
         case 164: break;
         case 80: 
-          { return newToken(ParserSym.LONGINT);
+          { return newToken(ParserSym.LONGINT, ParserSym.LONGINT);
           }
         case 165: break;
         case 81: 
@@ -1605,15 +1605,15 @@ public class Lexer implements java_cup.runtime.Scanner {
           }
         case 167: break;
         case 83: 
-          { return newToken(ParserSym.SHORTINT);
+          { return newToken(ParserSym.SHORTINT, ParserSym.SHORTINT);
           }
         case 168: break;
         case 84: 
-          { return newToken(ParserSym.FUNCTION);
+          { return newToken(ParserSym.FUNCTION, ParserSym.FUNCTION);
           }
         case 169: break;
         case 85: 
-          { return newToken(ParserSym.PROCEDURE);
+          { return newToken(ParserSym.PROCEDURE, ParserSym.PROCEDURE);
           }
         case 170: break;
         default: 
