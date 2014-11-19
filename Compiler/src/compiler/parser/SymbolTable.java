@@ -41,7 +41,7 @@ public class SymbolTable
         }
     } 
     
-    public TableRow lookupSymbol(String identifier)
+    public TableRow lookupSymbol(String identifier) throws Exception
     {
         SymbolTableScope lookupScope = this.currentScope;
         TableRow value = lookupScope.lookupSymbol(identifier);
@@ -51,7 +51,7 @@ public class SymbolTable
             lookupScope = lookupScope.getParentScope(); 
             if (lookupScope == null)
             {
-                return null; 
+                throw new Exception("Symbol " + identifier + " not declared.");
             }
             value = lookupScope.lookupSymbol(identifier); 
         }

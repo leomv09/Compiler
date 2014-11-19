@@ -31,37 +31,6 @@ public class TableRow
         this.constant = constant;
     }
     
-    public static Class getDataType(int type)
-    {
-        Class dataType = null;
-
-        switch (type)
-        {
-            case ParserSym.INT:
-            case ParserSym.LONGINT:
-            case ParserSym.SHORTINT:
-                dataType = Number.class;
-                break;
-            case ParserSym.REAL:
-                dataType = Double.class;
-                break;
-            case ParserSym.STRING:
-                dataType = String.class;
-                break;
-            case ParserSym.BYTE:
-                dataType = Byte.class;
-                break;
-            case ParserSym.CHAR:
-                dataType = Character.class;
-                break;
-            case ParserSym.BOOLEAN:
-                dataType = Boolean.class;
-                break;
-        }
-
-        return dataType;
-    }
-    
     public String getIdentifier()
     {
         return identifier;
@@ -93,14 +62,52 @@ public class TableRow
         {
             throw new Exception("Can not change value of constant.");
         }
-        else if (!TableRow.getDataType(this.type).isInstance(value))
+        else if (!this.getDataType().isInstance(value))
         {
-            throw new Exception("Incompatible type.");
+            throw new Exception("Incompatible type for " + this.identifier
+                    + " [EXPECTED=" + this.getDataType().getSimpleName());
+                    //+ " - GOT=" + value.getClass().getSimpleName() + "].");
         }
         else
         {
             this.value = value;
         }
+    }
+    
+    public Class getDataType()
+    {
+        Class dataType = null;
+
+        switch (this.type)
+        {
+            case ParserSym.INT:
+            case ParserSym.LONGINT:
+            case ParserSym.SHORTINT:
+                dataType = Number.class;
+                break;
+            case ParserSym.REAL:
+                dataType = Double.class;
+                break;
+            case ParserSym.STRING:
+                dataType = String.class;
+                break;
+            case ParserSym.BYTE:
+                dataType = Byte.class;
+                break;
+            case ParserSym.CHAR:
+                dataType = Character.class;
+                break;
+            case ParserSym.BOOLEAN:
+                dataType = Boolean.class;
+                break;
+        }
+
+        return dataType;
+    }
+    
+    public String getTypeName()
+    {
+        return ParserSym.terminalNames[this.type];
     }
 
     @Override

@@ -133,13 +133,51 @@ non terminal function, procedure, function_block, procedure_block;
 non terminal function_item, function_list, functions_declaration, program;
 
 /* Precedences */
+precedence left AND, OR, XOR;
 precedence left PLUS, MINUS;
 precedence left TIMES, DIV, MOD;
-precedence left AND, OR, XOR;
 precedence left LPAREN, RPAREN;
 precedence left PLUS_PLUS, MINUS_MINUS;
 
 start with program;
+
+assignment_operator ::=
+    ASSIGNMENT
+    | PLUS_EQUALS
+    | MINUS_EQUALS
+    | DIV_EQUALS
+    | TIMES_EQUALS
+    | SHIFT_LEFT_EQUALS
+    | SHIFT_RIGHT_EQUALS;
+
+condition_list_operator ::=
+    AND
+    | OR
+    | XOR;
+
+condition_operator ::=
+    EQUALS
+    | NOT_EQUALS
+    | GREATER_THAN
+    | LESS_THAN
+    | GREATER_EQUALS_THAN
+    | LESS_EQUALS_THAN;
+
+data_type ::=
+    STRING:type     {: RESULT = type; :}
+    | CHAR:type     {: RESULT = type; :}
+    | REAL:type     {: RESULT = type; :}
+    | BYTE:type     {: RESULT = type; :}
+    | INT:type      {: RESULT = type; :}
+    | LONGINT:type  {: RESULT = type; :}
+    | SHORTINT:type {: RESULT = type; :}
+    | BOOLEAN:type  {: RESULT = type; :};
+
+array_data_type ::=
+    CHAR:type           {: RESULT = type; :}
+    | INT:type          {: RESULT = type; :}
+    | LONGINT:type      {: RESULT = type; :}
+    | SHORTINT:type     {: RESULT = type; :};
 
 number_term ::=
     NUMBER:n    {: RESULT = n.doubleValue(); :}
@@ -169,7 +207,22 @@ expr ::=
     | byte_expr:e             {: RESULT = e; :}
     | literal_expr:e          {: RESULT = e; :}
     | boolean_term:t          {: RESULT = t; :}
-    | NIL:n                   {: RESULT = n; :};
+    | NIL:n                   {: RESULT = n; :}
+    | expr:e1 PLUS expr:e2
+    {:
+        if (e1 instanceof Double && e2 instanceof Double)
+        {
+            RESULT = ((Double) e1) + ((Double) e2);
+        }
+        else if (e1 instanceof String && e2 instanceof String)
+        {
+            RESULT = ((String) e1) + ((String) e2);
+        }
+        else
+        {
+            report_error("Bad operant for operator +.", null);
+        }
+    :};
 
 number_expr ::=
     number_expr:e1 PLUS number_expr:e2      {: RESULT = e1 + e2; :}
@@ -184,69 +237,100 @@ number_expr ::=
 identifier_expr ::=
     IDENTIFIER:id PLUS_PLUS
     {:
-        /*
-        TableRow row = table.lookupSymbol(id);//Retrieve the row of the table where is stored.
-        int value = (int) row.getValue();//Get the value from the row.
         try
         {
-            RESULT = value;
-            row.setValue(++value);
+            TableRow row = table.lookupSymbol(id); //Retrieve the row of the table where is stored.
+            if (row.getValue() instanceof Double)
+            {
+                Double value = (Double) row.getValue(); //Get the value from the row.
+                RESULT = value;
+                row.setValue(++value);
+            }
+            else
+            {
+                report_error("Bad operant " + row.getTypeName() + " for operator ++.", null);
+            }
         }
         catch (Exception ex)
         {
             report_error(ex.getMessage(), null);
         }
-        */
     :}
     | IDENTIFIER:id MINUS_MINUS
     {:
-        /*
-        TableRow row = table.lookupSymbol(id);//Retrieve the row of the table where is stored.
-        int value = (int) row.getValue();//Get the value from the row.
         try
         {
-            RESULT = value;
-            row.setValue(--value);
+            TableRow row = table.lookupSymbol(id); //Retrieve the row of the table where is stored.
+            if (row.getValue() instanceof Double)
+            {
+                Double value = (Double) row.getValue(); //Get the value from the row.
+                RESULT = value;
+                row.setValue(--value);
+            }
+            else
+            {
+                report_error("Bad operant " + row.getTypeName() + " for operator --.", null);
+            }
         }
         catch (Exception ex)
         {
             report_error(ex.getMessage(), null);
         }
-        */
     :}
     | PLUS_PLUS IDENTIFIER:id
     {:
-        /*
-        TableRow row = table.lookupSymbol(id);//Retrieve the row of the table where is stored.
-        int value = (int) row.getValue();//Get the value from the row.
         try
         {
-            row.setValue(++value);
-            RESULT = value;
+            TableRow row = table.lookupSymbol(id); //Retrieve the row of the table where is stored.
+            if (row.getValue() instanceof Double)
+            {
+                Double value = (Double) row.getValue(); //Get the value from the row.
+                row.setValue(++value);
+                RESULT = value;
+            }
+            else
+            {
+                report_error("Bad operant " + row.getTypeName() + " for operator ++.", null);
+            }
         }
         catch (Exception ex)
         {
             report_error(ex.getMessage(), null);
         }
-        */
     :}
     | MINUS_MINUS IDENTIFIER:id
     {:
-        /*
-        TableRow row = table.lookupSymbol(id);//Retrieve the row of the table where is stored.
-        int value = (int) row.getValue();//Get the value from the row.
         try
         {
-            row.setValue(--value);
-            RESULT = value;
+            TableRow row = table.lookupSymbol(id); //Retrieve the row of the table where is stored.
+            if (row.getValue() instanceof Double)
+            {
+                Double value = (Double) row.getValue(); //Get the value from the row.
+                row.setValue(--value);
+                RESULT = value;
+            }
+            else
+            {
+                report_error("Bad operant " + row.getTypeName() + " for operator --.", null);
+            }
         }
         catch (Exception ex)
         {
             report_error(ex.getMessage(), null);
         }
-        */
    :}
-    | IDENTIFIER:id;
+    | IDENTIFIER:id
+    {:
+        try
+        {
+            TableRow row = table.lookupSymbol(id); //Retrieve the row of the table where is stored.
+            RESULT = row.getValue();
+        }
+        catch (Exception ex)
+        {
+            report_error(ex.getMessage(), null);
+        }
+   :};
 
 byte_expr ::=
     byte_expr:b SHIFT_LEFT NUMBER:n     {: RESULT = new Byte((byte) (b << n)); :}
@@ -257,58 +341,29 @@ literal_expr ::=
     literal_expr:e1 PLUS literal_expr:e2    {: RESULT = e1 + e2; :}
     | literal_term:l                        {: RESULT = l; :};
 
-assignment_operator ::=
-    ASSIGNMENT
-    | PLUS_EQUALS
-    | MINUS_EQUALS
-    | DIV_EQUALS
-    | TIMES_EQUALS
-    | SHIFT_LEFT_EQUALS
-    | SHIFT_RIGHT_EQUALS;
-
 assignment_expr ::= 
     IDENTIFIER:id assignment_operator expr:e
     {:
-        TableRow row  = table.lookupSymbol(id);//Retrieve the row of the table where is stored.
-        if (row != null)
+        try
         {
-            try
-            {
-                row.setValue(e);
-                RESULT = e;
-            }
-            catch (Exception ex)
-            {
-                report_error(ex.getMessage(), null);
-            }
+            TableRow row  = table.lookupSymbol(id); //Retrieve the row of the table where is stored.
+            row.setValue(e);
+            RESULT = e;
         }
-        else
+        catch (Exception ex)
         {
-            report_error("Symbol " + id + " not declared.", null);
+            report_error(ex.getMessage(), null);
         }
     :}
     | IDENTIFIER:i assignment_operator {: report_error("Expected expression in assigment of " + i + " .", null); :}
     | assignment_operator expr {: report_error("Expected identifier in assigment.", null); :}
     | assignment_operator {: report_error("Expected identifier and expression in assigment.", null); :};
 
-condition_operator ::=
-    EQUALS
-    | NOT_EQUALS
-    | GREATER_THAN
-    | LESS_THAN
-    | GREATER_EQUALS_THAN
-    | LESS_EQUALS_THAN;
-
 condition ::=
     LPAREN condition RPAREN
     | expr condition_operator expr 
     | expr
     | condition_operator expr {: report_error("Expected expression in condition.", null); :};
-
-condition_list_operator ::=
-    AND
-    | OR
-    | XOR;
 
 condition_list ::=
     LPAREN condition_list RPAREN
@@ -332,22 +387,6 @@ identifier_list ::=
     :}
     | identifier_list IDENTIFIER {: report_error("Missing comma in identifier list.", null); :}
     | identifier_list COMMA error {: report_error("Missing identifier in identifier list.", null); :};
-
-data_type ::=
-    STRING:type     {: RESULT = type; :}
-    | CHAR:type     {: RESULT = type; :}
-    | REAL:type     {: RESULT = type; :}
-    | BYTE:type     {: RESULT = type; :}
-    | INT:type      {: RESULT = type; :}
-    | LONGINT:type  {: RESULT = type; :}
-    | SHORTINT:type {: RESULT = type; :}
-    | BOOLEAN:type  {: RESULT = type; :};
-
-array_data_type ::=
-    CHAR:type           {: RESULT = type; :}
-    | INT:type          {: RESULT = type; :}
-    | LONGINT:type      {: RESULT = type; :}
-    | SHORTINT:type     {: RESULT = type; :};
 
 variable_declaration  ::= 
     identifier_list:il COLON data_type:type SEMI
