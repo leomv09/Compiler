@@ -12,6 +12,12 @@ public class SymbolTableScope
     private final SymbolTableScope parent;
     private final Map<String, TableRow> table;
 
+    public SymbolTableScope()
+    {
+        this.parent = null;
+        this.table = new HashMap();
+    }
+    
     public SymbolTableScope(SymbolTableScope parent)
     {
         this.parent = parent;
@@ -28,8 +34,13 @@ public class SymbolTableScope
         this.table.put(identifier, row);
     }
     
-    public Object lookupSymbol(String identifier)
+    public TableRow lookupSymbol(String identifier)
     {
-        return table.get(identifier);
+        return this.table.get(identifier);
+    }
+    
+    public boolean haveSymbol(String identifier)
+    {
+        return this.table.containsKey(identifier);
     }
 }

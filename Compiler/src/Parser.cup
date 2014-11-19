@@ -130,12 +130,14 @@ terminal Boolean TRUE, FALSE;
 /* Non terminals */
 non terminal Integer data_type, array_data_type;
 non terminal List<String> identifier_list;
+non terminal TableRow parameter_declaration;
+non terminal List<TableRow> parameter_declaration_list;
 non terminal number_term, literal_term, boolean_term, term, function_write, function_read;
 non terminal expr, number_expr, identifier_expr, byte_expr, literal_expr, assignment_operator, assignment_expr, function_call;
 non terminal condition_operator, condition_list_operator, condition, condition_list;
 non terminal variable_declaration, variable_declaration_list, variable_declaration_block, declaration_block;
 non terminal constant_declaration, constant_declaration_list, constant_declaration_block;
-non terminal parameter, parameter_list, parameter_list_forced, parameter_declaration_list, parameter_declaration;
+non terminal parameter, parameter_list, parameter_list_forced;
 non terminal function_block, function, procedure_block, procedure;
 non terminal code_block_item, code_block, sentence, sentence_item;
 non terminal for_statement, while_statement, repeat_statement, if_statement, case_statement, case_list, case_item;
@@ -267,13 +269,19 @@ condition_list ::= LPAREN condition_list RPAREN
                  | condition_list_operator condition_list {: report_error("Missing condition in condition list.", null); :}
                  | NOT error {: report_error("Missing condition in condition list.", null); :};
 
-identifier_list ::= identifier_list:il COMMA IDENTIFIER:id {: il.add(id); RESULT = il; :}
+identifier_list ::= identifier_list:il COMMA IDENTIFIER:id
+                    {:
+                        il.add(id);
+                        RESULT = il;
+                    :}
+                  | IDENTIFIER:id
+                    {:
+                        List<String> list = new LinkedList();
+                        list.add(id);
+                        RESULT = list;  
+                    :}
                   | identifier_list IDENTIFIER {: report_error("Missing comma in identifier list.", null); :}
-                  | identifier_list COMMA error {: report_error("Missing identifier in identifier list.", null); :}
-                  | IDENTIFIER:id {: List<String> list = new LinkedList();
-                                     list.add(id);
-                                     RESULT = list;  
-                                  :};
+                  | identifier_list COMMA error {: report_error("Missing identifier in identifier list.", null); :};
 
 data_type ::= STRING:type   {: RESULT = type; :}
             | CHAR:type     {: RESULT = type; :}
@@ -289,14 +297,15 @@ array_data_type ::= CHAR:type       {: RESULT = type; :}
                   | LONGINT:type    {: RESULT = type; :}
                   | SHORTINT:type   {: RESULT = type; :};
 
-variable_declaration  ::= identifier_list:il COLON data_type:type SEMI
-                          {:
-                                for (String id : il)
-                                {
-                                     TableRow row = new TableRow(id, type);
-                                     table.declareSymbol(id, row); 
-                                }
-                          :}
+variable_declaration  ::= 
+                 identifier_list:il COLON data_type:type SEMI
+                 {:
+                    for (String id : il)
+                    {
+                        TableRow row = new TableRow(id, type);
+                        table.declareSymbol(id, row); 
+                    }
+                 :}
                | identifier_list:il COLON ARRAY:type LBRACKET NUMBER:n1 DOT DOT NUMBER:n2 RBRACKET OF array_data_type:array_type SEMI
                  {:
                     for (String id : il)
@@ -329,13 +338,29 @@ constant_declaration_block ::= CONST constant_declaration_list END | /* Epsilon 
 
 declaration_block ::= constant_declaration_block variable_declaration_block;
 
-parameter_declaration ::= data_type IDENTIFIER
-                       | error IDENTIFIER {: report_error("Missing data type in paramater declaration.", null); :}
-                       | data_type error{: report_error("Missing identifier in parameter declaration.", null); :};
+parameter_declaration ::= data_type:type IDENTIFIER:id
+                          {:
+                                RESULT = new TableRow(id, type);
+                          :}
+                        | error IDENTIFIER {: report_error("Missing data type in paramater declaration.", null); :}
+                        | data_type error {: report_error("Missing identifier in parameter declaration.", null); :};
 
-parameter_declaration_list ::= parameter_declaration_list COMMA parameter_declaration
-                 | parameter_declaration
-                 | /* Epsilon */;
+parameter_declaration_list ::= 
+                   parameter_declaration_list:l COMMA parameter_declaration:p
+                   {:
+                        l.add(p);
+                        RESULT = l;
+                   :}
+                 | parameter_declaration:p
+                   {:
+                        List<TableRow> list = new LinkedList();
+                        list.add(p);
+                        RESULT = list;
+                   :}
+                 | /* Epsilon */
+                   {:
+                        RESULT = new LinkedList<TableRow>();
+                   :};
 
 parameter_list_forced ::= parameter_list_forced COMMA expr
                 | expr;
@@ -384,7 +409,7 @@ case_statement ::= CASE IDENTIFIER OF case_list ELSE sentence
                 | CASE error ELSE {: report_error("Error in case statement.", null); :}
                 | CASE IDENTIFIER OF case_list ELSE error {: report_error("Invalid sentence in case statement.", null); :};
 
-function ::= FUNCTION IDENTIFIER LPAREN parameter_declaration_list RPAREN COLON data_type BEGIN declaration_block code_block END
+function ::= FUNCTION IDENTIFIER LPAREN parameter_declaration_list:p RPAREN COLON data_type BEGIN declaration_block code_block END
             | FUNCTION error END {: report_error("Error in function declaration.", null); :};
 
 procedure ::= PROCEDURE IDENTIFIER LPAREN parameter_declaration_list RPAREN BEGIN declaration_block code_block END
