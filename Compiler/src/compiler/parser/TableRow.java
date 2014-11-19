@@ -40,7 +40,7 @@ public class TableRow
             case ParserSym.INT:
             case ParserSym.LONGINT:
             case ParserSym.SHORTINT:
-                dataType = Integer.class;
+                dataType = Number.class;
                 break;
             case ParserSym.REAL:
                 dataType = Double.class;
@@ -93,7 +93,7 @@ public class TableRow
         {
             throw new Exception("Can not change value of constant.");
         }
-        else if (!TableRow.getDataType(this.type).equals(value.getClass()))
+        else if (!TableRow.getDataType(this.type).isInstance(value))
         {
             throw new Exception("Incompatible type.");
         }
