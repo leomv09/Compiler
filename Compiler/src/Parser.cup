@@ -48,6 +48,8 @@ parser code {:
             this.syntax_result.addError(message, s);
         }
     }
+
+
    
     public void report_fatal_error(String message, Object info)
     {
@@ -63,7 +65,23 @@ parser code {:
     {
         report_fatal_error("Couldn't repair and continue parse", current_token);
     }
-    
+
+
+    public Class getDataType(int type)
+    {
+        Object dataType = null;
+        switch(type)
+        {
+            case ParserSym.NUMBER: dataType = Integer.class;
+            case ParserSym.XSTRING: dataType = String.class;
+            case ParserSym.XBYTE: dataType = Byte.class;
+            case ParserSym.CHARACTER: dataType = Character.class;
+            case ParserSym.TURE: dataType = Boolean.class;
+            case ParserSym.FALSE: dataType = Boolean.class;
+        }
+        return dataType; 
+    } 
+
 :};
 
 init with {:
@@ -132,11 +150,14 @@ precedence left PLUS_PLUS, MINUS_MINUS;
 
 start with program;
 
-number_term ::= NUMBER | DOUBLE;
+number_term ::= NUMBER:n    {: RESULT = n; :}
+               | DOUBLE:d   {: RESULT = d; :};
 
-literal_term ::= XSTRING | CHARACTER;
+literal_term ::= XSTRING:x      {: RESULT = x; :}
+               | CHARACTER:c    {: RESULT = c; :};
 
-boolean_term ::= TRUE | FALSE;
+boolean_term ::= TRUE   {: RESULT = true; :} 
+               | FALSE  {: RESULT = false; :};
 
 term ::= number_term
        | literal_term
@@ -154,27 +175,51 @@ expr ::=  LPAREN expr RPAREN
         | boolean_term
         | NIL;
 
-number_expr ::= number_expr PLUS number_expr
-              | number_expr MINUS number_expr
-              | number_expr TIMES number_expr
-              | number_expr DIV number_expr
-              | number_expr MOD number_expr
-              | MINUS number_expr
+number_expr ::= number_expr:e1 PLUS number_expr:e2 {: RESULT = e1 + e2; :}
+              | number_expr:e1 MINUS number_expr:2 {: RESULT = e1 - e2; :}
+              | number_expr:e1 TIMES number_expr:e2 {: RESULT = e1 * e2; :}
+              | number_expr:e1 DIV number_expr:e2 {: RESULT = e1 / e2; :}
+              | number_expr:e1 MOD number_expr:e2 {: RESULT = e1 % e2; :}
+              | MINUS number_expr:e {: RESULT = - e1; :}
               | number_term:n1 error:e number_term:n2 {: report_error("Invalid operator " + e + " in expression.", null); :}
-              | number_term;
+              | number_term:e; {: RESULT = e; :}
 
-identifier_expr ::= IDENTIFIER PLUS_PLUS
-                | IDENTIFIER MINUS_MINUS
-                | PLUS_PLUS IDENTIFIER
-                | MINUS_MINUS IDENTIFIER
+identifier_expr ::= IDENTIFIER:id PLUS_PLUS
+                          {:
+                                TableRow row  = (TableRow) table.lookupSymbol(id);//Retrieve the row of the table where is stored.
+                                int value = (int) row.getValue();//Get the value from the row.
+                                value++;//Increment the value;
+                                row.setValue(value);//Set the value into the row again.      
+                          :}
+                | IDENTIFIER:id MINUS_MINUS
+                           {:
+                                TableRow row  = (TableRow) table.lookupSymbol(id);//Retrieve the row of the table where is stored.
+                                int value = (int) row.getValue();//Get the value from the row.
+                                value--;//Decrement the value;
+                                row.setValue(value);//Set the value into the row again.      
+                           :}
+                | PLUS_PLUS IDENTIFIER:id
+                            {:
+                                TableRow row  = (TableRow) table.lookupSymbol(id);//Retrieve the row of the table where is stored.
+                                int value = (int) row.getValue();//Get the value from the row.
+                                ++value;//Increment the value;
+                                row.setValue(value);//Set the value into the row again.      
+                            :}
+                | MINUS_MINUS IDENTIFIER:id
+                            {:
+                                TableRow row  = (TableRow) table.lookupSymbol(id);//Retrieve the row of the table where is stored.
+                                int value = (int) row.getValue();//Get the value from the row.
+                                --value;//Decrement the value;
+                                row.setValue(value);//Set the value into the row again.      
+                           :}
                 | IDENTIFIER;
 
-byte_expr ::= byte_expr SHIFT_LEFT NUMBER
-            | byte_expr SHIFT_RIGHT NUMBER
-            | XBYTE;
+byte_expr ::= byte_expr:b1 SHIFT_LEFT NUMBER:n {: RESULT = b << n; :}
+            | byte_expr SHIFT_RIGHT NUMBER     {: RESULT = b >> n; :}
+            | XBYTE:b; {: RESULT = b; :}
 
-literal_expr ::= literal_expr PLUS literal_expr
-               | literal_term;
+literal_expr ::= literal_expr:e1 PLUS literal_expr:e2 {: RESULT = e1 + e2; :}
+               | literal_term:l {: RESULT = l; :};
 
 assignment_operator ::= ASSIGNMENT
                         | PLUS_EQUALS
@@ -184,7 +229,19 @@ assignment_operator ::= ASSIGNMENT
                         | SHIFT_LEFT_EQUALS
                         | SHIFT_RIGHT_EQUALS;
 
-assignment_expr ::= IDENTIFIER assignment_operator expr
+assignment_expr ::= IDENTIFIER:id assignment_operator expr:e
+                            {:
+                                TableRow row  = (TableRow) table.lookupSymbol(id);//Retrieve the row of the table where is stored.
+                                if(e.getClass().equals(getDataType(row.getType)))
+                                {
+                                        row.setValue(e);//Set the value into the row.
+                                }
+                                else
+                                {
+                                    report_error("Incompatible data type.", null);
+                                }
+                                                       
+                            :}
                   | IDENTIFIER:i assignment_operator {: report_error("Expected expression in assigment of " + i + " .", null); :}
                   | assignment_operator expr {: report_error("Expected identifier in assigment.", null); :}
                   | assignment_operator {: report_error("Expected identifier and expression in assigment.", null); :};
@@ -256,7 +313,12 @@ variable_declaration_list ::= variable_declaration_list variable_declaration
 
 variable_declaration_block ::= VAR variable_declaration_list END | /* Epsilon */ ;
 
-constant_declaration ::= IDENTIFIER EQUALS expr SEMI
+constant_declaration ::= IDENTIFIER:id EQUALS expr:e SEMI
+                            {:
+                                TableRow row = new TableRow(id, null);
+                                row.setValue(e);
+                                table.declareSymbol(id, row);
+                            :}        
                     | IDENTIFIER expr SEMI {: report_error("Missing operator in declaration.", null); :}
                     | IDENTIFIER EQUALS SEMI {: report_error("Missing espression in declaration.", null); :};
 
