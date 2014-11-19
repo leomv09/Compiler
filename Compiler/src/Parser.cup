@@ -48,8 +48,6 @@ parser code {:
             this.syntax_result.addError(message, s);
         }
     }
-
-
    
     public void report_fatal_error(String message, Object info)
     {
@@ -65,22 +63,6 @@ parser code {:
     {
         report_fatal_error("Couldn't repair and continue parse", current_token);
     }
-
-
-    public Class getDataType(int type)
-    {
-        Object dataType = null;
-        switch(type)
-        {
-            case ParserSym.NUMBER: dataType = Integer.class;
-            case ParserSym.XSTRING: dataType = String.class;
-            case ParserSym.XBYTE: dataType = Byte.class;
-            case ParserSym.CHARACTER: dataType = Character.class;
-            case ParserSym.TURE: dataType = Boolean.class;
-            case ParserSym.FALSE: dataType = Boolean.class;
-        }
-        return dataType; 
-    } 
 
 :};
 
@@ -128,19 +110,26 @@ terminal String IDENTIFIER;
 terminal Boolean TRUE, FALSE;
 
 /* Non terminals */
+non terminal Object term, expr, identifier_expr, assignment_expr;
+non terminal Boolean boolean_term;
+non terminal Double number_term, number_expr;
+non terminal Byte byte_expr;
+non terminal String literal_term, literal_expr;
 non terminal Integer data_type, array_data_type;
 non terminal List<String> identifier_list;
-non terminal TableRow parameter_declaration;
-non terminal List<TableRow> parameter_declaration_list;
-non terminal number_term, literal_term, boolean_term, term, function_write, function_read;
-non terminal expr, number_expr, identifier_expr, byte_expr, literal_expr, assignment_operator, assignment_expr, function_call;
-non terminal condition_operator, condition_list_operator, condition, condition_list;
-non terminal variable_declaration, variable_declaration_list, variable_declaration_block, declaration_block;
-non terminal constant_declaration, constant_declaration_list, constant_declaration_block;
+non terminal TableRow parameter_declaration, constant_declaration;
+non terminal List<TableRow> variable_declaration;
+non terminal List<TableRow> parameter_declaration_list, variable_declaration_list, constant_declaration_list;
+non terminal List<TableRow> variable_declaration_block, constant_declaration_block, declaration_block;
+
+non terminal assignment_operator, condition_operator, condition_list_operator;
+non terminal function_write, function_read, function_call;
+non terminal condition, condition_list;
 non terminal parameter, parameter_list, parameter_list_forced;
-non terminal function_block, function, procedure_block, procedure;
-non terminal code_block_item, code_block, sentence, sentence_item;
-non terminal for_statement, while_statement, repeat_statement, if_statement, case_statement, case_list, case_item;
+non terminal sentence_item, sentence, code_block_item, code_block;
+non terminal case_item, case_list;
+non terminal for_statement, while_statement, repeat_statement, if_statement, case_statement;
+non terminal function, procedure, function_block, procedure_block;
 non terminal function_item, function_list, functions_declaration, program;
 
 /* Precedences */
@@ -152,223 +141,340 @@ precedence left PLUS_PLUS, MINUS_MINUS;
 
 start with program;
 
-number_term ::= NUMBER:n    {: RESULT = n; :}
-               | DOUBLE:d   {: RESULT = d; :};
+number_term ::=
+    NUMBER:n    {: RESULT = n.doubleValue(); :}
+    | DOUBLE:d  {: RESULT = d; :};
 
-literal_term ::= XSTRING:x      {: RESULT = x; :}
-               | CHARACTER:c    {: RESULT = c; :};
+literal_term ::=
+    XSTRING:s       {: RESULT = s; :}
+    | CHARACTER:c   {: RESULT = c.toString(); :};
 
-boolean_term ::= TRUE   {: RESULT = true; :} 
-               | FALSE  {: RESULT = false; :};
+boolean_term ::=
+    TRUE    {: RESULT = Boolean.TRUE; :} 
+    | FALSE {: RESULT = Boolean.FALSE; :};
 
-term ::= number_term
-       | literal_term
-       | boolean_term
-       | XBYTE
-       | IDENTIFIER
-       | NIL;
+term ::=
+    number_term:t       {: RESULT = t; :}
+    | literal_term:t    {: RESULT = t; :}
+    | boolean_term:t    {: RESULT = t; :}
+    | XBYTE:t           {: RESULT = t; :}
+    | IDENTIFIER:t      {: RESULT = t; :}
+    | NIL:t             {: RESULT = t; :};
 
-expr ::=  LPAREN expr RPAREN
-        | function_call
-        | number_expr 
-        | identifier_expr 
-        | byte_expr
-        | literal_expr 
-        | boolean_term
-        | NIL;
+expr ::=
+    LPAREN expr:e RPAREN      {: RESULT = e; :}
+    | function_call:f         {: RESULT = f; :}
+    | number_expr:e           {: RESULT = e; :}
+    | identifier_expr:e       {: RESULT = e; :}
+    | byte_expr:e             {: RESULT = e; :}
+    | literal_expr:e          {: RESULT = e; :}
+    | boolean_term:t          {: RESULT = t; :}
+    | NIL:n                   {: RESULT = n; :};
 
-number_expr ::= number_expr:e1 PLUS number_expr:e2 {: RESULT = e1 + e2; :}
-              | number_expr:e1 MINUS number_expr:2 {: RESULT = e1 - e2; :}
-              | number_expr:e1 TIMES number_expr:e2 {: RESULT = e1 * e2; :}
-              | number_expr:e1 DIV number_expr:e2 {: RESULT = e1 / e2; :}
-              | number_expr:e1 MOD number_expr:e2 {: RESULT = e1 % e2; :}
-              | MINUS number_expr:e {: RESULT = - e1; :}
-              | number_term:n1 error:e number_term:n2 {: report_error("Invalid operator " + e + " in expression.", null); :}
-              | number_term:e; {: RESULT = e; :}
+number_expr ::=
+    number_expr:e1 PLUS number_expr:e2      {: RESULT = e1 + e2; :}
+    | number_expr:e1 MINUS number_expr:e2   {: RESULT = e1 - e2; :}
+    | number_expr:e1 TIMES number_expr:e2   {: RESULT = e1 * e2; :}
+    | number_expr:e1 DIV number_expr:e2     {: RESULT = e1 / e2; :}
+    | number_expr:e1 MOD number_expr:e2     {: RESULT = e1 % e2; :}
+    | MINUS number_expr:e                   {: RESULT = -e; :}
+    | number_term:t                         {: RESULT = t; :}
+    | number_term:n1 error:e number_term:n2 {: report_error("Invalid operator " + e + " in expression.", null); :};
 
-identifier_expr ::= IDENTIFIER:id PLUS_PLUS
-                          {:
-                                TableRow row  = (TableRow) table.lookupSymbol(id);//Retrieve the row of the table where is stored.
-                                int value = (int) row.getValue();//Get the value from the row.
-                                value++;//Increment the value;
-                                row.setValue(value);//Set the value into the row again.      
-                          :}
-                | IDENTIFIER:id MINUS_MINUS
-                           {:
-                                TableRow row  = (TableRow) table.lookupSymbol(id);//Retrieve the row of the table where is stored.
-                                int value = (int) row.getValue();//Get the value from the row.
-                                value--;//Decrement the value;
-                                row.setValue(value);//Set the value into the row again.      
-                           :}
-                | PLUS_PLUS IDENTIFIER:id
-                            {:
-                                TableRow row  = (TableRow) table.lookupSymbol(id);//Retrieve the row of the table where is stored.
-                                int value = (int) row.getValue();//Get the value from the row.
-                                ++value;//Increment the value;
-                                row.setValue(value);//Set the value into the row again.      
-                            :}
-                | MINUS_MINUS IDENTIFIER:id
-                            {:
-                                TableRow row  = (TableRow) table.lookupSymbol(id);//Retrieve the row of the table where is stored.
-                                int value = (int) row.getValue();//Get the value from the row.
-                                --value;//Decrement the value;
-                                row.setValue(value);//Set the value into the row again.      
-                           :}
-                | IDENTIFIER;
+identifier_expr ::=
+    IDENTIFIER:id PLUS_PLUS
+    {:
+        /*
+        TableRow row = table.lookupSymbol(id);//Retrieve the row of the table where is stored.
+        int value = (int) row.getValue();//Get the value from the row.
+        try
+        {
+            RESULT = value;
+            row.setValue(++value);
+        }
+        catch (Exception ex)
+        {
+            report_error(ex.getMessage(), null);
+        }
+        */
+    :}
+    | IDENTIFIER:id MINUS_MINUS
+    {:
+        /*
+        TableRow row = table.lookupSymbol(id);//Retrieve the row of the table where is stored.
+        int value = (int) row.getValue();//Get the value from the row.
+        try
+        {
+            RESULT = value;
+            row.setValue(--value);
+        }
+        catch (Exception ex)
+        {
+            report_error(ex.getMessage(), null);
+        }
+        */
+    :}
+    | PLUS_PLUS IDENTIFIER:id
+    {:
+        /*
+        TableRow row = table.lookupSymbol(id);//Retrieve the row of the table where is stored.
+        int value = (int) row.getValue();//Get the value from the row.
+        try
+        {
+            row.setValue(++value);
+            RESULT = value;
+        }
+        catch (Exception ex)
+        {
+            report_error(ex.getMessage(), null);
+        }
+        */
+    :}
+    | MINUS_MINUS IDENTIFIER:id
+    {:
+        /*
+        TableRow row = table.lookupSymbol(id);//Retrieve the row of the table where is stored.
+        int value = (int) row.getValue();//Get the value from the row.
+        try
+        {
+            row.setValue(--value);
+            RESULT = value;
+        }
+        catch (Exception ex)
+        {
+            report_error(ex.getMessage(), null);
+        }
+        */
+   :}
+    | IDENTIFIER:id;
 
-byte_expr ::= byte_expr:b1 SHIFT_LEFT NUMBER:n {: RESULT = b << n; :}
-            | byte_expr SHIFT_RIGHT NUMBER     {: RESULT = b >> n; :}
-            | XBYTE:b; {: RESULT = b; :}
+byte_expr ::=
+    byte_expr:b SHIFT_LEFT NUMBER:n     {: RESULT = new Byte((byte) (b << n)); :}
+    | byte_expr:b SHIFT_RIGHT NUMBER:n  {: RESULT = new Byte((byte) (b >> n)); :}
+    | XBYTE:b                           {: RESULT = new Byte(b); :};
 
-literal_expr ::= literal_expr:e1 PLUS literal_expr:e2 {: RESULT = e1 + e2; :}
-               | literal_term:l {: RESULT = l; :};
+literal_expr ::=
+    literal_expr:e1 PLUS literal_expr:e2    {: RESULT = e1 + e2; :}
+    | literal_term:l                        {: RESULT = l; :};
 
-assignment_operator ::= ASSIGNMENT
-                        | PLUS_EQUALS
-                        | MINUS_EQUALS
-                        | DIV_EQUALS
-                        | TIMES_EQUALS
-                        | SHIFT_LEFT_EQUALS
-                        | SHIFT_RIGHT_EQUALS;
+assignment_operator ::=
+    ASSIGNMENT
+    | PLUS_EQUALS
+    | MINUS_EQUALS
+    | DIV_EQUALS
+    | TIMES_EQUALS
+    | SHIFT_LEFT_EQUALS
+    | SHIFT_RIGHT_EQUALS;
 
-assignment_expr ::= IDENTIFIER:id assignment_operator expr:e
-                            {:
-                                TableRow row  = (TableRow) table.lookupSymbol(id);//Retrieve the row of the table where is stored.
-                                if(e.getClass().equals(getDataType(row.getType)))
-                                {
-                                        row.setValue(e);//Set the value into the row.
-                                }
-                                else
-                                {
-                                    report_error("Incompatible data type.", null);
-                                }
-                                                       
-                            :}
-                  | IDENTIFIER:i assignment_operator {: report_error("Expected expression in assigment of " + i + " .", null); :}
-                  | assignment_operator expr {: report_error("Expected identifier in assigment.", null); :}
-                  | assignment_operator {: report_error("Expected identifier and expression in assigment.", null); :};
+assignment_expr ::= 
+    IDENTIFIER:id assignment_operator expr:e
+    {:
+        TableRow row  = table.lookupSymbol(id);//Retrieve the row of the table where is stored.
+        if (row != null)
+        {
+            try
+            {
+                row.setValue(e);
+                RESULT = e;
+            }
+            catch (Exception ex)
+            {
+                report_error(ex.getMessage(), null);
+            }
+        }
+        else
+        {
+            report_error("Symbol " + id + " not declared.", null);
+        }
+    :}
+    | IDENTIFIER:i assignment_operator {: report_error("Expected expression in assigment of " + i + " .", null); :}
+    | assignment_operator expr {: report_error("Expected identifier in assigment.", null); :}
+    | assignment_operator {: report_error("Expected identifier and expression in assigment.", null); :};
 
-condition_operator ::= EQUALS
-                    | NOT_EQUALS
-                    | GREATER_THAN
-                    | LESS_THAN
-                    | GREATER_EQUALS_THAN
-                    | LESS_EQUALS_THAN;
+condition_operator ::=
+    EQUALS
+    | NOT_EQUALS
+    | GREATER_THAN
+    | LESS_THAN
+    | GREATER_EQUALS_THAN
+    | LESS_EQUALS_THAN;
 
-condition ::= LPAREN condition RPAREN
-            | expr condition_operator expr 
-            | expr
-            | condition_operator expr {: report_error("Expected expression in condition.", null); :};
+condition ::=
+    LPAREN condition RPAREN
+    | expr condition_operator expr 
+    | expr
+    | condition_operator expr {: report_error("Expected expression in condition.", null); :};
 
-condition_list_operator ::= AND | OR | XOR;
+condition_list_operator ::=
+    AND
+    | OR
+    | XOR;
 
-condition_list ::= LPAREN condition_list RPAREN
-                 | condition_list condition_list_operator condition_list
-                 | NOT condition_list
-                 | condition
-                 | condition_list_operator condition_list {: report_error("Missing condition in condition list.", null); :}
-                 | NOT error {: report_error("Missing condition in condition list.", null); :};
+condition_list ::=
+    LPAREN condition_list RPAREN
+    | condition_list condition_list_operator condition_list
+    | NOT condition_list
+    | condition
+    | condition_list_operator condition_list {: report_error("Missing condition in condition list.", null); :}
+    | NOT error {: report_error("Missing condition in condition list.", null); :};
 
-identifier_list ::= identifier_list:il COMMA IDENTIFIER:id
-                    {:
-                        il.add(id);
-                        RESULT = il;
-                    :}
-                  | IDENTIFIER:id
-                    {:
-                        List<String> list = new LinkedList();
-                        list.add(id);
-                        RESULT = list;  
-                    :}
-                  | identifier_list IDENTIFIER {: report_error("Missing comma in identifier list.", null); :}
-                  | identifier_list COMMA error {: report_error("Missing identifier in identifier list.", null); :};
+identifier_list ::=
+    identifier_list:il COMMA IDENTIFIER:id
+    {:
+        il.add(id);
+        RESULT = il;
+    :}
+    | IDENTIFIER:id
+    {:
+        List<String> list = new LinkedList();
+        list.add(id);
+        RESULT = list;  
+    :}
+    | identifier_list IDENTIFIER {: report_error("Missing comma in identifier list.", null); :}
+    | identifier_list COMMA error {: report_error("Missing identifier in identifier list.", null); :};
 
-data_type ::= STRING:type   {: RESULT = type; :}
-            | CHAR:type     {: RESULT = type; :}
-            | REAL:type     {: RESULT = type; :}
-            | BYTE:type     {: RESULT = type; :}
-            | INT:type      {: RESULT = type; :}
-            | LONGINT:type  {: RESULT = type; :}
-            | SHORTINT:type {: RESULT = type; :}
-            | BOOLEAN:type  {: RESULT = type; :};
+data_type ::=
+    STRING:type     {: RESULT = type; :}
+    | CHAR:type     {: RESULT = type; :}
+    | REAL:type     {: RESULT = type; :}
+    | BYTE:type     {: RESULT = type; :}
+    | INT:type      {: RESULT = type; :}
+    | LONGINT:type  {: RESULT = type; :}
+    | SHORTINT:type {: RESULT = type; :}
+    | BOOLEAN:type  {: RESULT = type; :};
 
-array_data_type ::= CHAR:type       {: RESULT = type; :}
-                  | INT:type        {: RESULT = type; :}
-                  | LONGINT:type    {: RESULT = type; :}
-                  | SHORTINT:type   {: RESULT = type; :};
+array_data_type ::=
+    CHAR:type           {: RESULT = type; :}
+    | INT:type          {: RESULT = type; :}
+    | LONGINT:type      {: RESULT = type; :}
+    | SHORTINT:type     {: RESULT = type; :};
 
 variable_declaration  ::= 
-                 identifier_list:il COLON data_type:type SEMI
-                 {:
-                    for (String id : il)
-                    {
-                        TableRow row = new TableRow(id, type);
-                        table.declareSymbol(id, row); 
-                    }
-                 :}
-               | identifier_list:il COLON ARRAY:type LBRACKET NUMBER:n1 DOT DOT NUMBER:n2 RBRACKET OF array_data_type:array_type SEMI
-                 {:
-                    for (String id : il)
-                    {
-                        ArrayTableRow row = new ArrayTableRow(id, type, array_type, n2 - n1);
-                        table.declareSymbol(id, row);
-                    }
-                 :}
-               | identifier_list data_type SEMI {: report_error("Missing colon in declaration.", null); :}
-               | identifier_list COLON SEMI {: report_error("Missing data type in declaration.", null); :};
+    identifier_list:il COLON data_type:type SEMI
+    {:
+       List<TableRow> list = new LinkedList();
+       for (String id : il)
+       {
+           TableRow row = new TableRow(id, type);
+           list.add(row);
+       }
+       RESULT = list;
+    :}
+    | identifier_list:il COLON ARRAY:type LBRACKET NUMBER:n1 DOT DOT NUMBER:n2 RBRACKET OF array_data_type:array_type SEMI
+    {:
+       List<TableRow> list = new LinkedList();
+       for (String id : il)
+       {
+           ArrayTableRow row = new ArrayTableRow(id, type, array_type, n2 - n1);
+           list.add(row);
+       }
+       RESULT = list;
+    :}
+    | identifier_list data_type SEMI {: report_error("Missing colon in declaration.", null); :}
+    | identifier_list COLON SEMI {: report_error("Missing data type in declaration.", null); :};
 
-variable_declaration_list ::= variable_declaration_list variable_declaration 
-                   | variable_declaration;
+variable_declaration_list ::=
+    variable_declaration_list:list variable_declaration:v
+    {:
+        list.addAll(v);
+        RESULT = list;
+    :}
+    | variable_declaration:v
+    {:
+        RESULT = v;
+    :};
 
-variable_declaration_block ::= VAR variable_declaration_list END | /* Epsilon */ ;
+variable_declaration_block ::=
+    VAR variable_declaration_list:list END
+    {:
+        RESULT = list;
+    :}
+    | /* Epsilon */
+    {:
+        RESULT = new LinkedList();
+    :};
 
-constant_declaration ::= IDENTIFIER:id EQUALS expr:e SEMI
-                            {:
-                                TableRow row = new TableRow(id, null);
-                                row.setValue(e);
-                                table.declareSymbol(id, row);
-                            :}        
-                    | IDENTIFIER expr SEMI {: report_error("Missing operator in declaration.", null); :}
-                    | IDENTIFIER EQUALS SEMI {: report_error("Missing espression in declaration.", null); :};
+constant_declaration ::=
+    IDENTIFIER:id EQUALS expr:e SEMI
+    {:
+        TableRow row = new TableRow(id, -1, e, true);
+        RESULT = row;
+    :}
+    | IDENTIFIER expr SEMI {: report_error("Missing operator in declaration.", null); :}
+    | IDENTIFIER EQUALS SEMI {: report_error("Missing espression in declaration.", null); :};
 
-constant_declaration_list ::= constant_declaration_list constant_declaration
-                            | constant_declaration;
+constant_declaration_list ::=
+    constant_declaration_list:list constant_declaration:c
+    {:
+        list.add(c);
+        RESULT = list;
+    :}
+    | constant_declaration:c
+    {:
+        List<TableRow> list = new LinkedList();
+        list.add(c);
+        RESULT = list;
+    :};
 
-constant_declaration_block ::= CONST constant_declaration_list END | /* Epsilon */ ;
+constant_declaration_block ::=
+    CONST constant_declaration_list:list END
+    {:
+        RESULT = list;
+    :}
+    | /* Epsilon */
+    {:
+        RESULT = new LinkedList();
+    :};
 
-declaration_block ::= constant_declaration_block variable_declaration_block;
+declaration_block ::=
+    constant_declaration_block:l1 variable_declaration_block:l2
+    {:
+        List<TableRow> list = new LinkedList();
+        list.addAll(l1);
+        list.addAll(l2);
+
+        table.pushScope();
+        for (TableRow row : list)
+        {
+            table.declareSymbol(row);
+        }
+
+        RESULT = list;
+    :};
 
 parameter_declaration ::= data_type:type IDENTIFIER:id
-                          {:
-                                RESULT = new TableRow(id, type);
-                          :}
-                        | error IDENTIFIER {: report_error("Missing data type in paramater declaration.", null); :}
-                        | data_type error {: report_error("Missing identifier in parameter declaration.", null); :};
+    {:
+          RESULT = new TableRow(id, type);
+    :}
+    | error IDENTIFIER {: report_error("Missing data type in paramater declaration.", null); :}
+    | data_type error {: report_error("Missing identifier in parameter declaration.", null); :};
 
 parameter_declaration_list ::= 
-                   parameter_declaration_list:l COMMA parameter_declaration:p
-                   {:
-                        l.add(p);
-                        RESULT = l;
-                   :}
-                 | parameter_declaration:p
-                   {:
-                        List<TableRow> list = new LinkedList();
-                        list.add(p);
-                        RESULT = list;
-                   :}
-                 | /* Epsilon */
-                   {:
-                        RESULT = new LinkedList<TableRow>();
-                   :};
+    parameter_declaration_list:l COMMA parameter_declaration:p
+    {:
+         l.add(p);
+         RESULT = l;
+    :}
+    | parameter_declaration:p
+    {:
+         List<TableRow> list = new LinkedList();
+         list.add(p);
+         RESULT = list;
+    :}
+    | /* Epsilon */
+    {:
+         RESULT = new LinkedList();
+    :};
 
-parameter_list_forced ::= parameter_list_forced COMMA expr
-                | expr;
+parameter_list_forced ::=
+    parameter_list_forced COMMA expr
+    | expr;
 
-parameter_list ::= parameter_list COMMA expr
-                | expr
-                | /* Epsilon */
-                | error {: report_error("Missing expression in parameter list.", null); :};
+parameter_list ::= 
+    parameter_list COMMA expr
+    | expr
+    | /* Epsilon */
+    | error {: report_error("Missing expression in parameter list.", null); :};
 
 sentence_item ::= assignment_expr | expr;
 
@@ -376,60 +482,77 @@ sentence ::= sentence_item SEMI;
 
 code_block_item ::= sentence | for_statement | while_statement | repeat_statement | if_statement | case_statement;
 
-code_block ::= code_block code_block_item
-             | code_block_item;
+code_block ::= code_block code_block_item | code_block_item;
 
-for_statement ::= FOR IDENTIFIER ASSIGNMENT expr TO expr DO BEGIN code_block END
-                | FOR ASSIGNMENT expr TO expr DO BEGIN code_block END {: report_error("Missing identifier in for statement.", null); :}
-                | FOR IDENTIFIER expr TO expr DO BEGIN code_block END {: report_error("Missing assignment in for statement.", null); :}
-                | FOR IDENTIFIER ASSIGNMENT TO expr DO BEGIN code_block END {: report_error("Missing expression in for statement.", null); :}
-                | FOR IDENTIFIER ASSIGNMENT expr expr DO BEGIN code_block END {: report_error("Missing reserved word in for statement.", null); :}
-                | FOR IDENTIFIER ASSIGNMENT expr TO error DO BEGIN code_block END {: report_error("Missing expression in for statement.", null); :};
+for_statement ::=
+    FOR IDENTIFIER ASSIGNMENT expr TO expr DO BEGIN code_block END
+    | FOR ASSIGNMENT expr TO expr DO BEGIN code_block END {: report_error("Missing identifier in for statement.", null); :}
+    | FOR IDENTIFIER expr TO expr DO BEGIN code_block END {: report_error("Missing assignment in for statement.", null); :}
+    | FOR IDENTIFIER ASSIGNMENT TO expr DO BEGIN code_block END {: report_error("Missing expression in for statement.", null); :}
+    | FOR IDENTIFIER ASSIGNMENT expr expr DO BEGIN code_block END {: report_error("Missing reserved word in for statement.", null); :}
+    | FOR IDENTIFIER ASSIGNMENT expr TO error DO BEGIN code_block END {: report_error("Missing expression in for statement.", null); :};
 
-while_statement ::= WHILE condition_list DO BEGIN code_block END
-                | WHILE error END {: report_error("Error in while statement.", null); :};
+while_statement ::= 
+    WHILE condition_list DO BEGIN code_block END
+    | WHILE error END {: report_error("Error in while statement.", null); :};
 
-repeat_statement ::= REPEAT code_block UNTIL condition_list
-                    | REPEAT code_block UNTIL error {: report_error("Missing condition in repeat statement.", null); :};
+repeat_statement ::=
+    REPEAT code_block UNTIL condition_list
+    | REPEAT code_block UNTIL error {: report_error("Missing condition in repeat statement.", null); :};
 
-if_statement ::= IF condition_list THEN code_block ELSE code_block END
-                | IF condition_list THEN code_block END
-                | IF condition_list THEN error {: report_error("Missing sentence in if statement.", null); :}
-                | IF condition_list THEN code_block ELSE error {: report_error("Missing else sentence in if statement.", null); :};
+if_statement ::= 
+    IF condition_list THEN code_block ELSE code_block END
+    | IF condition_list THEN code_block END
+    | IF condition_list THEN error {: report_error("Missing sentence in if statement.", null); :}
+    | IF condition_list THEN code_block ELSE error {: report_error("Missing else sentence in if statement.", null); :};
 
-case_item ::= expr COLON sentence
-            | expr sentence {: report_error("Missing colon in case item.", null); :}
-            | expr COLON error {: report_error("Missing sentence in case item.", null); :}
-            | COLON sentence {: report_error("Missing expression in case item.", null); :};
+case_item ::=
+    expr COLON sentence
+    | expr sentence {: report_error("Missing colon in case item.", null); :}
+    | expr COLON error {: report_error("Missing sentence in case item.", null); :}
+    | COLON sentence {: report_error("Missing expression in case item.", null); :};
 
-case_list ::= case_list case_item
-            | case_item;
+case_list ::= case_list case_item | case_item;
 
-case_statement ::= CASE IDENTIFIER OF case_list ELSE sentence
-                | CASE error ELSE {: report_error("Error in case statement.", null); :}
-                | CASE IDENTIFIER OF case_list ELSE error {: report_error("Invalid sentence in case statement.", null); :};
+case_statement ::= 
+    CASE IDENTIFIER OF case_list ELSE sentence
+    | CASE error ELSE {: report_error("Error in case statement.", null); :}
+    | CASE IDENTIFIER OF case_list ELSE error {: report_error("Invalid sentence in case statement.", null); :};
 
-function ::= FUNCTION IDENTIFIER LPAREN parameter_declaration_list:p RPAREN COLON data_type BEGIN declaration_block code_block END
-            | FUNCTION error END {: report_error("Error in function declaration.", null); :};
+function ::= 
+    FUNCTION IDENTIFIER LPAREN parameter_declaration_list:p RPAREN COLON data_type BEGIN declaration_block:vars code_block END
+    {:
+        table.popScope();
+    :}
+    | FUNCTION error END {: report_error("Error in function declaration.", null); :};
 
-procedure ::= PROCEDURE IDENTIFIER LPAREN parameter_declaration_list RPAREN BEGIN declaration_block code_block END
-            | PROCEDURE error END  {: report_error("Error in procedure declaration.", null); :} ;
+procedure ::=
+    PROCEDURE IDENTIFIER LPAREN parameter_declaration_list RPAREN BEGIN declaration_block:vars code_block END
+    {:
+        table.popScope();
+    :}
+    | PROCEDURE error END  {: report_error("Error in procedure declaration.", null); :} ;
 
 function_item ::= function | procedure;
 
-function_list ::= function_list function_item
-                | function_item;
+function_list ::= function_list function_item | function_item;
 
 functions_declaration ::= function_list | /* Epsilon */;
 
 function_read ::= READ LPAREN parameter_list RPAREN;
 
-function_write ::= WRITE LPAREN parameter_list_forced RPAREN
-                | WRITE LPAREN RPAREN {: report_error("Function write must have at least one parameter.", null); :};
+function_write ::=
+    WRITE LPAREN parameter_list_forced RPAREN
+    | WRITE LPAREN RPAREN {: report_error("Function write must have at least one parameter.", null); :};
 
-function_call ::= IDENTIFIER LPAREN parameter_list RPAREN
-                | function_write
-                | function_read;
+function_call ::=
+    IDENTIFIER LPAREN parameter_list RPAREN
+    | function_write
+    | function_read;
 
-program ::= PROGRAM IDENTIFIER declaration_block functions_declaration BEGIN code_block END
-            | error {: report_error("Error in program.", null); :} ;
+program ::=
+    PROGRAM IDENTIFIER declaration_block:vars functions_declaration BEGIN code_block END
+    {:
+        table.popScope();
+    :}
+    | error {: report_error("Error in program.", null); :} ;

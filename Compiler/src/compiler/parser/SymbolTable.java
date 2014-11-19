@@ -27,8 +27,10 @@ public class SymbolTable
         return this.currentScope; 
     }
     
-    public void declareSymbol(String identifier, TableRow row) throws Exception
+    public void declareSymbol(TableRow row) throws Exception
     {
+        String identifier = row.getIdentifier();
+        
         if (!currentScope.haveSymbol(identifier))
         {
             this.currentScope.enterSymbol(identifier, row);
