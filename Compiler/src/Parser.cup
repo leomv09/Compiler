@@ -240,16 +240,25 @@ identifier_expr ::=
         try
         {
             TableRow row = table.lookupSymbol(id); //Retrieve the row of the table where is stored.
-            if (row.getValue() instanceof Double)
+            if(row.getValue() != null)
             {
-                Double value = (Double) row.getValue(); //Get the value from the row.
-                RESULT = value;
-                row.setValue(++value);
+                if (row.getValue() instanceof Number)
+                {
+                    Double value = (Double) row.getValue(); //Get the value from the row.
+                    RESULT = value;
+                    row.setValue(value++);
+                }
+                else
+                {
+                    report_error("Bad operand " + row.getTypeName() + " for operator ++.", null);
+                }
             }
             else
             {
-                report_error("Bad operant " + row.getTypeName() + " for operator ++.", null);
+                report_error("Variable not initialized" , null);
             }
+
+                    
         }
         catch (Exception ex)
         {
@@ -340,8 +349,6 @@ byte_expr ::=
 literal_expr ::=
     literal_expr:e1 PLUS literal_expr:e2    {: RESULT = e1 + e2; :}
     | literal_term:l                        {: RESULT = l; :};
-
-return_block ::= IDENTIFIER:id assignment_operator expr:e;
 
 assignment_expr ::= 
     IDENTIFIER:id assignment_operator expr:e
@@ -474,7 +481,6 @@ declaration_block ::=
         list.addAll(l1);
         list.addAll(l2);
 
-        table.pushScope();
         for (TableRow row : list)
         {
             table.declareSymbol(row);
@@ -493,13 +499,16 @@ parameter_declaration ::= data_type:type IDENTIFIER:id
 parameter_declaration_list ::= 
     parameter_declaration_list:l COMMA parameter_declaration:p
     {:
-         l.add(p);
-         RESULT = l;
+        l.add(p);
+        table.declareSymbol(p);
+        RESULT = l;
     :}
     | parameter_declaration:p
     {:
          List<TableRow> list = new LinkedList();
          list.add(p);
+         table.pushScope();
+         table.declareSymbol(p);
          RESULT = list;
     :}
     | /* Epsilon */
@@ -593,13 +602,23 @@ case_statement ::=
     | CASE error ELSE {: report_error("Error in case statement.", null); :}
     | CASE IDENTIFIER OF case_list ELSE error {: report_error("Invalid sentence in case statement.", null); :};
 
+return_block ::= IDENTIFIER:id assignment_operator expr:e {: RESULT = e; :};
+
 function ::= 
-    FUNCTION IDENTIFIER:id LPAREN parameter_declaration_list:p RPAREN COLON data_type:dt BEGIN declaration_block:vars code_block return_block END
+    FUNCTION IDENTIFIER:id LPAREN parameter_declaration_list:p RPAREN COLON data_type:dt BEGIN declaration_block:vars code_block return_block:rb END
     {:
         FunctionTableRow functionRow = new FunctionTableRow(id, ParserSym.FUNCTION, dt);
         functionRow.setParameters(p);
-        table.declareSymbol(functionRow);
-        table.popScope();
+        if(rb.getClass().isAssignableFrom((functionRow.getDataType())))
+        {
+            table.declareSymbol(functionRow);
+            table.popScope();
+        }
+        else
+        {
+            report_error("Incompatible return data type.", null);
+        }
+        
     :}
     | FUNCTION error END {: report_error("Error in function declaration.", null); :};
 
@@ -658,6 +677,7 @@ function_call ::=
 program ::=
     PROGRAM IDENTIFIER declaration_block:vars functions_declaration BEGIN code_block END
     {:
+        table.pushScope();
         table.popScope();
     :}
     | error {: report_error("Error in program.", null); :} ;
