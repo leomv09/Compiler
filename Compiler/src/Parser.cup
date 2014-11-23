@@ -506,13 +506,34 @@ parameter_declaration_list ::=
     :};
 
 parameter_list_forced ::=
-    parameter_list_forced COMMA expr
-    | expr;
+    parameter_list_forced:pl COMMA expr:e
+    {:
+         pl.add(e);
+         RESULT = l;
+    :}
+    | expr:e
+    {:
+         List<Object> list = new LinkedList();
+         list.add(e);
+         RESULT = list;
+    :};
 
 parameter_list ::= 
-    parameter_list COMMA expr
-    | expr
+    parameter_list:pl COMMA expr:e
+    {:
+         pl.add(e);
+         RESULT = pl;
+    :}
+    | expr:e
+    {:
+         List<Object> list = new LinkedList();
+         list.add(e);
+         RESULT = list;
+    :}
     | /* Epsilon */
+    {:
+         RESULT = new LinkedList();
+    :}
     | error {: report_error("Missing expression in parameter list.", null); :};
 
 sentence_item ::= assignment_expr | expr;
@@ -559,15 +580,21 @@ case_statement ::=
     | CASE IDENTIFIER OF case_list ELSE error {: report_error("Invalid sentence in case statement.", null); :};
 
 function ::= 
-    FUNCTION IDENTIFIER LPAREN parameter_declaration_list:p RPAREN COLON data_type BEGIN declaration_block:vars code_block END
+    FUNCTION IDENTIFIER:id LPAREN parameter_declaration_list:p RPAREN COLON data_type:dt BEGIN declaration_block:vars code_block END
     {:
+        FunctionTableRow functionRow = new FunctionTableRow(id, ParserSym.FUNCTION, dt);
+        functionRow.setParameters(p);
+        table.declareSymbol(functionRow);
         table.popScope();
     :}
     | FUNCTION error END {: report_error("Error in function declaration.", null); :};
 
 procedure ::=
-    PROCEDURE IDENTIFIER LPAREN parameter_declaration_list RPAREN BEGIN declaration_block:vars code_block END
+    PROCEDURE IDENTIFIER:id LPAREN parameter_declaration_list:p RPAREN BEGIN declaration_block:vars code_block END
     {:
+        FunctionTableRow procedureRow = new FunctionTableRow(id, ParserSym.PROCEDURE, ParserSym.NIL);
+        procedureRow.setParameters(p);
+        table.declareSymbol(procedureRow);
         table.popScope();
     :}
     | PROCEDURE error END  {: report_error("Error in procedure declaration.", null); :} ;
@@ -585,7 +612,32 @@ function_write ::=
     | WRITE LPAREN RPAREN {: report_error("Function write must have at least one parameter.", null); :};
 
 function_call ::=
-    IDENTIFIER LPAREN parameter_list RPAREN
+    IDENTIFIER:id LPAREN parameter_list:pl RPAREN
+    {:
+        try
+        {
+            FunctionTableRow functionRow  = (FunctionTableRow)table.lookupSymbol(id); //Retrieve the row of the table where is stored.
+            List<TableRow> functionParameters = functionRow.getParameters();
+            int expectedParameters = functionParameters.size();
+            int givenParameters = pl.size();
+            if(givenParameters == expectedParameters)
+            {
+                for(int i = 0; i < expectedParameters; i++)
+                {//Set the value for each parameter of the function, acording to the values given in the parameter list in the function call.
+                    TableRow parameterRow = functionParameters.get(i);
+                    parameterRow.setValue(pl.get(i));
+                }
+            }
+            else
+            {
+                report_error("Argument list difer in length. Expected "+expectedParameters +" Got " + givenParameters, null);
+            }           
+        }
+        catch (Exception ex)
+        {
+            report_error(ex.getMessage(), null);
+        }
+    :}
     | function_write
     | function_read;
 

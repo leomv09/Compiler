@@ -2830,7 +2830,16 @@ class CUP$Parser$actions {
           case 108: // parameter_list_forced ::= parameter_list_forced COMMA expr 
             {
               Object RESULT =null;
-
+		int plleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int plright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		Object pl = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		
+         pl.add(e);
+         RESULT = l;
+    
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("parameter_list_forced",32, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2839,7 +2848,14 @@ class CUP$Parser$actions {
           case 109: // parameter_list_forced ::= expr 
             {
               Object RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		
+         List<Object> list = new LinkedList();
+         list.add(e);
+         RESULT = list;
+    
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("parameter_list_forced",32, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2848,7 +2864,16 @@ class CUP$Parser$actions {
           case 110: // parameter_list ::= parameter_list COMMA expr 
             {
               Object RESULT =null;
-
+		int plleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int plright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		Object pl = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		
+         pl.add(e);
+         RESULT = pl;
+    
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("parameter_list",31, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2857,7 +2882,14 @@ class CUP$Parser$actions {
           case 111: // parameter_list ::= expr 
             {
               Object RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		
+         List<Object> list = new LinkedList();
+         list.add(e);
+         RESULT = list;
+    
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("parameter_list",31, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2866,7 +2898,9 @@ class CUP$Parser$actions {
           case 112: // parameter_list ::= 
             {
               Object RESULT =null;
-
+		
+         RESULT = new LinkedList();
+    
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("parameter_list",31, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -3190,13 +3224,22 @@ class CUP$Parser$actions {
           case 148: // function ::= FUNCTION IDENTIFIER LPAREN parameter_declaration_list RPAREN COLON data_type BEGIN declaration_block code_block END 
             {
               Object RESULT =null;
+		int idleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-9)).left;
+		int idright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-9)).right;
+		String id = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-9)).value;
 		int pleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-7)).left;
 		int pright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-7)).right;
 		List<TableRow> p = (List<TableRow>)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-7)).value;
+		int dtleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).left;
+		int dtright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).right;
+		Integer dt = (Integer)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-4)).value;
 		int varsleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
 		int varsright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		List<TableRow> vars = (List<TableRow>)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		
+        FunctionTableRow functionRow = new FunctionTableRow(id, ParserSym.FUNCTION, dt);
+        functionRow.setParameters(p);
+        table.declareSymbol(functionRow);
         table.popScope();
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("function",44, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-10)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -3216,10 +3259,19 @@ class CUP$Parser$actions {
           case 150: // procedure ::= PROCEDURE IDENTIFIER LPAREN parameter_declaration_list RPAREN BEGIN declaration_block code_block END 
             {
               Object RESULT =null;
+		int idleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-7)).left;
+		int idright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-7)).right;
+		String id = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-7)).value;
+		int pleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-5)).left;
+		int pright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-5)).right;
+		List<TableRow> p = (List<TableRow>)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-5)).value;
 		int varsleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
 		int varsright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		List<TableRow> vars = (List<TableRow>)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		
+        FunctionTableRow procedureRow = new FunctionTableRow(id, ParserSym.PROCEDURE, ParserSym.NIL);
+        procedureRow.setParameters(p);
+        table.declareSymbol(procedureRow);
         table.popScope();
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("procedure",45, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-8)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -3320,7 +3372,37 @@ class CUP$Parser$actions {
           case 161: // function_call ::= IDENTIFIER LPAREN parameter_list RPAREN 
             {
               Object RESULT =null;
-
+		int idleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).left;
+		int idright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
+		String id = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
+		int plleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
+		int plright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
+		Object pl = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
+		
+        try
+        {
+            FunctionTableRow functionRow  = (FunctionTableRow)table.lookupSymbol(id); //Retrieve the row of the table where is stored.
+            List<TableRow> functionParameters = functionRow.getParameters();
+            int expectedParameters = functionParameters.size();
+            int givenParameters = pl.size();
+            if(givenParameters == expectedParameters)
+            {
+                for(int i = 0; i < expectedParameters; i++)
+                {//Set the value for each parameter of the function, acording to the values given in the parameter list in the function call.
+                    TableRow parameterRow = functionParameters.get(i);
+                    parameterRow.setValue(pl.get(i));
+                }
+            }
+            else
+            {
+                report_error("Argument list difer in length. Expected "+expectedParameters +" Got " + givenParameters, null);
+            }           
+        }
+        catch (Exception ex)
+        {
+            report_error(ex.getMessage(), null);
+        }
+    
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("function_call",27, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;

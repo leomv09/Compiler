@@ -60,7 +60,7 @@ public class TableRow
     {
         if (this.isConstant())
         {
-            throw new Exception("Can not change value of constant.");
+            throw new Exception("Constant values cannot be changed.");
         }
         else if (!this.getDataType().isInstance(value))
         {
