@@ -10,6 +10,40 @@ public class TableRow
     private final int type;
     private boolean constant;
     protected Object value;
+    
+    public static Class getDataType(int type)
+    {
+        Class dataType;
+
+        switch (type)
+        {
+            case ParserSym.INT:
+            case ParserSym.LONGINT:
+            case ParserSym.SHORTINT:
+                dataType = Number.class;
+                break;
+            case ParserSym.REAL:
+                dataType = Double.class;
+                break;
+            case ParserSym.STRING:
+                dataType = String.class;
+                break;
+            case ParserSym.BYTE:
+                dataType = Byte.class;
+                break;
+            case ParserSym.CHAR:
+                dataType = Character.class;
+                break;
+            case ParserSym.BOOLEAN:
+                dataType = Boolean.class;
+                break;
+            default:
+                dataType = Object.class;
+                break;
+        }
+
+        return dataType;
+    }
 
     public TableRow(String identifier, int type)
     {
@@ -76,33 +110,7 @@ public class TableRow
     
     public Class getDataType()
     {
-        Class dataType = null;
-
-        switch (this.type)
-        {
-            case ParserSym.INT:
-            case ParserSym.LONGINT:
-            case ParserSym.SHORTINT:
-                dataType = Number.class;
-                break;
-            case ParserSym.REAL:
-                dataType = Double.class;
-                break;
-            case ParserSym.STRING:
-                dataType = String.class;
-                break;
-            case ParserSym.BYTE:
-                dataType = Byte.class;
-                break;
-            case ParserSym.CHAR:
-                dataType = Character.class;
-                break;
-            case ParserSym.BOOLEAN:
-                dataType = Boolean.class;
-                break;
-        }
-
-        return dataType;
+        return TableRow.getDataType(this.type);
     }
     
     public String getTypeName()

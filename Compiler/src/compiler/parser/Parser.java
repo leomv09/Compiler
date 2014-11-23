@@ -3294,7 +3294,8 @@ class CUP$Parser$actions {
 		
         FunctionTableRow functionRow = new FunctionTableRow(id, ParserSym.FUNCTION, dt);
         functionRow.setParameters(p);
-        if(rb.getClass().isAssignableFrom((functionRow.getDataType())))
+
+        if((functionRow.getReturnDataType()).isAssignableFrom(rb.getClass()))
         {
             table.declareSymbol(functionRow);
             table.popScope();
@@ -3444,7 +3445,7 @@ class CUP$Parser$actions {
 		
         try
         {
-            FunctionTableRow functionRow  = (FunctionTableRow)table.lookupSymbol(id); //Retrieve the row of the table where is stored.
+            FunctionTableRow functionRow  = (FunctionTableRow) table.lookupSymbol(id); //Retrieve the row of the table where is stored.
             List<TableRow> functionParameters = functionRow.getParameters();
             int expectedParameters = functionParameters.size();
             int givenParameters = pl.size();

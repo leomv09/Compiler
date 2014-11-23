@@ -32,4 +32,9 @@ public class FunctionTableRow extends TableRow
     {
         return (int) this.value;
     }
+    
+    public Class getReturnDataType()
+    {
+        return TableRow.getDataType(this.getReturnType());
+    }
 }
