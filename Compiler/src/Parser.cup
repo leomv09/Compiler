@@ -121,16 +121,17 @@ non terminal TableRow parameter_declaration, constant_declaration;
 non terminal List<TableRow> variable_declaration;
 non terminal List<TableRow> parameter_declaration_list, variable_declaration_list, constant_declaration_list;
 non terminal List<TableRow> variable_declaration_block, constant_declaration_block, declaration_block;
+non terminal List parameter_list,parameter_list_forced;
+non terminal FunctionTableRow function, procedure, function_item;
+non terminal List<FunctionTableRow> function_list, functions_declaration;
 
 non terminal assignment_operator, condition_operator, condition_list_operator;
 non terminal function_write, function_read, function_call;
 non terminal condition, condition_list;
-non terminal List parameter_list,parameter_list_forced;
 non terminal sentence_item, sentence, code_block_item, code_block, return_block;
 non terminal case_item, case_list;
 non terminal for_statement, while_statement, repeat_statement, if_statement, case_statement;
-non terminal function, procedure, function_block, procedure_block;
-non terminal function_item, function_list, functions_declaration, program;
+non terminal program;
 
 /* Precedences */
 precedence left AND, OR, XOR;
@@ -610,16 +611,15 @@ function ::=
         FunctionTableRow functionRow = new FunctionTableRow(id, ParserSym.FUNCTION, dt);
         functionRow.setParameters(p);
 
-        if((functionRow.getReturnDataType()).isAssignableFrom(rb.getClass()))
+        if(!(functionRow.getReturnDataType()).isAssignableFrom(rb.getClass()))
         {
-            table.declareSymbol(functionRow);
-            table.popScope();
+            report_error("Incompatible return data type.", null);;
         }
-        else
-        {
-            report_error("Incompatible return data type.", null);
-        }
-        
+
+        table.popScope();
+        table.declareSymbol(functionRow);
+
+        RESULT = functionRow;
     :}
     | FUNCTION error END {: report_error("Error in function declaration.", null); :};
 
@@ -628,16 +628,40 @@ procedure ::=
     {:
         FunctionTableRow procedureRow = new FunctionTableRow(id, ParserSym.PROCEDURE, ParserSym.NIL);
         procedureRow.setParameters(p);
-        table.declareSymbol(procedureRow);
+
         table.popScope();
+        table.declareSymbol(procedureRow);
+
+        RESULT = procedureRow;
     :}
     | PROCEDURE error END  {: report_error("Error in procedure declaration.", null); :} ;
 
-function_item ::= function | procedure;
+function_item ::=
+    function:f      {: RESULT = f; :}
+    | procedure:p   {: RESULT = p; :};
 
-function_list ::= function_list function_item | function_item;
+function_list ::=
+    function_list:l function_item:f
+    {:
+        l.add(f);
+        RESULT = l;
+    :}
+    | function_item:f
+    {:
+        List<FunctionTableRow> list = new LinkedList();
+        list.add(f);
+        RESULT = list;
+    :};
 
-functions_declaration ::= function_list | /* Epsilon */;
+functions_declaration ::=
+    function_list:l
+    {:
+        RESULT = l;
+    :}
+    | /* Epsilon */
+    {:
+        RESULT = new LinkedList<FunctionTableRow>();
+    :};
 
 function_read ::= READ LPAREN parameter_list RPAREN;
 
@@ -676,7 +700,7 @@ function_call ::=
     | function_read;
 
 program ::=
-    PROGRAM IDENTIFIER declaration_block:vars functions_declaration BEGIN code_block END
+    PROGRAM IDENTIFIER declaration_block:vars functions_declaration:funs BEGIN code_block END
     {:
         table.pushScope();
         table.popScope();
