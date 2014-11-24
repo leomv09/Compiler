@@ -192,6 +192,10 @@ COMENTARIOS = {COMENTARIO_LINEA} | {COMENTARIO_BLOQUE}
 
 "WRITE" { return newToken(ParserSym.WRITE); }
 
+"BREAK" { return newToken(ParserSym.BREAK); }
+
+"CONTINUE" { return newToken(ParserSym.CONTINUE); }
+
 "+" { return newToken(ParserSym.PLUS); }
 
 "++" { return newToken(ParserSym.PLUS_PLUS); }

@@ -11,8 +11,10 @@ class Parser;
 parser code {:
 
     private SymbolTable table;
+    private SemanticStack stack;
     private SyntacticAnalysisResult syntax_result;
     private SemanticAnalysisResult semantic_result;
+    private FileWriter writer;
     private boolean generateCode;
 
     public SyntacticAnalysisResult getSyntacticResult()
@@ -69,8 +71,10 @@ parser code {:
 init with {:
 
     this.table = new SymbolTable();
+    this.stack = SemanticStack.getInstance();
     this.syntax_result = new SyntacticAnalysisResult();
     this.semantic_result = new SemanticAnalysisResult();
+    this.writer = new FileWriter("out.asm");
     this.generateCode = true;
 
 :}
@@ -94,6 +98,8 @@ terminal SHIFT_LEFT, SHIFT_RIGHT, SHIFT_LEFT_EQUALS, SHIFT_RIGHT_EQUALS;
 
 // Palabras reservadas.
 terminal BEGIN, CASE, CONST, DO, DOWNTO, ELSE, END, FILE, FOR, FORWARD, GOTO, IF, IN, INLINE, LABEL, OF, PACKED, PROGRAM, READ, RECORD, REPEAT, SET, THEN, TO, TYPE, UNTIL, VAR, WHILE, WITH, WRITE;
+
+terminal BREAK, CONTINUE;
 
 // Otros
 terminal SEMI, COMMA, COLON, DOT;
@@ -130,6 +136,7 @@ non terminal function_write, function_read, function_call;
 non terminal condition, condition_list;
 non terminal sentence_item, sentence, code_block_item, code_block, return_block;
 non terminal case_item, case_list;
+non terminal iteration_item, iteration_block;
 non terminal for_statement, while_statement, repeat_statement, if_statement, case_statement;
 non terminal program;
 
@@ -556,8 +563,12 @@ code_block_item ::= sentence | for_statement | while_statement | repeat_statemen
 
 code_block ::= code_block code_block_item | code_block_item;
 
+iteration_item ::= code_block_item | BREAK SEMI | CONTINUE SEMI;
+
+iteration_block ::= iteration_block iteration_item | iteration_item;
+
 for_statement ::=
-    FOR IDENTIFIER:id ASSIGNMENT expr:e TO expr DO BEGIN code_block END
+    FOR IDENTIFIER:id ASSIGNMENT expr:e TO expr DO BEGIN iteration_block END
     {:
         try
         {
@@ -570,23 +581,31 @@ for_statement ::=
             report_error(ex.getMessage(), null);
         }
     :}
-    | FOR ASSIGNMENT expr TO expr DO BEGIN code_block END {: report_error("Missing identifier in for statement.", null); :}
-    | FOR IDENTIFIER expr TO expr DO BEGIN code_block END {: report_error("Missing assignment in for statement.", null); :}
-    | FOR IDENTIFIER ASSIGNMENT TO expr DO BEGIN code_block END {: report_error("Missing expression in for statement.", null); :}
-    | FOR IDENTIFIER ASSIGNMENT expr expr DO BEGIN code_block END {: report_error("Missing reserved word in for statement.", null); :}
-    | FOR IDENTIFIER ASSIGNMENT expr TO error DO BEGIN code_block END {: report_error("Missing expression in for statement.", null); :};
+    | FOR ASSIGNMENT expr TO expr DO BEGIN iteration_block END {: report_error("Missing identifier in for statement.", null); :}
+    | FOR IDENTIFIER expr TO expr DO BEGIN iteration_block END {: report_error("Missing assignment in for statement.", null); :}
+    | FOR IDENTIFIER ASSIGNMENT TO expr DO BEGIN iteration_block END {: report_error("Missing expression in for statement.", null); :}
+    | FOR IDENTIFIER ASSIGNMENT expr expr DO BEGIN iteration_block END {: report_error("Missing reserved word in for statement.", null); :}
+    | FOR IDENTIFIER ASSIGNMENT expr TO error DO BEGIN iteration_block END {: report_error("Missing expression in for statement.", null); :};
 
 while_statement ::= 
-    WHILE condition_list DO BEGIN code_block END
+    WHILE condition_list DO BEGIN iteration_block END
     | WHILE error END {: report_error("Error in while statement.", null); :};
 
 repeat_statement ::=
-    REPEAT code_block UNTIL condition_list
-    | REPEAT code_block UNTIL error {: report_error("Missing condition in repeat statement.", null); :};
+    REPEAT iteration_block UNTIL condition_list
+    | REPEAT iteration_block UNTIL error {: report_error("Missing condition in repeat statement.", null); :};
 
 if_statement ::= 
     IF condition_list THEN code_block ELSE code_block END
+    {:
+        IfSemanticRegistry registry = new IfSemanticRegistry();
+        stack.push(registry);
+    :}
     | IF condition_list THEN code_block END
+    {:
+        IfSemanticRegistry registry = new IfSemanticRegistry();
+        stack.push(registry);
+    :}
     | IF condition_list THEN error {: report_error("Missing sentence in if statement.", null); :}
     | IF condition_list THEN code_block ELSE error {: report_error("Missing else sentence in if statement.", null); :};
 
