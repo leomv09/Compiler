@@ -5,6 +5,7 @@ import compiler.scanner.Lexer;
 import compiler.SemanticAnalysisResult;
 import java.util.List;
 import java.util.LinkedList;
+import compiler.parser.Condition;
 
 class Parser;
 
@@ -69,14 +70,13 @@ parser code {:
 :};
 
 init with {:
-
     this.table = new SymbolTable();
     this.stack = SemanticStack.getInstance();
     this.syntax_result = new SyntacticAnalysisResult();
     this.semantic_result = new SemanticAnalysisResult();
     this.writer = new FileWriter("out.asm");
     this.generateCode = true;
-
+    this.writer.append("DATA Segment");
 :}
 
 /* Terminals (tokens returned by the scanner). */
@@ -133,7 +133,8 @@ non terminal List<FunctionTableRow> function_list, functions_declaration;
 
 non terminal assignment_operator, condition_operator, condition_list_operator;
 non terminal function_write, function_read, function_call;
-non terminal condition, condition_list;
+non terminal List<Condition> condition_list;
+non terminal Condition condition;
 non terminal sentence_item, sentence, code_block_item, code_block, return_block;
 non terminal case_item, case_list;
 non terminal iteration_item, iteration_block;
@@ -376,17 +377,29 @@ assignment_expr ::=
     | assignment_operator expr {: report_error("Expected identifier in assigment.", null); :}
     | assignment_operator {: report_error("Expected identifier and expression in assigment.", null); :};
 
+
+
 condition ::=
     LPAREN condition RPAREN
-    | expr condition_operator expr 
-    | expr
+    | expr:e1 EQUALS expr:e2 {: RESULT = new Condition(e1, ParserSym.EQUALS, e2); :}
+    | expr:e1 NOT_EQUALS expr:e2 {: RESULT = new Condition(e1, ParserSym.NOT_EQUALS, e2); :}
+    | expr:e1 GREATER_THAN expr:e2 {: RESULT = new Condition(e1, ParserSym.GREATER_THAN, e2); :}
+    | expr:e1 LESS_THAN expr:e2 {: RESULT = new Condition(e1, ParserSym.LESS_THAN, e2); :}
+    | expr:e1 GREATER_EQUALS_THAN expr:e2 {: RESULT = new Condition(e1, ParserSym.GREATER_EQUALS_THAN, e2); :}
+    | expr:e1 LESS_EQUALS_THAN expr:e2 {: RESULT = new Condition(e1, ParserSym.LESS_EQUALS_THAN, e2); :}
+    | expr:e {: RESULT = new Condition(e); :}
     | condition_operator expr {: report_error("Expected expression in condition.", null); :};
 
 condition_list ::=
     LPAREN condition_list RPAREN
-    | condition_list condition_list_operator condition_list
+    | condition_list:cl1 condition_list_operator:op condition_list:cl2
     | NOT condition_list
-    | condition
+    | condition:c
+    {:
+        List<Condition> list = new LinkedList();
+        list.add(c);
+        RESULT = list;
+    :}
     | condition_list_operator condition_list {: report_error("Missing condition in condition list.", null); :}
     | NOT error {: report_error("Missing condition in condition list.", null); :};
 
@@ -443,6 +456,13 @@ variable_declaration_list ::=
 variable_declaration_block ::=
     VAR variable_declaration_list:list END
     {:
+        for (TableRow var : list)
+       {
+            String asm = var.getIdentifier()+" resd   2";//Reserves two double word(8 bytes) for each variable.
+            writer.append(asm);//writes the asm code to the file.
+       }
+        writer.append("DATA EndS");
+        writer.append("CODE Segment");
         RESULT = list;
     :}
     | /* Epsilon */
@@ -596,10 +616,21 @@ repeat_statement ::=
     | REPEAT iteration_block UNTIL error {: report_error("Missing condition in repeat statement.", null); :};
 
 if_statement ::= 
-    IF condition_list THEN code_block ELSE code_block END
+    IF condition_list:cl THEN code_block ELSE code_block END
     {:
         IfSemanticRegistry registry = new IfSemanticRegistry();
         stack.push(registry);
+        String else_label = LabelGenerator.getInstance().getLabel("else_label");
+        String exit_label = LabelGenerator.getInstance().getLabel("exit_label");
+        Condition condition = cl.get(0);
+        String conditionCode = condition.getAssemblyCode();
+        writer.append(conditionCode+" "+else_label);
+        writer.append("If code block goes here"); 
+        writer.append("JMP "+exit_label); 
+        writer.append(else_label+":");
+        writer.append("Else code block goes here");
+        writer.append(exit_label+":");
+        writer.append("code block"); 
     :}
     | IF condition_list THEN code_block END
     {:
@@ -721,6 +752,7 @@ function_call ::=
 program ::=
     PROGRAM IDENTIFIER declaration_block:vars functions_declaration:funs BEGIN code_block END
     {:
+        writer.append("CODE EndS"); 
         table.pushScope();
         table.popScope();
     :}
