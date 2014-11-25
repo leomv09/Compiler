@@ -1,7 +1,9 @@
 package compiler.parser;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  *
@@ -42,5 +44,21 @@ public class SymbolTableScope
     public boolean haveSymbol(String identifier)
     {
         return this.table.containsKey(identifier);
+    }
+    
+    @Override
+    public String toString()
+    {
+        Iterator<Entry<String, TableRow>> iterator = this.table.entrySet().iterator();
+        StringBuilder sb = new StringBuilder();
+        TableRow row;
+        
+        while (iterator.hasNext())
+        {
+            row = iterator.next().getValue();
+            sb.append(row).append(System.lineSeparator());
+        }
+        
+        return sb.toString();
     }
 }

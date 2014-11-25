@@ -58,4 +58,22 @@ public class SymbolTable
 
         return value; 
     }
+
+    @Override
+    public String toString()
+    {
+        SymbolTableScope lookupScope = this.currentScope;
+        StringBuilder sb = new StringBuilder();
+        sb.append("--- SYMBOL TABLE ---").append(System.lineSeparator());
+        
+        while (lookupScope != null)
+        {
+            sb.append(lookupScope).append(System.lineSeparator());
+            lookupScope = lookupScope.getParentScope();
+        }
+        
+        return sb.toString();
+    }
+    
+    
 }

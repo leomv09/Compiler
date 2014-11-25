@@ -28,6 +28,11 @@ parser code {:
         return this.semantic_result;
     }
 
+    public SymbolTable getSymbolTable()
+    {
+        return this.table;
+    }
+
     public void setGenerateCode(boolean flag)
     {
         this.generateCode = flag;
