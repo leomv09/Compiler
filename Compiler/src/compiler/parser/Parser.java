@@ -3590,7 +3590,9 @@ class CUP$Parser$actions {
 		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RESULT = e; 
+		
+                    RESULT = e; 
+                 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("return_block",41, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -3625,7 +3627,8 @@ class CUP$Parser$actions {
 
         table.popScope();
         table.declareSymbol(functionRow);
-
+        writer.append(id+" proc");
+        writer.append("ret");
         RESULT = functionRow;
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("function",24, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-11)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);

@@ -705,7 +705,8 @@ function ::=
 
         table.popScope();
         table.declareSymbol(functionRow);
-
+        writer.append(id+" proc");
+        writer.append("ret");
         RESULT = functionRow;
     :}
     | FUNCTION error END {: report_error("Error in function declaration.", null); :};
