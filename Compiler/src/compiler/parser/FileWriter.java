@@ -17,6 +17,10 @@ public class FileWriter
     public FileWriter(String path) throws IOException
     {
         this.file = new File(path);
+        if (file.exists())
+        {
+            file.delete();
+        }
         this.writer =  new PrintWriter(new BufferedWriter(new java.io.FileWriter(file, true)));
     }
     

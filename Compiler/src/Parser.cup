@@ -71,7 +71,7 @@ parser code {:
 
 init with {:
     this.table = new SymbolTable();
-    this.stack = SemanticStack.getInstance();
+    this.stack = new SemanticStack();
     this.syntax_result = new SyntacticAnalysisResult();
     this.semantic_result = new SemanticAnalysisResult();
     this.writer = new FileWriter("out.asm");
@@ -234,13 +234,50 @@ expr ::=
     :};
 
 number_expr ::=
-    number_expr:e1 PLUS number_expr:e2      {: RESULT = e1 + e2; :}
-    | number_expr:e1 MINUS number_expr:e2   {: RESULT = e1 - e2; :}
-    | number_expr:e1 TIMES number_expr:e2   {: RESULT = e1 * e2; :}
-    | number_expr:e1 DIV number_expr:e2     {: RESULT = e1 / e2; :}
-    | number_expr:e1 MOD number_expr:e2     {: RESULT = e1 % e2; :}
-    | MINUS number_expr:e                   {: RESULT = -e; :}
-    | number_term:t                         {: RESULT = t; :}
+    number_expr:e1 PLUS number_expr:e2
+    {:
+        writer.append("MOV AX, " + e1);
+        writer.append("ADD AX, " + e2);
+        RESULT = e1 + e2;
+    :}
+    | number_expr:e1 MINUS number_expr:e2
+    {:
+        writer.append("MOV AX, " + e1);
+        writer.append("SUB AX, " + e2);
+        RESULT = e1 - e2;
+    :}
+    | number_expr:e1 TIMES number_expr:e2
+    {:
+        writer.append("MOV AX, " + e1);
+        writer.append("MUL AX, " + e2);
+        RESULT = e1 * e2;
+    :}
+    | number_expr:e1 DIV number_expr:e2
+    {:
+        writer.append("MOV DX, 0");
+        writer.append("MOV AX, " + e1);
+        writer.append("MOV BX, " + e2);
+        writer.append("DIV BX");
+        RESULT = e1 / e2; 
+    :}
+    | number_expr:e1 MOD number_expr:e2
+    {:
+        writer.append("MOV DX, 0");
+        writer.append("MOV AX, " + e1);
+        writer.append("MOV BX, " + e2);
+        writer.append("DIV BX");
+        RESULT = e1 % e2;
+    :}
+    | MINUS number_expr:e
+    {:
+        writer.append("MOV AX, 0");
+        writer.append("SUB AX, " + e);
+        RESULT = -e;
+    :}
+    | number_term:t
+    {:
+        RESULT = t;
+    :}
     | number_term:n1 error:e number_term:n2 {: report_error("Invalid operator " + e + " in expression.", null); :};
 
 identifier_expr ::=

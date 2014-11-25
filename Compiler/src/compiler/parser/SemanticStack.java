@@ -8,10 +8,9 @@ import java.util.LinkedList;
  */
 public class SemanticStack
 {
-    private static SemanticStack instance;
     private final LinkedList<SemanticRegistry> stack;
     
-    private SemanticStack()
+    public SemanticStack()
     {
         this.stack = new LinkedList();
     }
@@ -37,15 +36,5 @@ public class SemanticStack
         }
         
         return null;
-    }
-    
-    public static SemanticStack getInstance()
-    {
-        if (instance == null)
-        {
-            instance = new SemanticStack();
-        }
-        
-        return instance;
     }
 }
