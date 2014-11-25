@@ -121,6 +121,6 @@ public class TableRow
     @Override
     public String toString()
     {
-        return "TableRow{" + "identifier=" + identifier + ", type=" + type + ", value=" + value + '}';
+        return "TableRow {" + "identifier=" + identifier + ", type=" + type + ", value=" + value + '}';
     }
 }

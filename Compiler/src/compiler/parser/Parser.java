@@ -1465,6 +1465,11 @@ public class Parser extends java_cup.runtime.lr_parser {
         return this.semantic_result;
     }
 
+    public SymbolTable getSymbolTable()
+    {
+        return this.table;
+    }
+
     public void setGenerateCode(boolean flag)
     {
         this.generateCode = flag;
