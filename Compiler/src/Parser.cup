@@ -17,7 +17,12 @@ parser code {:
     private SemanticAnalysisResult semantic_result;
     private FileWriter writer;
     private boolean generateCode;
+    private List<String> assemblyCodeList; 
 
+    public void append(String str)
+    {   
+        this.assemblyCodeList.add(str+System.lineSeparator());
+    }   
     public SyntacticAnalysisResult getSyntacticResult()
     {
         return this.syntax_result;
@@ -75,6 +80,7 @@ parser code {:
 :};
 
 init with {:
+    this.assemblyCodeList = new LinkedList();
     this.table = new SymbolTable();
     this.stack = new SemanticStack();
     this.syntax_result = new SyntacticAnalysisResult();
@@ -666,13 +672,13 @@ if_statement ::=
         String exit_label = LabelGenerator.getInstance().getLabel("exit_label");
         Condition condition = cl.get(0);
         String conditionCode = condition.getAssemblyCode();
-        writer.append(conditionCode+" "+else_label);
-        writer.append("If code block goes here"); 
-        writer.append("JMP "+exit_label); 
-        writer.append(else_label+":");
-        writer.append("Else code block goes here");
-        writer.append(exit_label+":");
-        writer.append("code block"); 
+        append(conditionCode+" "+else_label);
+        append("If code block goes here"); 
+        append("JMP "+exit_label); 
+        append(else_label+":");
+        append("Else code block goes here");
+        append(exit_label+":");
+        append("code block"); 
     :}
     | IF condition_list THEN code_block END
     {:
