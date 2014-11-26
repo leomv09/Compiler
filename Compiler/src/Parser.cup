@@ -254,9 +254,13 @@ expr ::=
         {
             RESULT = ((String) e1) + ((String) e2);
         }
+        else if (e1 == null || e2 == null)
+        {
+            RESULT = null;
+        }
         else
         {
-            report_error("Bad operant for operator +.", null);
+            report_error("Bad operand for operator +.", null);
         }
     :};
 

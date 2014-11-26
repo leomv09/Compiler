@@ -2111,9 +2111,13 @@ class CUP$Parser$actions {
         {
             RESULT = ((String) e1) + ((String) e2);
         }
+        else if (e1 == null || e2 == null)
+        {
+            RESULT = null;
+        }
         else
         {
-            report_error("Bad operant for operator +.", null);
+            report_error("Bad operand for operator +.", null);
         }
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("expr",1, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);

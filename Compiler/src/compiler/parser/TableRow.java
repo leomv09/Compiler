@@ -96,6 +96,10 @@ public class TableRow
         {
             throw new Exception("Constant values cannot be changed.");
         }
+        else if (value == null)
+        {
+            this.value = null;
+        }
         else if (!this.getDataType().isInstance(value))
         {
             throw new Exception("Incompatible type for " + this.identifier
