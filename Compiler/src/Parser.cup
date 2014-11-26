@@ -140,10 +140,11 @@ non terminal assignment_operator, condition_operator, condition_list_operator;
 non terminal function_write, function_read, function_call;
 non terminal List<Condition> condition_list;
 non terminal Condition condition;
-non terminal sentence_item, sentence, code_block_item, code_block, return_block;
+non terminal sentence_item, sentence, return_block;
 non terminal case_item, case_list;
 non terminal iteration_item, iteration_block;
-non terminal for_statement, while_statement, repeat_statement, if_statement, case_statement;
+non terminal String if_statement, code_block, code_block_item;
+non terminal for_statement, while_statement, repeat_statement, case_statement;
 non terminal program;
 
 /* Precedences */
@@ -621,9 +622,9 @@ sentence_item ::= assignment_expr | expr;
 
 sentence ::= sentence_item SEMI;
 
-code_block_item ::= sentence | for_statement | while_statement | repeat_statement | if_statement | case_statement;
+code_block_item ::= sentence | for_statement | while_statement | repeat_statement | if_statement:str {: RESULT = str; :} | case_statement;
 
-code_block ::= code_block code_block_item | code_block_item;
+code_block ::= code_block:cb code_block_item:ci {: RESULT = cb + System.lineSeparator() + ci; :} | code_block_item:ci {: RESULT = ci; :};
 
 iteration_item ::= code_block_item | BREAK SEMI | CONTINUE SEMI;
 
@@ -665,14 +666,16 @@ if_statement ::=
         String else_label = LabelGenerator.getInstance().getLabel("else_label");
         String exit_label = LabelGenerator.getInstance().getLabel("exit_label");
         Condition condition = cl.get(0);
+        StringBuilder str = new StringBuilder();
         String conditionCode = condition.getAssemblyCode();
-        writer.append(conditionCode+" "+else_label);
-        writer.append("If code block goes here"); 
-        writer.append("JMP "+exit_label); 
-        writer.append(else_label+":");
-        writer.append("Else code block goes here");
-        writer.append(exit_label+":");
-        writer.append("code block"); 
+        str.append(conditionCode+" "+else_label).append(System.lineSeparator());
+        str.append("If code block goes here").append(System.lineSeparator()); 
+        str.append("JMP "+exit_label).append(System.lineSeparator()); 
+        str.append(else_label+":").append(System.lineSeparator());
+        str.append("Else code block goes here").append(System.lineSeparator());
+        str.append(exit_label+":").append(System.lineSeparator());
+        str.append("code block").append(System.lineSeparator());
+        RESULT = str.toString();
     :}
     | IF condition_list THEN code_block END
     {:
@@ -698,7 +701,7 @@ case_statement ::=
 return_block ::= IDENTIFIER:id assignment_operator expr:e {: RESULT = e; :};
 
 function ::= 
-    FUNCTION IDENTIFIER:id LPAREN parameter_declaration_list:p RPAREN COLON data_type:dt BEGIN declaration_block:vars code_block return_block:rb END
+    FUNCTION IDENTIFIER:id LPAREN parameter_declaration_list:p RPAREN COLON data_type:dt BEGIN declaration_block:vars code_block:cb return_block:rb END
     {:
         FunctionTableRow functionRow = new FunctionTableRow(id, ParserSym.FUNCTION, dt);
         functionRow.setParameters(p);
@@ -711,6 +714,7 @@ function ::=
         table.popScope();
         table.declareSymbol(functionRow);
         writer.append(id+" proc");
+        writer.append(cb);
         writer.append("ret");
         RESULT = functionRow;
     :}
