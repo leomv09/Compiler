@@ -577,7 +577,7 @@ parameter_declaration_list ::=
     {:
          List<TableRow> list = new LinkedList();
          list.add(p);
-         table.pushScope();
+         table.pushScope("Function scope");
          table.declareSymbol(p);
          RESULT = list;
     :}
@@ -796,7 +796,5 @@ program ::=
     PROGRAM IDENTIFIER declaration_block:vars functions_declaration:funs BEGIN code_block END
     {:
         writer.append("CODE EndS"); 
-        table.pushScope();
-        table.popScope();
     :}
     | error {: report_error("Error in program.", null); :} ;

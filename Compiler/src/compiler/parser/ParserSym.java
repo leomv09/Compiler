@@ -96,8 +96,6 @@ public class ParserSym {
   public static final int WITH = 60;
   public static final int XOR = 26;
   public static final int EQUALS = 18;
-  
-
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",

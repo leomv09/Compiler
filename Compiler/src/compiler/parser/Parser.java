@@ -3090,7 +3090,7 @@ class CUP$Parser$actions {
 		
          List<TableRow> list = new LinkedList();
          list.add(p);
-         table.pushScope();
+         table.pushScope("Function scope");
          table.declareSymbol(p);
          RESULT = list;
     
@@ -3595,9 +3595,7 @@ class CUP$Parser$actions {
 		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		
-                    RESULT = e; 
-                 
+		 RESULT = e; 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("return_block",41, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -3863,8 +3861,6 @@ class CUP$Parser$actions {
 		List<FunctionTableRow> funs = (List<FunctionTableRow>)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
 		
         writer.append("CODE EndS"); 
-        table.pushScope();
-        table.popScope();
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("program",51, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-6)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }

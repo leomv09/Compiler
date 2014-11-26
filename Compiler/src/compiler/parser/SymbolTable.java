@@ -1,5 +1,8 @@
 package compiler.parser;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  *
  * @author jose
@@ -8,16 +11,20 @@ public class SymbolTable
 {
     private final SymbolTableScope globalScope;
     private SymbolTableScope currentScope;
+    private final List<SymbolTableScope> scopes;
     
     public SymbolTable()
     {
+        this.scopes = new LinkedList();
         this.globalScope = new SymbolTableScope();
         this.currentScope = this.globalScope;
+        this.scopes.add(this.globalScope);
     }
     
-    public SymbolTableScope pushScope()
+    public SymbolTableScope pushScope(String name)
     {
-        this.currentScope = new SymbolTableScope(currentScope); 
+        this.currentScope = new SymbolTableScope(name, currentScope);
+        this.scopes.add(this.currentScope);
         return this.currentScope; 
     }
     
@@ -62,14 +69,12 @@ public class SymbolTable
     @Override
     public String toString()
     {
-        SymbolTableScope lookupScope = this.currentScope;
         StringBuilder sb = new StringBuilder();
         sb.append("--- SYMBOL TABLE ---").append(System.lineSeparator());
         
-        while (lookupScope != null)
+        for (SymbolTableScope scope : this.scopes)
         {
-            sb.append(lookupScope).append(System.lineSeparator());
-            lookupScope = lookupScope.getParentScope();
+            sb.append(scope).append(System.lineSeparator());
         }
         
         return sb.toString();

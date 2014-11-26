@@ -13,20 +13,21 @@ public class SymbolTableScope
 {
     private final SymbolTableScope parent;
     private final Map<String, TableRow> table;
-    private String scopeName;
+    private final String name;
 
     public SymbolTableScope()
     {
         this.parent = null;
         this.table = new HashMap();
-        this.scopeName = null;
+        this.name = "Global";
     }
 
     
-    public SymbolTableScope(SymbolTableScope parent)
+    public SymbolTableScope(String name, SymbolTableScope parent)
     {
         this.parent = parent;
         this.table = new HashMap();
+        this.name = name;
     }
     
     public SymbolTableScope getParentScope()
@@ -56,10 +57,17 @@ public class SymbolTableScope
         StringBuilder sb = new StringBuilder();
         TableRow row;
         
+        sb.append("Scope: ").append(this.name).append(System.lineSeparator());
+        
         while (iterator.hasNext())
         {
             row = iterator.next().getValue();
-            sb.append(row).append(System.lineSeparator());
+            sb.append("  ").append(row);
+            
+            if (iterator.hasNext())
+            {
+                sb.append(System.lineSeparator());
+            }
         }
         
         return sb.toString();

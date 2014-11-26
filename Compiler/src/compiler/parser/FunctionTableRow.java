@@ -33,6 +33,11 @@ public class FunctionTableRow extends TableRow
         return (int) this.value;
     }
     
+    public String getReturnTypeName()
+    {
+        return ParserSym.terminalNames[(int) this.value];
+    }
+    
     public Class getReturnDataType()
     {
         return TableRow.getDataType(this.getReturnType());
@@ -43,10 +48,12 @@ public class FunctionTableRow extends TableRow
         StringBuilder str = new StringBuilder();
         str.append("Parameters: ").append(System.lineSeparator());
         str.append("[").append(System.lineSeparator());
+        
         for(TableRow row : this.parameters)
         {
             str.append(row).append(System.lineSeparator());
         }
+        
         str.append("]");
         return str.toString();
     }
@@ -55,7 +62,8 @@ public class FunctionTableRow extends TableRow
     public String toString()
     {
         StringBuilder str = new StringBuilder();
-        str.append("TableRow {" + "identifier=").append(identifier).append(", type=").append(this.getTypeName()).append(", value=").append(value).append('}').append(System.lineSeparator());
+        str.append(identifier).append(" => type:").append(this.getTypeName());
+        str.append(" return:").append(this.getReturnTypeName()).append(System.lineSeparator());
         str.append(this.getParamInfo());
         return str.toString();
     }

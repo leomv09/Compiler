@@ -8,7 +8,7 @@ public class TableRow
 {
     protected final String identifier;
     protected final int type;
-    private boolean constant;
+    protected boolean constant;
     protected Object value;
     
     public static Class getDataType(int type)
@@ -99,8 +99,8 @@ public class TableRow
         else if (!this.getDataType().isInstance(value))
         {
             throw new Exception("Incompatible type for " + this.identifier
-                    + " [EXPECTED=" + this.getDataType().getSimpleName());
-                    //+ " - GOT=" + value.getClass().getSimpleName() + "].");
+                    + " [EXPECTED=" + this.getDataType().getSimpleName()
+                    + " - GOT=" + value.getClass().getSimpleName() + "].");
         }
         else
         {
@@ -115,7 +115,7 @@ public class TableRow
     
     public String getTypeName()
     {
-        if(this.type > 0)
+        if (this.type > 0)
         {
             return ParserSym.terminalNames[this.type];
         }
@@ -128,6 +128,6 @@ public class TableRow
     @Override
     public String toString()
     {
-        return "TableRow {" + "identifier=" + identifier + ", type=" + this.getTypeName() + ", value=" + value + '}';
+        return identifier + " => type:" + this.getTypeName() + " value:" + value;
     }
 }
