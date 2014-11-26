@@ -115,12 +115,19 @@ public class TableRow
     
     public String getTypeName()
     {
-        return ParserSym.terminalNames[this.type];
+        if(this.type > 0)
+        {
+            return ParserSym.terminalNames[this.type];
+        }
+        else
+        {
+            return "CONSTANT";
+        }
     }
 
     @Override
     public String toString()
     {
-        return "TableRow {" + "identifier=" + identifier + ", type=" + type + ", value=" + value + '}';
+        return "TableRow {" + "identifier=" + identifier + ", type=" + this.getTypeName() + ", value=" + value + '}';
     }
 }
