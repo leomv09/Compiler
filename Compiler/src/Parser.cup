@@ -247,42 +247,43 @@ expr ::=
 number_expr ::=
     number_expr:e1 PLUS number_expr:e2
     {:
-        writer.append("MOV AX, " + e1);
-        writer.append("ADD AX, " + e2);
+        
+        append("MOV AX, " + e1);
+        append("ADD AX, " + e2);
         RESULT = e1 + e2;
     :}
     | number_expr:e1 MINUS number_expr:e2
     {:
-        writer.append("MOV AX, " + e1);
-        writer.append("SUB AX, " + e2);
+        append("MOV AX, " + e1);
+        append("SUB AX, " + e2);
         RESULT = e1 - e2;
     :}
     | number_expr:e1 TIMES number_expr:e2
     {:
-        writer.append("MOV AX, " + e1);
-        writer.append("MUL AX, " + e2);
+        append("MOV AX, " + e1);
+        append("MUL AX, " + e2);
         RESULT = e1 * e2;
     :}
     | number_expr:e1 DIV number_expr:e2
     {:
-        writer.append("MOV DX, 0");
-        writer.append("MOV AX, " + e1);
-        writer.append("MOV BX, " + e2);
-        writer.append("DIV BX");
+        append("MOV DX, 0");
+        append("MOV AX, " + e1);
+        append("MOV BX, " + e2);
+        append("DIV BX");
         RESULT = e1 / e2; 
     :}
     | number_expr:e1 MOD number_expr:e2
     {:
-        writer.append("MOV DX, 0");
-        writer.append("MOV AX, " + e1);
-        writer.append("MOV BX, " + e2);
-        writer.append("DIV BX");
+        append("MOV DX, 0");
+        append("MOV AX, " + e1);
+        append("MOV BX, " + e2);
+        append("DIV BX");
         RESULT = e1 % e2;
     :}
     | MINUS number_expr:e
     {:
-        writer.append("MOV AX, 0");
-        writer.append("SUB AX, " + e);
+        append("MOV AX, 0");
+        append("SUB AX, " + e);
         RESULT = -e;
     :}
     | number_term:t

@@ -94,6 +94,7 @@ public class Compiler
             {
                 report = new CompilationReport(r1, r2, r3);
                 System.out.println(report);
+                System.out.println();
                 System.out.println(analyzer.getParser().getSymbolTable());
             }
         }
