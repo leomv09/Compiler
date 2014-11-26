@@ -1459,8 +1459,19 @@ public class Parser extends java_cup.runtime.lr_parser {
 
     public void append(String str)
     {   
-        this.assemblyCodeList.add(str+System.lineSeparator());
-    }   
+        this.assemblyCodeList.add(str + System.lineSeparator());
+    }
+
+    public void writeToFile()
+    {
+        for (String code : this.assemblyCodeList)
+        {
+            writer.append(code);
+        }
+
+        this.assemblyCodeList.clear();
+    }
+
     public SyntacticAnalysisResult getSyntacticResult()
     {
         return this.syntax_result;
@@ -2116,8 +2127,9 @@ class CUP$Parser$actions {
 		int e2right = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Double e2 = (Double)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
-        writer.append("MOV AX, " + e1);
-        writer.append("ADD AX, " + e2);
+        
+        append("MOV AX, " + e1);
+        append("ADD AX, " + e2);
         RESULT = e1 + e2;
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("number_expr",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -2135,8 +2147,8 @@ class CUP$Parser$actions {
 		int e2right = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Double e2 = (Double)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
-        writer.append("MOV AX, " + e1);
-        writer.append("SUB AX, " + e2);
+        append("MOV AX, " + e1);
+        append("SUB AX, " + e2);
         RESULT = e1 - e2;
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("number_expr",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -2154,8 +2166,8 @@ class CUP$Parser$actions {
 		int e2right = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Double e2 = (Double)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
-        writer.append("MOV AX, " + e1);
-        writer.append("MUL AX, " + e2);
+        append("MOV AX, " + e1);
+        append("MUL AX, " + e2);
         RESULT = e1 * e2;
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("number_expr",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -2173,10 +2185,10 @@ class CUP$Parser$actions {
 		int e2right = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Double e2 = (Double)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
-        writer.append("MOV DX, 0");
-        writer.append("MOV AX, " + e1);
-        writer.append("MOV BX, " + e2);
-        writer.append("DIV BX");
+        append("MOV DX, 0");
+        append("MOV AX, " + e1);
+        append("MOV BX, " + e2);
+        append("DIV BX");
         RESULT = e1 / e2; 
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("number_expr",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -2194,10 +2206,10 @@ class CUP$Parser$actions {
 		int e2right = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Double e2 = (Double)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
-        writer.append("MOV DX, 0");
-        writer.append("MOV AX, " + e1);
-        writer.append("MOV BX, " + e2);
-        writer.append("DIV BX");
+        append("MOV DX, 0");
+        append("MOV AX, " + e1);
+        append("MOV BX, " + e2);
+        append("DIV BX");
         RESULT = e1 % e2;
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("number_expr",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -2212,8 +2224,8 @@ class CUP$Parser$actions {
 		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Double e = (Double)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
-        writer.append("MOV AX, 0");
-        writer.append("SUB AX, " + e);
+        append("MOV AX, 0");
+        append("SUB AX, " + e);
         RESULT = -e;
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("number_expr",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -3636,8 +3648,11 @@ class CUP$Parser$actions {
 
         table.popScope();
         table.declareSymbol(functionRow);
+
         writer.append(id+" proc");
+        writeToFile();
         writer.append("ret");
+
         RESULT = functionRow;
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("function",24, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-11)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -3866,6 +3881,7 @@ class CUP$Parser$actions {
 		int funsright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
 		List<FunctionTableRow> funs = (List<FunctionTableRow>)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
 		
+        writeToFile();
         writer.append("CODE EndS"); 
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("program",51, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-6)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);

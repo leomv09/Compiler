@@ -21,8 +21,19 @@ parser code {:
 
     public void append(String str)
     {   
-        this.assemblyCodeList.add(str+System.lineSeparator());
-    }   
+        this.assemblyCodeList.add(str + System.lineSeparator());
+    }
+
+    public void writeToFile()
+    {
+        for (String code : this.assemblyCodeList)
+        {
+            writer.append(code);
+        }
+
+        this.assemblyCodeList.clear();
+    }
+
     public SyntacticAnalysisResult getSyntacticResult()
     {
         return this.syntax_result;
@@ -717,8 +728,11 @@ function ::=
 
         table.popScope();
         table.declareSymbol(functionRow);
+
         writer.append(id+" proc");
+        writeToFile();
         writer.append("ret");
+
         RESULT = functionRow;
     :}
     | FUNCTION error END {: report_error("Error in function declaration.", null); :};
@@ -802,6 +816,7 @@ function_call ::=
 program ::=
     PROGRAM IDENTIFIER declaration_block:vars functions_declaration:funs BEGIN code_block END
     {:
+        writeToFile();
         writer.append("CODE EndS"); 
     :}
     | error {: report_error("Error in program.", null); :} ;
