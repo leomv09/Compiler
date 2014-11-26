@@ -6,8 +6,8 @@ package compiler.parser;
  */
 public class TableRow
 {
-    private final String identifier;
-    private final int type;
+    protected final String identifier;
+    protected final int type;
     private boolean constant;
     protected Object value;
     

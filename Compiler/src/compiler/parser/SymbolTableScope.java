@@ -13,12 +13,15 @@ public class SymbolTableScope
 {
     private final SymbolTableScope parent;
     private final Map<String, TableRow> table;
+    private String scopeName;
 
     public SymbolTableScope()
     {
         this.parent = null;
         this.table = new HashMap();
+        this.scopeName = null;
     }
+
     
     public SymbolTableScope(SymbolTableScope parent)
     {

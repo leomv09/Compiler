@@ -37,4 +37,26 @@ public class FunctionTableRow extends TableRow
     {
         return TableRow.getDataType(this.getReturnType());
     }
+    
+    private String getParamInfo()
+    {
+        StringBuilder str = new StringBuilder();
+        str.append("Parameters: ").append(System.lineSeparator());
+        str.append("[").append(System.lineSeparator());
+        for(TableRow row : this.parameters)
+        {
+            str.append(row).append(System.lineSeparator());
+        }
+        str.append("]");
+        return str.toString();
+    }
+    
+    @Override
+    public String toString()
+    {
+        StringBuilder str = new StringBuilder();
+        str.append("TableRow {" + "identifier=").append(identifier).append(", type=").append(this.getTypeName()).append(", value=").append(value).append('}').append(System.lineSeparator());
+        str.append(this.getParamInfo());
+        return str.toString();
+    }
 }
